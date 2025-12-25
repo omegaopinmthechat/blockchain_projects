@@ -22,6 +22,10 @@ if (!fs.existsSync(uploadDir)) {
 
 const upload = multer({ dest: uploadDir });
 
+app.get('/', (req, res)=>{
+    res.send("Server is ok");
+})
+
 app.post("/upload", upload.single("certificate"), async (req, res) => {
   try {
     if (!req.file) {

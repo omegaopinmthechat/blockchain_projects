@@ -5,6 +5,8 @@ import fs from "fs";
 import axios from "axios";
 import FormData from "form-data";
 import dotenv from "dotenv";
+import path from "path";
+import { tmpdir } from "os";
 
 dotenv.config();
 
@@ -12,7 +14,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const upload = multer({ dest: "uploads/" });
+// Use /tmp directory for serverless environment
+const uploadDir = process.env.VERCEL ? path.join(tmpdir(), 'uploads') : 'uploads';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const upload = multer({ dest: uploadDir });
 
 app.post("/upload", upload.single("certificate"), async (req, res) => {
   try {
@@ -56,3 +64,6 @@ app.post("/upload", upload.single("certificate"), async (req, res) => {
 app.listen(5500, () => {
   console.log(`Backend running on port ${5500}`);
 });
+
+// Export for Vercel serverless
+export default app;

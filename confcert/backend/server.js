@@ -53,6 +53,6 @@ app.post("/upload", upload.single("certificate"), async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT|| 5500, () => {
   console.log(`Backend running on port ${process.env.PORT}`);
 });

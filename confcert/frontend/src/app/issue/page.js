@@ -96,8 +96,61 @@ export default function Issue() {
         .issueCertificate(studentName, cid)
         .send({ from: account });
 
+      console.log("Receipt:", receipt);
+      
+      // Get certificate ID from events
+      let certificateId = null;
+      
+      // Try multiple methods to get the event
+      if (receipt.events && receipt.events.CertificateIssued) {
+        certificateId = receipt.events.CertificateIssued.returnValues.id;
+        console.log("Got ID from receipt.events:", certificateId);
+      } 
+      
+      // Try parsing logs directly
+      if (!certificateId && receipt.logs && receipt.logs.length > 0) {
+        const web3 = new Web3(window.ethereum);
+        receipt.logs.forEach(log => {
+          try {
+            const decoded = web3.eth.abi.decodeLog(
+              [
+                { type: 'uint256', name: 'id', indexed: false },
+                { type: 'string', name: 'studentName', indexed: false },
+                { type: 'string', name: 'ipfsCID', indexed: false }
+              ],
+              log.data,
+              log.topics.slice(1)
+            );
+            if (decoded.id) {
+              certificateId = decoded.id;
+              console.log("Got ID from logs:", certificateId);
+            }
+          } catch (e) {
+            // Skip if not the right event
+          }
+        });
+      }
+      
+      // Fallback: get events from the transaction
+      if (!certificateId) {
+        const events = await contract.getPastEvents('CertificateIssued', {
+          fromBlock: receipt.blockNumber,
+          toBlock: receipt.blockNumber
+        });
+        
+        if (events.length > 0) {
+          const event = events.find(e => e.transactionHash === receipt.transactionHash);
+          if (event) {
+            certificateId = event.returnValues.id;
+            console.log("Got ID from getPastEvents:", certificateId);
+          }
+        }
+      }
+
       setStatus(
-        `Certificate issued successfully! ID: ${receipt.events.CertificateIssued.returnValues.id}`
+        certificateId 
+          ? `Certificate issued successfully! ID: ${certificateId}`
+          : "Certificate issued successfully!"
       );
     } catch (err) {
       console.error(err);

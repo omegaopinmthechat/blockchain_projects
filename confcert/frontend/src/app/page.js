@@ -29,6 +29,13 @@ export default function Home() {
               </button>
             </Link>
             
+            <Link href="/bulk-issue">
+              <button className="inline-flex items-center justify-center gap-2 h-14 px-8 py-4 text-lg bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
+                <FileCheck className="w-5 h-5" />
+                Bulk Issue
+              </button>
+            </Link>
+            
             <Link href="/verify">
               <button className="inline-flex items-center justify-center gap-2 h-14 px-8 py-4 text-lg bg-gradient-to-r from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 text-yellow-900 border-2 border-yellow-300 font-semibold rounded-xl transition-all duration-300 hover:scale-105">
                 <Shield className="w-5 h-5" />

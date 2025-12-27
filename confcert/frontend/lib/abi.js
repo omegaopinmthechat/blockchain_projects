@@ -45,6 +45,24 @@ export const CONF_CERT_ABI = [
   {
     inputs: [
       {
+        internalType: "string[]",
+        name: "_studentNames",
+        type: "string[]",
+      },
+      {
+        internalType: "string[]",
+        name: "_ipfsCIDs",
+        type: "string[]",
+      },
+    ],
+    name: "issueCertificatesBatch",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "",
         type: "uint256",

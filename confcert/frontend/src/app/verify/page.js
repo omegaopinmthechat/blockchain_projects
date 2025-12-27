@@ -3,17 +3,45 @@ import { useState } from "react";
 import Web3 from "web3";
 import { CONF_CERT_ABI } from "../../../lib/abi.js";
 import Link from "next/link";
-import { Search, ArrowLeft, CheckCircle, User, Shield, ExternalLink } from "lucide-react";
+import { Search, ArrowLeft, CheckCircle, User, Shield, ExternalLink, Wallet } from "lucide-react";
 
 export default function Verify() {
+  const [account, setAccount] = useState("");
   const [certId, setCertId] = useState("");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  async function connectWallet() {
+    if (!window.ethereum) {
+      alert("MetaMask is required. Please install MetaMask extension.");
+      return;
+    }
+    try {
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      setAccount(accounts[0]);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to connect wallet");
+    }
+  }
+
   async function verify() {
+    if (!account) {
+      setError("Please connect your wallet first");
+      return;
+    }
+    
     if (!certId.trim()) {
       setError("Please enter a certificate ID");
+      return;
+    }
+
+    const certIdNum = parseInt(certId);
+    if (isNaN(certIdNum) || certIdNum <= 1000) {
+      setError("Certificate ID must be greater than 1000");
       return;
     }
 
@@ -68,35 +96,58 @@ export default function Verify() {
           <div className="mb-6">
             <h3 className="text-2xl font-bold text-yellow-900 mb-2">Certificate Verification</h3>
             <p className="text-sm text-yellow-800">
-              Enter the unique certificate ID to retrieve details from the blockchain
+              Connect your wallet and enter certificate ID to verify
             </p>
           </div>
           
           <div className="space-y-4">
-            <div className="flex gap-3">
-              <input
-                placeholder="Enter Certificate ID (e.g., 1, 2, 3...)"
-                value={certId}
-                onChange={(e) => setCertId(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && verify()}
-                disabled={loading}
-                className="flex h-12 w-full rounded-xl border-2 border-yellow-200 bg-white px-4 py-2 text-base text-yellow-900 placeholder:text-yellow-400 focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
-              />
-              <button
-                onClick={verify}
-                disabled={loading || !certId}
-                className="inline-flex items-center justify-center gap-2 h-12 px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:pointer-events-none"
-              >
-                {loading ? (
-                  "Verifying..."
-                ) : (
-                  <>
-                    <Search className="w-5 h-5" />
-                    Verify
-                  </>
-                )}
-              </button>
-            </div>
+            {/* Wallet Connection */}
+            {!account ? (
+              <div className="flex flex-col items-center justify-center py-6 space-y-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center">
+                  <Wallet className="w-8 h-8 text-white" />
+                </div>
+                <p className="text-yellow-800 text-center">
+                  Connect your MetaMask wallet to verify certificates
+                </p>
+                <button onClick={connectWallet} className="inline-flex items-center justify-center gap-2 h-12 px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
+                  <Wallet className="w-5 h-5" />
+                  Connect MetaMask
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="p-4 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-xl border-2 border-yellow-300 mb-4">
+                  <p className="text-sm text-yellow-700 mb-1 font-semibold">Connected Wallet</p>
+                  <p className="text-yellow-900 font-mono text-sm break-all">{account}</p>
+                </div>
+
+                <div className="flex gap-3">
+                  <input
+                    placeholder="Enter Certificate ID (e.g., 1, 2, 3...)"
+                    value={certId}
+                    onChange={(e) => setCertId(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && verify()}
+                    disabled={loading}
+                    className="flex h-12 w-full rounded-xl border-2 border-yellow-200 bg-white px-4 py-2 text-base text-yellow-900 placeholder:text-yellow-400 focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
+                  />
+                  <button
+                    onClick={verify}
+                    disabled={loading || !certId}
+                    className="inline-flex items-center justify-center gap-2 h-12 px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    {loading ? (
+                      "Verifying..."
+                    ) : (
+                      <>
+                        <Search className="w-5 h-5" />
+                        Verify
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
 
             {error && (
               <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl">

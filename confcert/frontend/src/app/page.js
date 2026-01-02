@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Blocks, Award, Rocket, Vote } from "lucide-react";
+import { Blocks, Award, Rocket, Vote, Heart } from "lucide-react";
 
 export default function Home() {
   return (
@@ -88,6 +88,40 @@ export default function Home() {
               </div>
               
               <div className="flex items-center gap-2 text-blue-400 font-semibold group-hover:gap-3 transition-all">
+                Explore Project
+                <Rocket className="w-4 h-4" />
+              </div>
+            </div>
+          </Link>
+
+          {/* Donate System Project */}
+          <Link href="/donate">
+            <div className="group bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-green-500/30 hover:border-green-400 rounded-2xl p-8 shadow-[0_10px_40px_-5px_rgba(34,197,94,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(34,197,94,0.5)] transition-all duration-300 hover:scale-105 cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:rotate-6 transition-transform duration-300">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-green-400 mb-3">
+                Donate System
+              </h3>
+              
+              <p className="text-slate-300 mb-4">
+                Transparent charity donation platform with blockchain-verified transactions.
+              </p>
+              
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-xs text-green-400">
+                  Charity
+                </span>
+                <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-xs text-green-400">
+                  Ethereum
+                </span>
+                <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-xs text-green-400">
+                  Web3
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-green-400 font-semibold group-hover:gap-3 transition-all">
                 Explore Project
                 <Rocket className="w-4 h-4" />
               </div>

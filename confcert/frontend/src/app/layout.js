@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "ConfCert",
+  title: "Blockchain Projects",
   description: "Amar Sankar Maitra",
 };
 

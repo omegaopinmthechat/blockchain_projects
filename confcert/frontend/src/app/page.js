@@ -1,136 +1,135 @@
-"use client"
+"use client";
 import Link from "next/link";
-import { FileCheck, Shield, Award } from "lucide-react";
+import { Blocks, Award, Rocket, Vote } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-yellow-50 via-yellow-100 to-yellow-200">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-8 py-16">
         <div className="text-center mb-16">
-          <div className="inline-block mb-6 px-6 py-2 bg-gradient-to-r from-yellow-200 to-yellow-300 rounded-full">
-            <span className="text-yellow-900 font-semibold text-sm">🎓 Blockchain-Powered Certificates</span>
+          <div className="inline-block mb-6 px-6 py-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-full">
+            <span className="text-blue-300 font-semibold text-sm">
+              ⚡ Blockchain Projects Portfolio
+            </span>
           </div>
-          
-          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
-            ConfCert
+
+          <h1 className="text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Blockchain Projects
           </h1>
-          
-          <p className="text-xl text-yellow-800 mb-8 max-w-2xl mx-auto">
-            Issue and verify certificates on the blockchain with IPFS storage. 
-            Secure, transparent, and tamper-proof certification system.
+
+          <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
+            Explore decentralized applications built on blockchain technology.
+            Secure, transparent, and innovative solutions.
           </p>
-          
-          <div className="flex gap-4 justify-center">
-            <Link href="/issue">
-              <button className="inline-flex items-center justify-center gap-2 h-14 px-8 py-4 text-lg bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
-                <Award className="w-5 h-5" />
-                Issue Certificate
-              </button>
-            </Link>
+        </div>
+
+        {/* Projects Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+          {/* ConfCert Project */}
+          <Link href="/confcert">
+            <div className="group bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-yellow-500/30 hover:border-yellow-400 rounded-2xl p-8 shadow-[0_10px_40px_-5px_rgba(234,179,8,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(234,179,8,0.5)] transition-all duration-300 hover:scale-105 cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center mb-6 group-hover:rotate-6 transition-transform duration-300">
+                <Award className="w-8 h-8 text-white" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-yellow-400 mb-3">
+                ConfCert
+              </h3>
+              
+              <p className="text-slate-300 mb-4">
+                Blockchain-powered certificate issuance and verification system with IPFS storage.
+              </p>
+              
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="px-3 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-full text-xs text-yellow-400">
+                  Sepolia
+                </span>
+                <span className="px-3 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-full text-xs text-yellow-400">
+                  IPFS
+                </span>
+                <span className="px-3 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-full text-xs text-yellow-400">
+                  Web3
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-yellow-400 font-semibold group-hover:gap-3 transition-all">
+                Explore Project
+                <Rocket className="w-4 h-4" />
+              </div>
+            </div>
+          </Link>
+
+          {/* Placeholder for future projects */}
+          <Link href="/voting">
+            <div className="group bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-blue-500/30 hover:border-blue-400 rounded-2xl p-8 shadow-[0_10px_40px_-5px_rgba(59,130,246,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(59,130,246,0.5)] transition-all duration-300 hover:scale-105 cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:rotate-6 transition-transform duration-300">
+                <Vote className="w-8 h-8 text-white" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-blue-400 mb-3">
+                Voting System
+              </h3>
+              
+              <p className="text-slate-300 mb-4">
+                Decentralized voting system ensuring transparency and preventing fraud.
+              </p>
+              
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs text-blue-400">
+                  Ethereum
+                </span>
+                <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs text-blue-400">
+                  Solidity
+                </span>
+                <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs text-blue-400">
+                  Web3
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-blue-400 font-semibold group-hover:gap-3 transition-all">
+                Explore Project
+                <Rocket className="w-4 h-4" />
+              </div>
+            </div>
+          </Link>
+
+          <div className="bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-8 opacity-50">
+            <div className="w-16 h-16 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center mb-6">
+              <Blocks className="w-8 h-8 text-slate-400" />
+            </div>
             
-            <Link href="/bulk-issue">
-              <button className="inline-flex items-center justify-center gap-2 h-14 px-8 py-4 text-lg bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
-                <FileCheck className="w-5 h-5" />
-                Bulk Issue
-              </button>
-            </Link>
+            <h3 className="text-2xl font-bold text-slate-400 mb-3">
+              Coming Soon
+            </h3>
             
-            <Link href="/verify">
-              <button className="inline-flex items-center justify-center gap-2 h-14 px-8 py-4 text-lg bg-gradient-to-r from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 text-yellow-900 border-2 border-yellow-300 font-semibold rounded-xl transition-all duration-300 hover:scale-105">
-                <Shield className="w-5 h-5" />
-                Verify Certificate
-              </button>
-            </Link>
+            <p className="text-slate-500">
+              More blockchain projects in development...
+            </p>
           </div>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mt-16">
-          <div className="bg-gradient-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] hover:scale-105 transition-transform duration-300">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-yellow-900 mb-2">Blockchain Security</h3>
-            <p className="text-sm text-yellow-800">
-              Certificates stored immutably on the blockchain, ensuring authenticity and preventing fraud.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] hover:scale-105 transition-transform duration-300">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-              <FileCheck className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-yellow-900 mb-2">IPFS Storage</h3>
-            <p className="text-sm text-yellow-800">
-              Certificate files stored on IPFS for decentralized, permanent, and accessible storage.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] hover:scale-105 transition-transform duration-300">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-              <Award className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-yellow-900 mb-2">Easy Verification</h3>
-            <p className="text-sm text-yellow-800">
-              Instantly verify any certificate by its ID. No central authority needed.
-            </p>
-          </div>
-        </div>
-
-        {/* How It Works Section */}
-        <div className="mt-20">
-          <h2 className="text-4xl font-bold text-center mb-12 text-yellow-900">How It Works</h2>
+        {/* About Section */}
+        <div className="mt-20 text-center">
+          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Built with Modern Tech
+          </h2>
           
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-gradient-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
-              <h3 className="text-2xl font-bold text-yellow-900 flex items-center gap-3 mb-6">
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-white font-bold">1</span>
-                Issue Certificates
-              </h3>
-              <ul className="space-y-3 text-yellow-800">
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">▸</span>
-                  Connect your MetaMask wallet
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">▸</span>
-                  Upload the certificate file
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">▸</span>
-                  Enter student name and submit
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">▸</span>
-                  File stored on IPFS, record on blockchain
-                </li>
-              </ul>
+          <div className="flex flex-wrap justify-center gap-4 mt-8">
+            <div className="px-6 py-3 bg-slate-800 border border-slate-700 rounded-xl">
+              <span className="text-slate-300 font-semibold">Solidity</span>
             </div>
-
-            <div className="bg-gradient-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
-              <h3 className="text-2xl font-bold text-yellow-900 flex items-center gap-3 mb-6">
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-white font-bold">2</span>
-                Verify Certificates
-              </h3>
-              <ul className="space-y-3 text-yellow-800">
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">▸</span>
-                  Enter the certificate ID
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">▸</span>
-                  Click verify to query blockchain
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">▸</span>
-                  View certificate details and issuer
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500 mt-1">▸</span>
-                  Access original certificate from IPFS
-                </li>
-              </ul>
+            <div className="px-6 py-3 bg-slate-800 border border-slate-700 rounded-xl">
+              <span className="text-slate-300 font-semibold">Web3.js</span>
+            </div>
+            <div className="px-6 py-3 bg-slate-800 border border-slate-700 rounded-xl">
+              <span className="text-slate-300 font-semibold">Next.js</span>
+            </div>
+            <div className="px-6 py-3 bg-slate-800 border border-slate-700 rounded-xl">
+              <span className="text-slate-300 font-semibold">IPFS</span>
+            </div>
+            <div className="px-6 py-3 bg-slate-800 border border-slate-700 rounded-xl">
+              <span className="text-slate-300 font-semibold">MetaMask</span>
             </div>
           </div>
         </div>

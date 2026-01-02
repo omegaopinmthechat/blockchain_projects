@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Web3 from "web3";
 import axios from "axios";
-import { CONF_CERT_ABI } from "../../../lib/abi.js";
+import { CONF_CERT_ABI } from "../../../../lib/abi.js";
 import Link from "next/link";
 import { Upload, Wallet, ArrowLeft, Loader2, FileSpreadsheet, X, Plus, Edit3 } from "lucide-react";
 
@@ -272,7 +272,7 @@ export default function BulkIssue() {
       <div className="max-w-4xl mx-auto px-8 py-12">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/">
+          <Link href="/confcert">
             <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm border-2 border-yellow-400 text-yellow-900 hover:bg-yellow-50 rounded-xl font-semibold transition-all duration-300 mb-6">
               <ArrowLeft className="w-4 h-4" />
               Back to Home

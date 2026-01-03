@@ -61,7 +61,7 @@ export default function DonateAdmin() {
     try {
       setLoading(true);
       await contract.methods.addCharity(charityAddress).send({ from: account });
-      alert("✅ Charity added successfully!");
+      alert("Charity added successfully!");
       setCharityAddress("");
       await loadBlockchain();
     } catch (err) {
@@ -86,7 +86,7 @@ export default function DonateAdmin() {
     try {
       setLoading(true);
       await contract.methods.removeCharity(removeAddress).send({ from: account });
-      alert("✅ Charity removed successfully!");
+      alert("Charity removed successfully!");
       setRemoveAddress("");
       await loadBlockchain();
     } catch (err) {
@@ -120,7 +120,7 @@ export default function DonateAdmin() {
 
       // New contract: withdraw(address _to, uint256 amount) - onlyCharity modifier
       await contract.methods.withdraw(withdrawTo, amountInWei).send({ from: account });
-      alert("✅ Funds withdrawn successfully!");
+      alert("Funds withdrawn successfully!");
       setWithdrawAmount("");
       setWithdrawTo("");
       await loadBlockchain();
@@ -297,7 +297,7 @@ export default function DonateAdmin() {
 
           <div className="bg-blue-50 border border-blue-300 rounded-lg p-4 mb-4">
             <p className="text-sm text-blue-800">
-              ℹ️ <strong>Note:</strong> Only approved charities can withdraw funds. If you are a charity, 
+              <strong>Note:</strong> Only approved charities can withdraw funds. If you are a charity, 
               you can send funds to any address.
             </p>
           </div>
@@ -385,8 +385,8 @@ export default function DonateAdmin() {
             >
               <p className={`font-semibold ${isApproved ? "text-green-900" : "text-red-900"}`}>
                 {isApproved
-                  ? "✅ This address is an approved charity"
-                  : "❌ This address is NOT an approved charity"}
+                  ? "This address is an approved charity"
+                  : "This address is NOT an approved charity"}
               </p>
             </div>
           )}

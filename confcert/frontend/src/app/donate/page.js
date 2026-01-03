@@ -67,7 +67,7 @@ export default function Donate() {
         value: amountInWei,
       });
 
-      alert("Thank you for your donation! 💚");
+      alert("Thank you for your donation!");
       setDonationAmount("");
       await loadBlockchain();
     } catch (err) {
@@ -104,7 +104,7 @@ export default function Donate() {
           </div>
 
           <h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-green-600 via-green-500 to-green-600 bg-clip-text text-transparent">
-            💚 Charity Donation Platform
+            Charity Donation Platform
           </h1>
           <p className="text-green-800 text-lg">
             Make a difference with blockchain-powered donations
@@ -213,7 +213,7 @@ export default function Donate() {
               </button>
 
               <p className="text-xs text-green-700 text-center">
-                💡 All donations are recorded on the blockchain and are transparent
+                Note: All donations are recorded on the blockchain and are transparent
               </p>
             </div>
           </div>
@@ -247,19 +247,19 @@ export default function Donate() {
             <h3 className="text-xl font-bold text-green-900 mb-3">Why Blockchain?</h3>
             <ul className="space-y-2 text-green-800">
               <li className="flex items-start gap-2">
-                <span className="text-green-500 mt-1">▸</span>
+                <span className="text-green-500 mt-1">•</span>
                 100% transparent - all donations visible
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-500 mt-1">▸</span>
+                <span className="text-green-500 mt-1">•</span>
                 Secure and immutable records
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-500 mt-1">▸</span>
+                <span className="text-green-500 mt-1">•</span>
                 Direct donations - no intermediaries
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-500 mt-1">▸</span>
+                <span className="text-green-500 mt-1">•</span>
                 Smart contract controlled distribution
               </li>
             </ul>

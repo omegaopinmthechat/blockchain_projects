@@ -7,17 +7,18 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-yellow-50 via-yellow-100 to-yellow-200">
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-8 py-16">
-        <div className="text-center mb-16">
+        <div className="mb-8">
           <Link href="/">
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm border-2 border-yellow-400 text-yellow-900 hover:bg-yellow-50 rounded-xl font-semibold transition-all duration-300 mb-6">
+            <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm border-2 border-yellow-400 text-yellow-900 hover:bg-yellow-50 rounded-xl font-semibold transition-all duration-300">
               <ArrowLeft className="w-4 h-4" />
               Back to Projects
             </button>
           </Link>
+        </div>
 
-          <div className="inline-block mb-6 px-6 py-2 bg-gradient-to-r from-yellow-200 to-yellow-300 rounded-full">
+        <div className="text-center mb-16">          <div className="inline-block mb-6 px-6 py-2 bg-gradient-to-r from-yellow-200 to-yellow-300 rounded-full">
             <span className="text-yellow-900 font-semibold text-sm">
-              🎓 Blockchain-Powered Certificates
+              Blockchain-Powered Certificates
             </span>
           </div>
 

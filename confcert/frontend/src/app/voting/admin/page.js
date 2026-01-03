@@ -114,7 +114,7 @@ export default function VotingAdmin() {
             <div>
               <p className="text-sm font-semibold">Admin Status</p>
               <p className="font-mono text-sm break-all">
-                {isAdmin ? "✅ You are the admin" : "❌ You are not the admin"}
+                {isAdmin ? "You are the admin" : "You are not the admin"}
               </p>
               <p className="text-xs mt-1 opacity-75">Connected: {account}</p>
             </div>
@@ -154,7 +154,7 @@ export default function VotingAdmin() {
               </button>
 
               <p className="text-xs text-purple-700">
-                💡 Only the admin wallet can add candidates. Candidates are added directly to blockchain.
+                Note: Only the admin wallet can add candidates. Candidates are added directly to blockchain.
               </p>
             </div>
           </div>

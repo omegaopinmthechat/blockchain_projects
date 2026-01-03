@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen } from "lucide-react";
+import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen, Linkedin } from "lucide-react";
 
 export default function Home() {
   return (
@@ -212,18 +212,29 @@ export default function Home() {
         {/* Footer */}
         <div className="mt-16 text-center">
           <div className="bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-8">
-            <p className="text-2xl font-bold text-slate-300 mb-4">
-              Made by AMAR SANKAR MAITRA
+            <p className="text-2xl font-bold text-slate-300 mb-6">
+              Made by Amar Sankar Maitra
             </p>
-            <a
-              href="https://github.com/omegaopinmthechat/blockchain_projects"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
-            >
-              <Github className="w-5 h-5" />
-              View on GitHub
-            </a>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href="https://github.com/omegaopinmthechat/blockchain_projects"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+              >
+                <Github className="w-5 h-5" />
+                View on GitHub
+              </a>
+              <a
+                href="https://www.linkedin.com/in/amarsankarmaitra"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+              >
+                <Linkedin className="w-5 h-5" />
+                Connect on LinkedIn
+              </a>
+            </div>
           </div>
         </div>
       </div>

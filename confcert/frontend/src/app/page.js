@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Blocks, Award, Rocket, Vote, Heart, Shield, Github } from "lucide-react";
+import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen } from "lucide-react";
 
 export default function Home() {
   return (
@@ -18,10 +18,17 @@ export default function Home() {
             Blockchain Projects
           </h1>
 
-          <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
             Explore decentralized applications built on blockchain technology.
             Secure, transparent, and innovative solutions.
           </p>
+
+          <Link href="/documentation">
+            <button className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
+              <BookOpen className="w-5 h-5" />
+              View Documentation & Deploy Guide
+            </button>
+          </Link>
         </div>
 
         {/* Projects Grid */}

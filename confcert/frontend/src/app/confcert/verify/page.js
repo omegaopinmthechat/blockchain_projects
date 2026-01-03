@@ -72,7 +72,7 @@ export default function Verify() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-yellow-50 via-yellow-100 to-yellow-200">
+    <div className="min-h-screen bg-linear-to-b from-yellow-50 via-yellow-100 to-yellow-200">
       <div className="max-w-4xl mx-auto px-8 py-12">
         {/* Header */}
         <div className="mb-8">
@@ -83,7 +83,7 @@ export default function Verify() {
             </button>
           </Link>
           
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-yellow-600 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
             Verify Certificate
           </h1>
           <p className="text-yellow-800 text-lg">
@@ -92,7 +92,7 @@ export default function Verify() {
         </div>
 
         {/* Search Card */}
-        <div className="bg-gradient-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] mb-8">
+        <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] mb-8">
           <div className="mb-6">
             <h3 className="text-2xl font-bold text-yellow-900 mb-2">Certificate Verification</h3>
             <p className="text-sm text-yellow-800">
@@ -104,20 +104,20 @@ export default function Verify() {
             {/* Wallet Connection */}
             {!account ? (
               <div className="flex flex-col items-center justify-center py-6 space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center">
                   <Wallet className="w-8 h-8 text-white" />
                 </div>
                 <p className="text-yellow-800 text-center">
                   Connect your MetaMask wallet to verify certificates
                 </p>
-                <button onClick={connectWallet} className="inline-flex items-center justify-center gap-2 h-12 px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
+                <button onClick={connectWallet} className="inline-flex items-center justify-center gap-2 h-12 px-6 py-3 bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
                   <Wallet className="w-5 h-5" />
                   Connect MetaMask
                 </button>
               </div>
             ) : (
               <>
-                <div className="p-4 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-xl border-2 border-yellow-300 mb-4">
+                <div className="p-4 bg-linear-to-r from-yellow-100 to-yellow-200 rounded-xl border-2 border-yellow-300 mb-4">
                   <p className="text-sm text-yellow-700 mb-1 font-semibold">Connected Wallet</p>
                   <p className="text-yellow-900 font-mono text-sm break-all">{account}</p>
                 </div>
@@ -134,7 +134,7 @@ export default function Verify() {
                   <button
                     onClick={verify}
                     disabled={loading || !certId}
-                    className="inline-flex items-center justify-center gap-2 h-12 px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:pointer-events-none"
+                    className="inline-flex items-center justify-center gap-2 h-12 px-6 py-3 bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:pointer-events-none"
                   >
                     {loading ? (
                       "Verifying..."
@@ -159,9 +159,9 @@ export default function Verify() {
 
         {/* Results Card */}
         {data && (
-          <div className="bg-gradient-to-b from-green-50 to-yellow-50 border-2 border-green-500 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
+          <div className="bg-linear-to-b from-green-50 to-yellow-50 border-2 border-green-500 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-linear-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -220,7 +220,7 @@ export default function Verify() {
               )}
 
               {/* Certificate ID */}
-              <div className="p-4 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-xl border-2 border-yellow-300">
+              <div className="p-4 bg-linear-to-r from-yellow-100 to-yellow-200 rounded-xl border-2 border-yellow-300">
                 <p className="text-xs text-yellow-700 mb-1 font-semibold">Certificate ID</p>
                 <p className="text-lg font-mono font-bold text-yellow-900">{certId}</p>
               </div>

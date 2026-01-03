@@ -444,7 +444,7 @@ contract CertificateHashVerifier {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
       <div className="max-w-7xl mx-auto px-8 py-12">
         {/* Header */}
         <div className="mb-12">
@@ -456,11 +456,11 @@ contract CertificateHashVerifier {
           </Link>
 
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
               <BookOpen className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-5xl font-bold bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Project Documentation
               </h1>
               <p className="text-slate-400 text-lg mt-2">
@@ -471,7 +471,7 @@ contract CertificateHashVerifier {
         </div>
 
         {/* Deployment Guide */}
-        <div className="mb-16 bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-8">
+        <div className="mb-16 bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-8">
           <div className="flex items-center gap-3 mb-6">
             <Rocket className="w-8 h-8 text-blue-400" />
             <h2 className="text-3xl font-bold text-slate-200">
@@ -521,7 +521,7 @@ contract CertificateHashVerifier {
         {/* Projects */}
         <div className="space-y-12">
           {projects.map((project) => (
-            <div key={project.id} className={`bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-${project.color}-500/30 rounded-2xl p-8`}>
+            <div key={project.id} className={`bg-linear-to-b from-slate-800 to-slate-900 border-2 border-${project.color}-500/30 rounded-2xl p-8`}>
               {/* Project Header */}
               <div className="mb-6">
                 <h2 className={`text-3xl font-bold text-${project.color}-400 mb-3`}>
@@ -601,13 +601,13 @@ contract CertificateHashVerifier {
 
         {/* Footer */}
         <div className="mt-16 text-center">
-          <div className="bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-8">
+          <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-8">
             <h3 className="text-2xl font-bold text-slate-200 mb-4">Ready to Deploy?</h3>
             <p className="text-slate-400 mb-6">
               Follow the deployment guide above and use the contract codes provided. All contracts are tested and production-ready.
             </p>
             <Link href="/">
-              <button className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105">
+              <button className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105">
                 <ArrowLeft className="w-5 h-5" />
                 Back to Projects
               </button>

@@ -25,7 +25,7 @@ export default function Home() {
 
           <div className="bg-linear-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-4 max-w-2xl mx-auto mb-6 sm:mb-8">
             <p className="text-sm sm:text-base text-purple-300 font-medium">
-              💡 <strong>Note:</strong> Install MetaMask extension for PC/Laptops, or download the MetaMask app for mobile/tablets to get started!
+              <strong>Note:</strong> Install MetaMask extension for PC/Laptops, or download the MetaMask app for mobile/tablets to get started!
             </p>
           </div>
 

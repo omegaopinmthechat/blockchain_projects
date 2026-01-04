@@ -1,10 +1,11 @@
 "use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Web3 from "web3";
 import axios from "axios";
 import { CONF_CERT_ABI } from "../../../../lib/abi.js";
 import Link from "next/link";
 import { Upload, Wallet, ArrowLeft, Loader2, FileSpreadsheet, X, Plus, Edit3 } from "lucide-react";
+import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../../lib/metamask";
 
 export default function BulkIssue() {
   const [account, setAccount] = useState("");
@@ -17,15 +18,32 @@ export default function BulkIssue() {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  useEffect(() => {
+    async function checkAndConnect() {
+      const result = await checkPendingConnection();
+      if (result?.success) {
+        setAccount(result.accounts[0]);
+      }
+    }
+    checkAndConnect();
+  }, []);
+
   async function connectWallet() {
-    if (!window.ethereum) {
-      alert("MetaMask required");
+    const result = await connectMetaMaskWallet();
+    
+    if (!result.success) {
+      if (result.redirecting) {
+        setStatus("Opening MetaMask app...");
+        return;
+      }
+      alert(result.error);
+      if (result.installUrl && !isMobile()) {
+        window.open(result.installUrl, '_blank');
+      }
       return;
     }
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    setAccount(accounts[0]);
+    
+    setAccount(result.accounts[0]);
   }
   
   async function ensureSepoliaNetwork() {
@@ -268,18 +286,18 @@ export default function BulkIssue() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-yellow-50 via-yellow-100 to-yellow-200">
+    <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-yellow-50 via-yellow-100 to-yellow-200">
       <div className="max-w-4xl mx-auto px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
           <Link href="/confcert">
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm border-2 border-yellow-400 text-yellow-900 hover:bg-yellow-50 rounded-xl font-semibold transition-all duration-300 mb-6">
+            <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-yellow-400 text-yellow-900 hover:bg-yellow-50 rounded-xl font-semibold transition-all duration-300 mb-6">
               <ArrowLeft className="w-4 h-4" />
               Back to Home
             </button>
           </Link>
           
-          <h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-yellow-600 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-linear-to-r from-yellow-600 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
             Bulk Issue Certificates
           </h1>
           <p className="text-yellow-800 text-lg">
@@ -288,9 +306,9 @@ export default function BulkIssue() {
         </div>
 
         {/* Instructions */}
-        <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-6 mb-8">
-          <h3 className="text-lg font-bold text-yellow-900 mb-3 flex items-center gap-2">
-            <FileSpreadsheet className="w-5 h-5" />
+        <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-6 mb-4 sm:mb-6 lg:mb-8">
+          <h3 className="text-sm sm:text-base lg:text-lg font-bold text-yellow-900 mb-3 flex items-center gap-2">
+            <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5" />
             Instructions
           </h3>
           <div className="space-y-3">
@@ -317,9 +335,9 @@ export default function BulkIssue() {
         </div>
 
         {/* Main Card */}
-        <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] mb-8">
+        <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] mb-4 sm:mb-6 lg:mb-8">
           <div className="mb-6">
-            <h3 className="text-2xl font-bold text-yellow-900 mb-2">Batch Certificate Details</h3>
+            <h3 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 mb-2">Batch Certificate Details</h3>
             <p className="text-sm text-yellow-800">
               Connect your wallet and upload the required files
             </p>
@@ -330,13 +348,13 @@ export default function BulkIssue() {
             {!account ? (
               <div className="flex flex-col items-center justify-center py-8 space-y-4">
                 <div className="w-16 h-16 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center">
-                  <Wallet className="w-8 h-8 text-white" />
+                  <Wallet className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
                 <p className="text-yellow-800 text-center">
                   Connect your MetaMask wallet to continue
                 </p>
-                <button onClick={connectWallet} className="inline-flex items-center justify-center gap-2 h-14 px-8 py-4 text-lg bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
-                  <Wallet className="w-5 h-5" />
+                <button onClick={connectWallet} className="inline-flex items-center justify-center gap-2 min-h-12 sm:min-h-14 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-sm sm:text-base lg:text-lg bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg">
+                  <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />
                   Connect MetaMask
                 </button>
               </div>
@@ -358,13 +376,13 @@ export default function BulkIssue() {
                       setCertificates([]);
                       setManualNames([""]);
                     }}
-                    className={`flex-1 h-12 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
+                    className={`flex-1 min-h-11 sm:min-h-12 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
                       inputMode === "csv"
                         ? "bg-linear-to-r from-yellow-400 to-yellow-500 text-white"
                         : "bg-white border-2 border-yellow-200 text-yellow-900 hover:bg-yellow-50"
                     }`}
                   >
-                    <FileSpreadsheet className="w-5 h-5 inline mr-2" />
+                    <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
                     CSV Upload
                   </button>
                   <button
@@ -373,13 +391,13 @@ export default function BulkIssue() {
                       setCertificates([]);
                       setCsvFile(null);
                     }}
-                    className={`flex-1 h-12 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
+                    className={`flex-1 min-h-11 sm:min-h-12 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
                       inputMode === "manual"
                         ? "bg-linear-to-r from-yellow-400 to-yellow-500 text-white"
                         : "bg-white border-2 border-yellow-200 text-yellow-900 hover:bg-yellow-50"
                     }`}
                   >
-                    <Edit3 className="w-5 h-5 inline mr-2" />
+                    <Edit3 className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
                     Manual Entry
                   </button>
                 </div>
@@ -395,7 +413,7 @@ export default function BulkIssue() {
                       accept=".csv"
                       onChange={handleCSVUpload}
                       disabled={loading}
-                      className="flex h-12 w-full rounded-xl border-2 border-yellow-200 bg-white px-4 py-2 text-base text-yellow-900 placeholder:text-yellow-400 focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 cursor-pointer"
+                      className="flex min-h-11 sm:min-h-12 w-full rounded-xl border-2 border-yellow-200 bg-white px-4 py-2 text-base text-yellow-900 placeholder:text-yellow-400 focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 cursor-pointer"
                     />
                     {csvFile && (
                       <p className="mt-2 text-sm text-yellow-700 flex items-center gap-2">
@@ -421,15 +439,15 @@ export default function BulkIssue() {
                             onChange={(e) => updateManualName(index, e.target.value)}
                             placeholder={`Student ${index + 1} name`}
                             disabled={loading}
-                            className="flex h-12 flex-1 rounded-xl border-2 border-yellow-200 bg-white px-4 py-2 text-base text-yellow-900 placeholder:text-yellow-400 focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
+                            className="flex min-h-11 sm:min-h-12 flex-1 rounded-xl border-2 border-yellow-200 bg-white px-4 py-2 text-base text-yellow-900 placeholder:text-yellow-400 focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
                           />
                           {manualNames.length > 1 && (
                             <button
                               onClick={() => removeManualName(index)}
                               disabled={loading}
-                              className="h-12 px-3 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-all duration-300 disabled:opacity-50"
+                              className="min-h-11 sm:min-h-12 px-3 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-all duration-300 disabled:opacity-50"
                             >
-                              <X className="w-5 h-5" />
+                              <X className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                           )}
                         </div>
@@ -439,7 +457,7 @@ export default function BulkIssue() {
                       <button
                         onClick={addManualName}
                         disabled={loading}
-                        className="flex items-center gap-2 h-10 px-4 py-2 bg-linear-to-r from-yellow-200 to-yellow-300 hover:from-yellow-300 hover:to-yellow-400 text-yellow-900 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
+                        className="flex items-center gap-2 min-h-10 px-4 py-2 bg-linear-to-r from-yellow-200 to-yellow-300 hover:from-yellow-300 hover:to-yellow-400 text-yellow-900 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         Add Name
@@ -447,7 +465,7 @@ export default function BulkIssue() {
                       <button
                         onClick={applyManualNames}
                         disabled={loading}
-                        className="flex items-center gap-2 h-10 px-4 py-2 bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
+                        className="flex items-center gap-2 min-h-10 px-4 py-2 bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
                       >
                         Apply Names ({manualNames.filter(n => n.trim()).length})
                       </button>
@@ -469,7 +487,7 @@ export default function BulkIssue() {
                     multiple
                     onChange={handleFilesUpload}
                     disabled={loading}
-                    className="flex h-12 w-full rounded-xl border-2 border-yellow-200 bg-white px-4 py-2 text-base text-yellow-900 placeholder:text-yellow-400 focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 cursor-pointer"
+                    className="flex min-h-11 sm:min-h-12 w-full rounded-xl border-2 border-yellow-200 bg-white px-4 py-2 text-base text-yellow-900 placeholder:text-yellow-400 focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 cursor-pointer"
                   />
                   {files.length > 0 && (
                     <p className="mt-2 text-sm text-yellow-700 flex items-center gap-2">
@@ -494,16 +512,16 @@ export default function BulkIssue() {
                 <button
                   onClick={issueBulkCertificates}
                   disabled={loading || certificates.length === 0 || files.length === 0 || certificates.length !== files.length}
-                  className="inline-flex items-center justify-center gap-2 w-full h-14 px-8 py-4 text-lg bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:pointer-events-none"
+                  className="inline-flex items-center justify-center gap-2 w-full min-h-12 sm:min-h-14 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-sm sm:text-base lg:text-lg bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg disabled:opacity-50 disabled:pointer-events-none"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
                       Processing...
                     </>
                   ) : (
                     <>
-                      <Upload className="w-5 h-5" />
+                      <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
                       Issue Batch ({certificates.length} certificates)
                     </>
                   )}
@@ -515,7 +533,7 @@ export default function BulkIssue() {
 
         {/* Status Display */}
         {status && (
-          <div className={`bg-linear-to-b from-white to-yellow-100 border-2 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] ${status.includes("successfully") ? "border-green-500 from-green-50" : status.includes("failed") ? "border-red-500 from-red-50" : "border-yellow-200"}`}>
+          <div className={`bg-linear-to-b from-white to-yellow-100 border-2 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] ${status.includes("successfully") ? "border-green-500 from-green-50" : status.includes("failed") ? "border-red-500 from-red-50" : "border-yellow-200"}`}>
             <p className={`text-center font-semibold ${status.includes("successfully") ? "text-green-700" : status.includes("failed") ? "text-red-700" : "text-yellow-800"}`}>
               {status}
             </p>

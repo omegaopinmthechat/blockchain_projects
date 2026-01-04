@@ -30,11 +30,28 @@ body {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile touch improvements */
+* {
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+}
+
+body {
+  overscroll-behavior-y: none;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 12px;
+}
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
 }
 
 ::-webkit-scrollbar-track {
@@ -54,5 +71,16 @@ html {
 ::selection {
   background: var(--yellow-300);
   color: var(--yellow-900);
+}
+
+/* Better mobile input handling */
+input, textarea, select, button {
+  font-size: 16px; /* Prevents zoom on iOS */
+}
+
+@media (min-width: 768px) {
+  input, textarea, select {
+    font-size: 14px;
+  }
 }
 

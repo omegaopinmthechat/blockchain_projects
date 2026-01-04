@@ -444,12 +444,12 @@ contract CertificateHashVerifier {
   ];
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
       <div className="max-w-7xl mx-auto px-8 py-12">
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-6 sm:mb-4 sm:mb-6 lg:mb-8 lg:mb-12">
           <Link href="/">
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm border-2 border-slate-600 text-slate-300 hover:bg-slate-800 rounded-xl font-semibold transition-all duration-300 mb-6">
+            <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-slate-600 text-slate-300 hover:bg-slate-800 rounded-xl font-semibold transition-all duration-300 mb-6">
               <ArrowLeft className="w-4 h-4" />
               Back to Home
             </button>
@@ -457,13 +457,13 @@ contract CertificateHashVerifier {
 
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <BookOpen className="w-8 h-8 text-white" />
+              <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-bold bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Project Documentation
               </h1>
-              <p className="text-slate-400 text-lg mt-2">
+              <p className="text-slate-400 text-sm sm:text-base lg:text-lg mt-2">
                 Complete guide to smart contracts, code explanations, and deployment
               </p>
             </div>
@@ -471,10 +471,10 @@ contract CertificateHashVerifier {
         </div>
 
         {/* Deployment Guide */}
-        <div className="mb-16 bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-8">
+        <div className="mb-4 sm:mb-6 lg:mb-8 sm:mb-6 sm:mb-4 sm:mb-6 lg:mb-8 lg:mb-12 lg:mb-16 bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-6 lg:p-8">
           <div className="flex items-center gap-3 mb-6">
-            <Rocket className="w-8 h-8 text-blue-400" />
-            <h2 className="text-3xl font-bold text-slate-200">
+            <Rocket className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-200">
               How to Deploy Smart Contracts on Remix IDE
             </h2>
           </div>
@@ -483,7 +483,7 @@ contract CertificateHashVerifier {
             {deploymentSteps.map((item) => (
               <div key={item.step} className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                  <div className="shrink-0 w-10 min-h-10 bg-blue-500 rounded-full flex items-center justify-center">
                     <span className="text-white font-bold">{item.step}</span>
                   </div>
                   <div className="flex-1">
@@ -496,7 +496,7 @@ contract CertificateHashVerifier {
           </div>
 
           <div className="mt-8 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6">
-            <h3 className="text-lg font-bold text-yellow-400 mb-2">Important Notes</h3>
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-yellow-400 mb-2">Important Notes</h3>
             <ul className="space-y-2 text-yellow-200 text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-yellow-400 mt-1">•</span>
@@ -521,13 +521,13 @@ contract CertificateHashVerifier {
         {/* Projects */}
         <div className="space-y-12">
           {projects.map((project) => (
-            <div key={project.id} className={`bg-linear-to-b from-slate-800 to-slate-900 border-2 border-${project.color}-500/30 rounded-2xl p-8`}>
+            <div key={project.id} className={`bg-linear-to-b from-slate-800 to-slate-900 border-2 border-${project.color}-500/30 rounded-2xl p-4 sm:p-6 lg:p-8`}>
               {/* Project Header */}
               <div className="mb-6">
-                <h2 className={`text-3xl font-bold text-${project.color}-400 mb-3`}>
+                <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-${project.color}-400 mb-3`}>
                   {project.name}
                 </h2>
-                <p className="text-slate-300 text-lg mb-4">{project.description}</p>
+                <p className="text-slate-300 text-sm sm:text-base lg:text-lg mb-4">{project.description}</p>
                 <div className="inline-block bg-slate-800 border border-slate-700 rounded-lg px-4 py-2">
                   <p className="text-sm text-slate-400">Contract Address</p>
                   <p className="text-slate-300 font-mono text-sm">{project.address}</p>
@@ -537,7 +537,7 @@ contract CertificateHashVerifier {
               {/* Features */}
               <div className="mb-6">
                 <h3 className="text-xl font-bold text-slate-200 mb-3 flex items-center gap-2">
-                  <Code className="w-5 h-5" />
+                  <Code className="w-4 h-4 sm:w-5 sm:h-5" />
                   Key Features
                 </h3>
                 <ul className="space-y-2">
@@ -554,7 +554,7 @@ contract CertificateHashVerifier {
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-xl font-bold text-slate-200 flex items-center gap-2">
-                    <Code className="w-5 h-5" />
+                    <Code className="w-4 h-4 sm:w-5 sm:h-5" />
                     Complete Solidity Code
                   </h3>
                   <button
@@ -574,7 +574,7 @@ contract CertificateHashVerifier {
                     )}
                   </button>
                 </div>
-                <div className="bg-slate-950 border border-slate-700 rounded-xl p-6 overflow-x-auto">
+                <div className="bg-slate-950 border border-slate-700 rounded-xl p-6 overflow-x-auto touch-pan-x">
                   <pre className="text-sm text-slate-300">
                     <code>{project.code}</code>
                   </pre>
@@ -587,7 +587,7 @@ contract CertificateHashVerifier {
                 <div className="space-y-4">
                   {project.explanation.map((item, idx) => (
                     <div key={idx} className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-                      <h4 className={`text-lg font-bold text-${project.color}-400 mb-2`}>
+                      <h4 className={`text-sm sm:text-base lg:text-lg font-bold text-${project.color}-400 mb-2`}>
                         {item.title}
                       </h4>
                       <p className="text-slate-300">{item.content}</p>
@@ -601,14 +601,14 @@ contract CertificateHashVerifier {
 
         {/* Footer */}
         <div className="mt-16 text-center">
-          <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-8">
-            <h3 className="text-2xl font-bold text-slate-200 mb-4">Ready to Deploy?</h3>
+          <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-6 lg:p-8">
+            <h3 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-slate-200 mb-4">Ready to Deploy?</h3>
             <p className="text-slate-400 mb-6">
               Follow the deployment guide above and use the contract codes provided. All contracts are tested and production-ready.
             </p>
             <Link href="/">
-              <button className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105">
-                <ArrowLeft className="w-5 h-5" />
+              <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95">
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 Back to Projects
               </button>
             </Link>

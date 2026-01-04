@@ -4,6 +4,7 @@ import Web3 from "web3";
 import { CERTIFICATE_HASH_ABI } from "../../../../lib/abi4";
 import Link from "next/link";
 import { ArrowLeft, FileCheck, CheckCircle, XCircle } from "lucide-react";
+import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../../lib/metamask";
 
 export default function VerifyCertificate() {
   const [account, setAccount] = useState("");
@@ -13,26 +14,43 @@ export default function VerifyCertificate() {
   const [loading, setLoading] = useState(false);
   const [verificationResult, setVerificationResult] = useState(null);
 
-  async function loadBlockchain() {
-    if (window.ethereum) {
-      try {
-        const web3 = new Web3(window.ethereum);
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-
-        const accounts = await web3.eth.getAccounts();
-        setAccount(accounts[0]);
-
-        const instance = new web3.eth.Contract(
-          CERTIFICATE_HASH_ABI,
-          process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_4
-        );
-        setContract(instance);
-      } catch (err) {
-        console.error(err);
-        alert("Failed to connect to blockchain");
+  useEffect(() => {
+    async function checkAndConnect() {
+      const result = await checkPendingConnection();
+      if (result?.success) {
+        loadBlockchain();
       }
-    } else {
-      alert("Please install MetaMask!");
+    }
+    checkAndConnect();
+  }, []);
+
+  async function loadBlockchain() {
+    const result = await connectMetaMaskWallet();
+    
+    if (!result.success) {
+      if (result.redirecting) {
+        return;
+      }
+      alert(result.error);
+      if (result.installUrl && !isMobile()) {
+        window.open(result.installUrl, '_blank');
+      }
+      return;
+    }
+
+    try {
+      const web3 = new Web3(window.ethereum);
+      const accounts = await web3.eth.getAccounts();
+      setAccount(accounts[0]);
+
+      const instance = new web3.eth.Contract(
+        CERTIFICATE_HASH_ABI,
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_4
+      );
+      setContract(instance);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to connect to blockchain");
     }
   }
 
@@ -86,12 +104,12 @@ export default function VerifyCertificate() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-indigo-50 via-indigo-100 to-indigo-200">
+    <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-indigo-50 via-indigo-100 to-indigo-200">
       <div className="max-w-4xl mx-auto px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
           <Link href="/university-certificate">
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm border-2 border-indigo-400 text-indigo-900 hover:bg-indigo-50 rounded-xl font-semibold transition-all duration-300 mb-6">
+            <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-indigo-400 text-indigo-900 hover:bg-indigo-50 rounded-xl font-semibold transition-all duration-300 mb-6">
               <ArrowLeft className="w-4 h-4" />
               Back to Home
             </button>
@@ -99,10 +117,10 @@ export default function VerifyCertificate() {
 
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-linear-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center">
-              <FileCheck className="w-8 h-8 text-white" />
+              <FileCheck className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-bold bg-linear-to-r from-indigo-600 via-indigo-500 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-linear-to-r from-indigo-600 via-indigo-500 to-indigo-600 bg-clip-text text-transparent">
                 Verify Certificate
               </h1>
               <p className="text-indigo-800 text-lg">Public Access - Anyone can verify</p>
@@ -118,12 +136,12 @@ export default function VerifyCertificate() {
         </div>
 
         {/* Verify Card */}
-        <div className="bg-linear-to-b from-white to-indigo-100 border-2 border-indigo-200 rounded-2xl p-8 shadow-lg">
+        <div className="bg-linear-to-b from-white to-indigo-100 border-2 border-indigo-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg">
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-indigo-400 to-indigo-600 rounded-full mb-4">
-              <FileCheck className="w-10 h-10 text-white" />
+              <FileCheck className="w-10 min-h-10 text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-indigo-900 mb-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-indigo-900 mb-2">
               Upload Certificate to Verify
             </h2>
             <p className="text-indigo-700">
@@ -165,7 +183,7 @@ export default function VerifyCertificate() {
             >
               {verificationResult ? (
                 <>
-                  <CheckCircle className="w-12 h-12 text-green-600 flex-shrink-0" />
+                  <CheckCircle className="w-12 min-h-11 sm:min-h-12 text-green-600 shrink-0" />
                   <div>
                     <p className="text-green-900 font-bold text-xl mb-1">AUTHENTIC</p>
                     <p className="text-green-700">
@@ -176,7 +194,7 @@ export default function VerifyCertificate() {
                 </>
               ) : (
                 <>
-                  <XCircle className="w-12 h-12 text-red-600 flex-shrink-0" />
+                  <XCircle className="w-12 min-h-11 sm:min-h-12 text-red-600 shrink-0" />
                   <div>
                     <p className="text-red-900 font-bold text-xl mb-1">NOT AUTHENTIC</p>
                     <p className="text-red-700">
@@ -193,9 +211,9 @@ export default function VerifyCertificate() {
           <button
             onClick={verifyHash}
             disabled={loading || !file}
-            className="w-full inline-flex items-center justify-center gap-2 h-14 px-6 py-4 bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:cursor-not-allowed text-lg"
+            className="w-full inline-flex items-center justify-center gap-2 min-h-12 sm:min-h-14 px-6 py-4 bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg disabled:cursor-not-allowed text-lg"
           >
-            <FileCheck className="w-5 h-5" />
+            <FileCheck className="w-4 h-4 sm:w-5 sm:h-5" />
             {loading ? "Verifying..." : "Verify Certificate"}
           </button>
 
@@ -233,7 +251,7 @@ export default function VerifyCertificate() {
 
         {/* Security Notice */}
         <div className="mt-6 bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6">
-          <h3 className="text-lg font-bold text-yellow-900 mb-2">Security Notice</h3>
+          <h3 className="text-sm sm:text-base lg:text-lg font-bold text-yellow-900 mb-2">Security Notice</h3>
           <p className="text-yellow-800 text-sm">
             This verification is tamper-proof. Any modification to the certificate (even changing
             a single character) will produce a different hash and fail verification. Only

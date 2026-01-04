@@ -4,6 +4,7 @@ import Web3 from "web3";
 import { DONATE_ABI } from "../../../lib/abi3";
 import Link from "next/link";
 import { ArrowLeft, Heart, DollarSign, Users, TrendingUp, Settings } from "lucide-react";
+import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../lib/metamask";
 
 export default function Donate() {
   const [account, setAccount] = useState("");
@@ -14,35 +15,52 @@ export default function Donate() {
   const [myDonations, setMyDonations] = useState("0");
   const [loading, setLoading] = useState(false);
 
-  async function loadBlockchain() {
-    if (window.ethereum) {
-      try {
-        const web3 = new Web3(window.ethereum);
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-
-        const accounts = await web3.eth.getAccounts();
-        setAccount(accounts[0]);
-
-        const instance = new web3.eth.Contract(
-          DONATE_ABI,
-          process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_3
-        );
-        setContract(instance);
-
-        // Load donation stats
-        const total = await instance.methods.totalDonations().call();
-        const balance = await instance.methods.contractBalance().call();
-        const myAmount = await instance.methods.donations(accounts[0]).call();
-
-        setTotalDonations(web3.utils.fromWei(total, "ether"));
-        setContractBalance(web3.utils.fromWei(balance, "ether"));
-        setMyDonations(web3.utils.fromWei(myAmount, "ether"));
-      } catch (err) {
-        console.error(err);
-        alert("Failed to connect to blockchain");
+  useEffect(() => {
+    async function checkAndConnect() {
+      const result = await checkPendingConnection();
+      if (result?.success) {
+        loadBlockchain();
       }
-    } else {
-      alert("Please install MetaMask!");
+    }
+    checkAndConnect();
+  }, []);
+
+  async function loadBlockchain() {
+    const result = await connectMetaMaskWallet();
+    
+    if (!result.success) {
+      if (result.redirecting) {
+        return;
+      }
+      alert(result.error);
+      if (result.installUrl && !isMobile()) {
+        window.open(result.installUrl, '_blank');
+      }
+      return;
+    }
+
+    try {
+      const web3 = new Web3(window.ethereum);
+      const accounts = await web3.eth.getAccounts();
+      setAccount(accounts[0]);
+
+      const instance = new web3.eth.Contract(
+        DONATE_ABI,
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_3
+      );
+      setContract(instance);
+
+      // Load donation stats
+      const total = await instance.methods.totalDonations().call();
+      const balance = await instance.methods.contractBalance().call();
+      const myAmount = await instance.methods.donations(accounts[0]).call();
+
+      setTotalDonations(web3.utils.fromWei(total, "ether"));
+      setContractBalance(web3.utils.fromWei(balance, "ether"));
+      setMyDonations(web3.utils.fromWei(myAmount, "ether"));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to connect to blockchain");
     }
   }
 
@@ -83,27 +101,27 @@ export default function Donate() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-green-50 via-green-100 to-green-200">
-      <div className="max-w-6xl mx-auto px-8 py-12">
+    <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-green-50 via-green-100 to-green-200">
+      <div className="max-w-7xl mx-auto px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="flex justify-between items-start mb-6">
             <Link href="/">
-              <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm border-2 border-green-400 text-green-900 hover:bg-green-50 rounded-xl font-semibold transition-all duration-300">
+              <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-green-400 text-green-900 hover:bg-green-50 rounded-xl font-semibold transition-all duration-300">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Projects
               </button>
             </Link>
 
             <Link href="/donate/admin">
-              <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-300">
+              <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-300">
                 <Settings className="w-4 h-4" />
                 Admin Panel
               </button>
             </Link>
           </div>
 
-          <h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-green-600 via-green-500 to-green-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-linear-to-r from-green-600 via-green-500 to-green-600 bg-clip-text text-transparent">
             Charity Donation Platform
           </h1>
           <p className="text-green-800 text-lg">
@@ -112,39 +130,39 @@ export default function Donate() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-linear-to-b from-white to-green-100 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-linear-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 min-h-11 sm:min-h-12 bg-linear-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="text-sm text-green-700 font-semibold">Total Raised</p>
-                <p className="text-2xl font-bold text-green-900">{totalDonations} ETH</p>
+                <p className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{totalDonations} ETH</p>
               </div>
             </div>
           </div>
 
           <div className="bg-linear-to-b from-white to-green-100 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-linear-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 min-h-11 sm:min-h-12 bg-linear-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="text-sm text-green-700 font-semibold">Available Funds</p>
-                <p className="text-2xl font-bold text-green-900">{contractBalance} ETH</p>
+                <p className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{contractBalance} ETH</p>
               </div>
             </div>
           </div>
 
           <div className="bg-linear-to-b from-white to-green-100 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-linear-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 min-h-11 sm:min-h-12 bg-linear-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="text-sm text-green-700 font-semibold">Your Donations</p>
-                <p className="text-2xl font-bold text-green-900">{myDonations} ETH</p>
+                <p className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{myDonations} ETH</p>
               </div>
             </div>
           </div>
@@ -152,12 +170,12 @@ export default function Donate() {
 
         {/* Donation Card */}
         <div className="max-w-2xl mx-auto">
-          <div className="bg-linear-to-b from-white to-green-100 border-2 border-green-200 rounded-2xl p-8 shadow-lg">
-            <div className="text-center mb-8">
+          <div className="bg-linear-to-b from-white to-green-100 border-2 border-green-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg">
+            <div className="text-center mb-4 sm:mb-6 lg:mb-8">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-green-400 to-green-600 rounded-full mb-4">
-                <Heart className="w-10 h-10 text-white" />
+                <Heart className="w-10 min-h-10 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-green-900 mb-2">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-green-900 mb-2">
                 Make a Donation
               </h2>
               <p className="text-green-700">
@@ -206,9 +224,9 @@ export default function Donate() {
               <button
                 onClick={donate}
                 disabled={loading || !donationAmount}
-                className="w-full inline-flex items-center justify-center gap-2 h-14 px-6 py-4 bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:cursor-not-allowed text-lg"
+                className="w-full inline-flex items-center justify-center gap-2 min-h-12 sm:min-h-14 px-6 py-4 bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg disabled:cursor-not-allowed text-lg"
               >
-                <Heart className="w-5 h-5" />
+                <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                 {loading ? "Processing..." : "Donate Now"}
               </button>
 
@@ -220,7 +238,7 @@ export default function Donate() {
         </div>
 
         {/* Info Section */}
-        <div className="mt-12 grid md:grid-cols-2 gap-6">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
           <div className="bg-linear-to-b from-white to-green-100 border-2 border-green-200 rounded-2xl p-6">
             <h3 className="text-xl font-bold text-green-900 mb-3">How It Works</h3>
             <ul className="space-y-2 text-green-800">

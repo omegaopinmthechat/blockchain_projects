@@ -4,6 +4,7 @@ import Web3 from "web3";
 import { CERTIFICATE_HASH_ABI } from "../../../../lib/abi4";
 import Link from "next/link";
 import { ArrowLeft, Upload, Shield, CheckCircle } from "lucide-react";
+import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../../lib/metamask";
 
 export default function StoreCertificate() {
   const [account, setAccount] = useState("");
@@ -14,29 +15,46 @@ export default function StoreCertificate() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  async function loadBlockchain() {
-    if (window.ethereum) {
-      try {
-        const web3 = new Web3(window.ethereum);
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-
-        const accounts = await web3.eth.getAccounts();
-        setAccount(accounts[0]);
-
-        const instance = new web3.eth.Contract(
-          CERTIFICATE_HASH_ABI,
-          process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_4
-        );
-        setContract(instance);
-
-        const universityAddress = await instance.methods.university().call();
-        setIsUniversity(universityAddress.toLowerCase() === accounts[0].toLowerCase());
-      } catch (err) {
-        console.error(err);
-        alert("Failed to connect to blockchain");
+  useEffect(() => {
+    async function checkAndConnect() {
+      const result = await checkPendingConnection();
+      if (result?.success) {
+        loadBlockchain();
       }
-    } else {
-      alert("Please install MetaMask!");
+    }
+    checkAndConnect();
+  }, []);
+
+  async function loadBlockchain() {
+    const result = await connectMetaMaskWallet();
+    
+    if (!result.success) {
+      if (result.redirecting) {
+        return;
+      }
+      alert(result.error);
+      if (result.installUrl && !isMobile()) {
+        window.open(result.installUrl, '_blank');
+      }
+      return;
+    }
+
+    try {
+      const web3 = new Web3(window.ethereum);
+      const accounts = await web3.eth.getAccounts();
+      setAccount(accounts[0]);
+
+      const instance = new web3.eth.Contract(
+        CERTIFICATE_HASH_ABI,
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_4
+      );
+      setContract(instance);
+
+      const universityAddress = await instance.methods.university().call();
+      setIsUniversity(universityAddress.toLowerCase() === accounts[0].toLowerCase());
+    } catch (err) {
+      console.error(err);
+      alert("Failed to connect to blockchain");
     }
   }
 
@@ -92,12 +110,12 @@ export default function StoreCertificate() {
 
   if (!isUniversity) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-red-50 via-red-100 to-red-200 flex items-center justify-center">
+      <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-red-50 via-red-100 to-red-200 flex items-center justify-center">
         <div className="bg-white border-2 border-red-300 rounded-2xl p-12 text-center max-w-md shadow-xl">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Shield className="w-10 h-10 text-red-600" />
+            <Shield className="w-10 min-h-10 text-red-600" />
           </div>
-          <h2 className="text-3xl font-bold text-red-900 mb-4">Access Denied</h2>
+          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-red-900 mb-4">Access Denied</h2>
           <p className="text-red-700 mb-6">
             Only the university wallet can store certificate hashes.
           </p>
@@ -105,7 +123,7 @@ export default function StoreCertificate() {
             Your address: {account || "Not connected"}
           </p>
           <Link href="/university-certificate">
-            <button className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-all">
+            <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-all">
               <ArrowLeft className="w-4 h-4" />
               Back to Home
             </button>
@@ -116,12 +134,12 @@ export default function StoreCertificate() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-indigo-50 via-indigo-100 to-indigo-200">
+    <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-indigo-50 via-indigo-100 to-indigo-200">
       <div className="max-w-4xl mx-auto px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
           <Link href="/university-certificate">
-            <button className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 text-sm border-2 border-indigo-400 text-indigo-900 hover:bg-indigo-50 rounded-xl font-semibold transition-all duration-300 mb-6">
+            <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-indigo-400 text-indigo-900 hover:bg-indigo-50 rounded-xl font-semibold transition-all duration-300 mb-6">
               <ArrowLeft className="w-4 h-4" />
               Back to Home
             </button>
@@ -129,10 +147,10 @@ export default function StoreCertificate() {
 
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-linear-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center">
-              <Upload className="w-8 h-8 text-white" />
+              <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-bold bg-linear-to-r from-indigo-600 via-indigo-500 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-linear-to-r from-indigo-600 via-indigo-500 to-indigo-600 bg-clip-text text-transparent">
                 Store Certificate Hash
               </h1>
               <p className="text-indigo-800 text-lg">University Only</p>
@@ -146,12 +164,12 @@ export default function StoreCertificate() {
         </div>
 
         {/* Upload Card */}
-        <div className="bg-linear-to-b from-white to-indigo-100 border-2 border-indigo-200 rounded-2xl p-8 shadow-lg">
+        <div className="bg-linear-to-b from-white to-indigo-100 border-2 border-indigo-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg">
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-indigo-400 to-indigo-600 rounded-full mb-4">
-              <Upload className="w-10 h-10 text-white" />
+              <Upload className="w-10 min-h-10 text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-indigo-900 mb-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-indigo-900 mb-2">
               Upload Certificate
             </h2>
             <p className="text-indigo-700">
@@ -197,9 +215,9 @@ export default function StoreCertificate() {
           <button
             onClick={storeHash}
             disabled={loading || !file}
-            className="w-full inline-flex items-center justify-center gap-2 h-14 px-6 py-4 bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:cursor-not-allowed text-lg"
+            className="w-full inline-flex items-center justify-center gap-2 min-h-12 sm:min-h-14 px-6 py-4 bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg disabled:cursor-not-allowed text-lg"
           >
-            <Upload className="w-5 h-5" />
+            <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
             {loading ? "Storing on Blockchain..." : "Store Certificate Hash"}
           </button>
 

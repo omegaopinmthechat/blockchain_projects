@@ -142,7 +142,7 @@ export default function VotingAdmin() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Add New Candidate */}
           <div className="bg-linear-to-b from-white to-purple-100 border-2 border-purple-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg">
-            <h2 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-purple-900 mb-6 flex items-center gap-2">
+            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-purple-900 mb-6 flex items-center gap-2">
               <Plus className="w-6 h-6" />
               Add New Candidate
             </h2>
@@ -179,7 +179,7 @@ export default function VotingAdmin() {
 
           {/* Blockchain Candidates */}
           <div className="bg-linear-to-b from-white to-purple-100 border-2 border-purple-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg">
-            <h2 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-purple-900 mb-6 flex items-center gap-2">
+            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-purple-900 mb-6 flex items-center gap-2">
               <Trophy className="w-6 h-6" />
               All Candidates ({blockchainCandidates.length})
             </h2>
@@ -196,7 +196,7 @@ export default function VotingAdmin() {
                       <p className="text-xs text-purple-600">Candidate #{c.id}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-purple-600">{c.votes}</p>
+                      <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-purple-600">{c.votes}</p>
                       <p className="text-xs text-purple-500">votes</p>
                     </div>
                   </div>

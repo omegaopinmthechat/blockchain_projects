@@ -447,7 +447,7 @@ contract CertificateHashVerifier {
     <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
       <div className="max-w-7xl mx-auto px-8 py-12">
         {/* Header */}
-        <div className="mb-6 sm:mb-4 sm:mb-6 lg:mb-8 lg:mb-12">
+        <div className="mb-6 sm:mb-8 lg:mb-12">
           <Link href="/">
             <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-slate-600 text-slate-300 hover:bg-slate-800 rounded-xl font-semibold transition-all duration-300 mb-6">
               <ArrowLeft className="w-4 h-4" />
@@ -471,7 +471,7 @@ contract CertificateHashVerifier {
         </div>
 
         {/* Deployment Guide */}
-        <div className="mb-4 sm:mb-6 lg:mb-8 sm:mb-6 sm:mb-4 sm:mb-6 lg:mb-8 lg:mb-12 lg:mb-16 bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-6 lg:p-8">
+        <div className="mb-4 sm:mb-6 lg:mb-12 bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-6 lg:p-8">
           <div className="flex items-center gap-3 mb-6">
             <Rocket className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
             <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-200">
@@ -602,7 +602,7 @@ contract CertificateHashVerifier {
         {/* Footer */}
         <div className="mt-16 text-center">
           <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-6 lg:p-8">
-            <h3 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-slate-200 mb-4">Ready to Deploy?</h3>
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-200 mb-4">Ready to Deploy?</h3>
             <p className="text-slate-400 mb-6">
               Follow the deployment guide above and use the contract codes provided. All contracts are tested and production-ready.
             </p>

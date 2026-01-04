@@ -157,7 +157,7 @@ export default function Voting() {
                   <Trophy className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-blue-900">{c.name}</h2>
+                  <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-blue-900">{c.name}</h2>
                   <p className="text-sm text-blue-600">Candidate #{c.id}</p>
                 </div>
               </div>

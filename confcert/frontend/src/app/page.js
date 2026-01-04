@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { motion } from 'framer-motion';
 import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen, Linkedin } from "lucide-react";
 
 export default function Home() {
@@ -44,7 +45,14 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mt-12 sm:mt-16">
           {/* ConfCert Project */}
           <Link href="/confcert">
-            <div className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-yellow-500/30 hover:border-yellow-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(234,179,8,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(234,179,8,0.5)] transition-all duration-300 hover:scale-105 cursor-pointer active:scale-95">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0 }}
+              whileHover={{ scale: 1.03 }}
+              className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-yellow-500/30 hover:border-yellow-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(234,179,8,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(234,179,8,0.5)] transition-all duration-300 cursor-pointer active:scale-95"
+            >
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
                 <Award className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
@@ -74,12 +82,19 @@ export default function Home() {
                 Explore Project
                 <Rocket className="w-4 h-4" />
               </div>
-            </div>
+            </motion.div>
           </Link>
 
           {/* Placeholder for future projects */}
           <Link href="/voting">
-            <div className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-blue-500/30 hover:border-blue-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(59,130,246,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(59,130,246,0.5)] transition-all duration-300 hover:scale-105 cursor-pointer active:scale-95">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              whileHover={{ scale: 1.03 }}
+              className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-blue-500/30 hover:border-blue-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(59,130,246,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(59,130,246,0.5)] transition-all duration-300 cursor-pointer active:scale-95"
+            >
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
                 <Vote className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
@@ -109,12 +124,19 @@ export default function Home() {
                 Explore Project
                 <Rocket className="w-4 h-4" />
               </div>
-            </div>
+            </motion.div>
           </Link>
 
           {/* Donate System Project */}
           <Link href="/donate">
-            <div className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-green-500/30 hover:border-green-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(34,197,94,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(34,197,94,0.5)] transition-all duration-300 hover:scale-105 cursor-pointer active:scale-95">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ scale: 1.03 }}
+              className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-green-500/30 hover:border-green-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(34,197,94,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(34,197,94,0.5)] transition-all duration-300 cursor-pointer active:scale-95"
+            >
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
                 <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
@@ -144,12 +166,19 @@ export default function Home() {
                 Explore Project
                 <Rocket className="w-4 h-4" />
               </div>
-            </div>
+            </motion.div>
           </Link>
 
           {/* University Certificate Project */}
           <Link href="/university-certificate">
-            <div className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-indigo-500/30 hover:border-indigo-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(99,102,241,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(99,102,241,0.5)] transition-all duration-300 hover:scale-105 cursor-pointer active:scale-95">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              whileHover={{ scale: 1.03 }}
+              className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-indigo-500/30 hover:border-indigo-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(99,102,241,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(99,102,241,0.5)] transition-all duration-300 cursor-pointer active:scale-95"
+            >
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
                 <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
@@ -179,10 +208,17 @@ export default function Home() {
                 Explore Project
                 <Rocket className="w-4 h-4" />
               </div>
-            </div>
+            </motion.div>
           </Link>
 
-          <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-6 sm:p-8 opacity-50">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            whileHover={{ scale: 1.03 }}
+            className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-6 sm:p-8 opacity-50"
+          >
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
               <Blocks className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
             </div>
@@ -194,7 +230,7 @@ export default function Home() {
             <p className="text-sm sm:text-base text-slate-500">
               More blockchain projects in development...
             </p>
-          </div>
+          </motion.div>
         </div>
 
         {/* About Section */}

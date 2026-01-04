@@ -138,7 +138,7 @@ export default function Donate() {
               </div>
               <div>
                 <p className="text-sm text-green-700 font-semibold">Total Raised</p>
-                <p className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{totalDonations} ETH</p>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{totalDonations} ETH</p>
               </div>
             </div>
           </div>
@@ -150,7 +150,7 @@ export default function Donate() {
               </div>
               <div>
                 <p className="text-sm text-green-700 font-semibold">Available Funds</p>
-                <p className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{contractBalance} ETH</p>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{contractBalance} ETH</p>
               </div>
             </div>
           </div>
@@ -162,7 +162,7 @@ export default function Donate() {
               </div>
               <div>
                 <p className="text-sm text-green-700 font-semibold">Your Donations</p>
-                <p className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{myDonations} ETH</p>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-green-900">{myDonations} ETH</p>
               </div>
             </div>
           </div>

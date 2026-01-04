@@ -16,7 +16,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="text-center mb-4 sm:mb-6 lg:mb-8 sm:mb-6 sm:mb-4 sm:mb-6 lg:mb-8 lg:mb-12 lg:mb-16">          <div className="inline-block mb-6 px-6 py-2 bg-linear-to-r from-yellow-200 to-yellow-300 rounded-full">
+        <div className="text-center mb-4 sm:mb-6 lg:mb-12">          <div className="inline-block mb-6 px-6 py-2 bg-linear-to-r from-yellow-200 to-yellow-300 rounded-full">
             <span className="text-yellow-900 font-semibold text-sm">
               Blockchain-Powered Certificates
             </span>
@@ -26,7 +26,7 @@ export default function Home() {
             ConfCert
           </h1>
 
-          <p className="text-base sm:text-sm sm:text-base lg:text-lg lg:text-xl text-yellow-800 mb-4 sm:mb-6 lg:mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-yellow-800 mb-4 sm:mb-6 lg:mb-8 max-w-2xl mx-auto">
             Issue and verify certificates on the blockchain with IPFS storage.
             Secure, transparent, and tamper-proof certification system.
           </p>
@@ -99,13 +99,13 @@ export default function Home() {
 
         {/* How It Works Section */}
         <div className="mt-20">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 sm:mb-4 sm:mb-6 lg:mb-8 lg:mb-12 text-yellow-900">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 sm:mb-8 lg:mb-12 text-yellow-900">
             How It Works
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
             <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
-              <h3 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 flex items-center gap-3 mb-6">
+              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 flex items-center gap-3 mb-6">
                 <span className="flex items-center justify-center w-10 min-h-10 rounded-full bg-linear-to-br from-yellow-400 to-yellow-500 text-white font-bold">
                   1
                 </span>
@@ -132,7 +132,7 @@ export default function Home() {
             </div>
 
             <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
-              <h3 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 flex items-center gap-3 mb-6">
+              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 flex items-center gap-3 mb-6">
                 <span className="flex items-center justify-center w-10 min-h-10 rounded-full bg-linear-to-br from-yellow-400 to-yellow-500 text-white font-bold">
                   2
                 </span>

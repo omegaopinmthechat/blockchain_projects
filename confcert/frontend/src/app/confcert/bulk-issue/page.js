@@ -323,13 +323,13 @@ export default function BulkIssue() {
             <div>
               <p className="font-semibold text-yellow-900 mb-2">Option 2: Manual Entry</p>
               <ol className="space-y-2 text-yellow-800 text-sm ml-4">
-                <li>1. Switch to "Manual Entry" mode</li>
+                <li>1. Switch to &quot;Manual Entry&quot; mode</li>
                 <li>2. Add student names using the form</li>
-                <li>3. Click "Apply Names"</li>
+                <li>3. Click &quot;Apply Names&quot;</li>
               </ol>
             </div>
             <p className="text-yellow-800 text-sm mt-3">
-              Then upload certificate files (one for each student, in the same order) and click "Issue Batch"
+              Then upload certificate files (one for each student, in the same order) and click &quot;Issue Batch&quot;
             </p>
           </div>
         </div>
@@ -337,7 +337,7 @@ export default function BulkIssue() {
         {/* Main Card */}
         <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] mb-4 sm:mb-6 lg:mb-8">
           <div className="mb-6">
-            <h3 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 mb-2">Batch Certificate Details</h3>
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 mb-2">Batch Certificate Details</h3>
             <p className="text-sm text-yellow-800">
               Connect your wallet and upload the required files
             </p>

@@ -107,7 +107,7 @@ export default function Verify() {
         {/* Search Card */}
         <div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)] mb-4 sm:mb-6 lg:mb-8">
           <div className="mb-6">
-            <h3 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 mb-2">Certificate Verification</h3>
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-yellow-900 mb-2">Certificate Verification</h3>
             <p className="text-sm text-yellow-800">
               Connect your wallet and enter certificate ID to verify
             </p>
@@ -178,7 +178,7 @@ export default function Verify() {
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-base sm:text-sm sm:text-base lg:text-lg md:text-xl lg:text-2xl font-bold text-green-700">Certificate Verified</h3>
+                <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-green-700">Certificate Verified</h3>
                 <p className="text-sm text-green-600">
                   This certificate is authentic and recorded on the blockchain
                 </p>

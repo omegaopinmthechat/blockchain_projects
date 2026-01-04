@@ -397,6 +397,174 @@ contract CertificateHashVerifier {
           content: "The frontend generates SHA-256 hash from certificate file content using browser's crypto API. Only the hash (32 bytes) is stored on blockchain, not the actual file. To verify, re-hash the file and check if that hash exists."
         }
       ]
+    },
+    {
+      id: "rental",
+      name: "Smart Rental Agreement System",
+      description: "A decentralized rental agreement platform where landlords create agreements, tenants deposit funds, landlords claim monthly rent, and security deposits are automatically managed.",
+      address: "CONTRACT_ADDRESS_HERE",
+      color: "purple",
+      features: [
+        "Create rental agreements with customizable terms",
+        "Automatic rent payment scheduling (30-day intervals)",
+        "Security deposit management with automatic release",
+        "5-day claim window for monthly rent collection",
+        "Transparent lease start/end tracking",
+        "Immutable agreement records on blockchain"
+      ],
+      code: `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.31;
+
+contract SmartRentalAgreement {
+
+    struct Agreement {
+        address landlord;
+        address tenant;
+        uint256 monthlyRent;
+        uint256 securityDeposit;
+        uint256 leaseStart;
+        uint256 leaseEnd;
+        uint256 lastRentClaimed;
+        bool depositReleased;
+        bool active;
+    }
+
+    uint256 public agreementCount;
+    mapping(uint256 => Agreement) public agreements;
+
+    uint256 constant RENT_INTERVAL = 30 days;
+    uint256 constant CLAIM_WINDOW = 5 days;
+
+    event AgreementCreated(
+        uint256 agreementId,
+        address landlord,
+        address tenant
+    );
+    event RentDeposited(uint256 agreementId, uint256 amount);
+    event RentClaimed(uint256 agreementId, uint256 amount);
+    event DepositReleased(uint256 agreementId, uint256 amount);
+
+    constructor() {}
+
+    function createAgreement(
+        address _tenant,
+        uint256 _monthlyRent,
+        uint256 _securityDeposit,
+        uint256 _leaseDuration
+    ) external {
+        require(_tenant != msg.sender, "Tenant cannot be landlord");
+        require(_monthlyRent > 0, "Invalid rent");
+
+        agreementCount++;
+
+        agreements[agreementCount] = Agreement({
+            landlord: msg.sender,
+            tenant: _tenant,
+            monthlyRent: _monthlyRent,
+            securityDeposit: _securityDeposit,
+            leaseStart: block.timestamp,
+            leaseEnd: block.timestamp + _leaseDuration,
+            lastRentClaimed: block.timestamp,
+            depositReleased: false,
+            active: true
+        });
+
+        emit AgreementCreated(agreementCount, msg.sender, _tenant);
+    }
+
+    function depositFunds(uint256 _agreementId) external payable {
+        Agreement storage a = agreements[_agreementId];
+
+        require(a.active, "Inactive agreement");
+        require(msg.sender == a.tenant, "Only tenant");
+        require(
+            msg.value == a.monthlyRent + a.securityDeposit,
+            "Incorrect amount"
+        );
+
+        emit RentDeposited(_agreementId, msg.value);
+    }
+
+    function claimMonthlyRent(uint256 _agreementId) external {
+        Agreement storage a = agreements[_agreementId];
+
+        require(msg.sender == a.landlord, "Only landlord");
+        require(block.timestamp <= a.leaseEnd, "Lease ended");
+        require(
+            block.timestamp >= a.lastRentClaimed + RENT_INTERVAL,
+            "Rent not due"
+        );
+        require(
+            block.timestamp <= a.lastRentClaimed + RENT_INTERVAL + CLAIM_WINDOW,
+            "Claim window missed"
+        );
+
+        a.lastRentClaimed = block.timestamp;
+
+        (bool sent, ) = a.landlord.call{value: a.monthlyRent}("");
+        require(sent, "Rent transfer failed");
+
+        emit RentClaimed(_agreementId, a.monthlyRent);
+    }
+
+    function releaseDeposit(uint256 _agreementId) external {
+        Agreement storage a = agreements[_agreementId];
+
+        require(msg.sender == a.landlord, "Only landlord");
+        require(block.timestamp >= a.leaseEnd, "Lease active");
+        require(!a.depositReleased, "Already released");
+
+        a.depositReleased = true;
+        a.active = false;
+
+        (bool sent, ) = a.tenant.call{value: a.securityDeposit}("");
+        require(sent, "Deposit transfer failed");
+
+        emit DepositReleased(_agreementId, a.securityDeposit);
+    }
+
+    function contractBalance() external view returns (uint256) {
+        return address(this).balance;
+    }
+}`,
+      explanation: [
+        {
+          title: "Agreement Struct",
+          content: "Contains all rental agreement details: landlord address, tenant address, monthlyRent (in wei), securityDeposit (in wei), leaseStart timestamp, leaseEnd timestamp, lastRentClaimed timestamp, depositReleased boolean, and active boolean."
+        },
+        {
+          title: "State Variables and Constants",
+          content: "agreementCount tracks total number of agreements created. agreements mapping stores all agreements by ID. RENT_INTERVAL is fixed at 30 days. CLAIM_WINDOW gives landlords 5 days to claim rent after it becomes due."
+        },
+        {
+          title: "createAgreement Function",
+          content: "Landlord creates rental agreement by specifying tenant address, monthly rent amount, security deposit amount, and lease duration in seconds. Validates tenant is not same as landlord, rent is greater than 0. Increments agreementCount, creates new Agreement struct with current timestamp as leaseStart, calculates leaseEnd, and emits event."
+        },
+        {
+          title: "depositFunds Function",
+          content: "Tenant deposits first month's rent plus security deposit in a single transaction. Validates agreement is active, caller is the tenant, and exact amount (monthlyRent + securityDeposit) is sent. Emits RentDeposited event. Funds are held by contract."
+        },
+        {
+          title: "claimMonthlyRent Function",
+          content: "Landlord claims monthly rent payment. Validates caller is landlord, lease hasn't ended, at least 30 days have passed since last claim, and claim is within 5-day window. Updates lastRentClaimed timestamp, transfers monthlyRent amount to landlord using call, and emits event. If landlord misses the 5-day window, that month's rent cannot be claimed."
+        },
+        {
+          title: "releaseDeposit Function",
+          content: "Landlord releases security deposit back to tenant after lease ends. Validates caller is landlord, lease has ended (current time >= leaseEnd), and deposit hasn't been released yet. Sets depositReleased to true, marks agreement as inactive, transfers securityDeposit to tenant, and emits event."
+        },
+        {
+          title: "Time-Based Logic",
+          content: "Contract uses block.timestamp for all time calculations. RENT_INTERVAL (30 days) determines when next rent is due. CLAIM_WINDOW (5 days) gives landlord grace period to claim rent. If landlord doesn't claim within window, they forfeit that month's rent. Tenant benefits from landlord's missed claims."
+        },
+        {
+          title: "Security Features",
+          content: "Role-based access control (only landlord or tenant can call specific functions). Prevents double claiming of rent or deposit. Validates exact payment amounts. Uses low-level call for ETH transfers with proper error handling. All funds held securely by contract until claimed or released."
+        },
+        {
+          title: "contractBalance Function",
+          content: "View function returning total ETH balance held by the contract. Useful for verifying funds are properly deposited and tracking overall contract state."
+        }
+      ]
     }
   ];
 

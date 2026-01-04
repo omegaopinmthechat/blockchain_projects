@@ -115,7 +115,7 @@ export default function StoreCertificate() {
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Shield className="w-10 min-h-10 text-red-600" />
           </div>
-          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-red-900 mb-4">Access Denied</h2>
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-red-900 mb-4">Access Denied</h2>
           <p className="text-red-700 mb-6">
             Only the university wallet can store certificate hashes.
           </p>
@@ -169,7 +169,7 @@ export default function StoreCertificate() {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-indigo-400 to-indigo-600 rounded-full mb-4">
               <Upload className="w-10 min-h-10 text-white" />
             </div>
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-indigo-900 mb-2">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-indigo-900 mb-2">
               Upload Certificate
             </h2>
             <p className="text-indigo-700">

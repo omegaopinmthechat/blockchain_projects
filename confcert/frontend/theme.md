@@ -92,14 +92,14 @@ background: linear-gradient(180deg, #FEFCE8 0%, #FEF9C3 50%, #FDE047 100%);
 
 ### Card Component
 ```jsx
-<div className="bg-gradient-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
+<div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
   {/* Content */}
 </div>
 ```
 
 ### Primary Button
 ```jsx
-<button className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
+<button className="bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
   Button Text
 </button>
 ```
@@ -111,7 +111,7 @@ background: linear-gradient(180deg, #FEFCE8 0%, #FEF9C3 50%, #FDE047 100%);
 
 ### Page Layout
 ```jsx
-<div className="min-h-screen bg-gradient-to-b from-yellow-50 via-yellow-100 to-yellow-200">
+<div className="min-h-screen bg-linear-to-b from-yellow-50 via-yellow-100 to-yellow-200">
   <div className="max-w-6xl mx-auto px-8 py-12">
     {/* Content */}
   </div>

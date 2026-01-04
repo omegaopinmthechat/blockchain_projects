@@ -23,10 +23,18 @@ export default function Home() {
             Secure, transparent, and innovative solutions.
           </p>
 
+          <div className="bg-linear-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-4 max-w-2xl mx-auto mb-6 sm:mb-8">
+            <p className="text-sm sm:text-base text-purple-300 font-medium">
+              💡 <strong>Note:</strong> Install MetaMask extension for PC/Laptops, or download the MetaMask app for mobile/tablets to get started!
+            </p>
+          </div>
+
           <Link href="/documentation">
             <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm sm:text-base rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg active:scale-95">
               <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">View Documentation & Deploy Guide</span>
+              <span className="hidden sm:inline">
+                View Documentation & Deploy Guide
+              </span>
               <span className="sm:hidden">Documentation</span>
             </button>
           </Link>
@@ -40,15 +48,16 @@ export default function Home() {
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
                 <Award className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              
+
               <h3 className="text-xl sm:text-2xl font-bold text-yellow-400 mb-2 sm:mb-3">
                 ConfCert
               </h3>
-              
+
               <p className="text-sm sm:text-base text-slate-300 mb-3 sm:mb-4">
-                Blockchain-powered certificate issuance and verification system with IPFS storage.
+                Blockchain-powered certificate issuance and verification system
+                with IPFS storage.
               </p>
-              
+
               <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                 <span className="px-2 sm:px-3 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-full text-xs text-yellow-400">
                   Sepolia
@@ -60,7 +69,7 @@ export default function Home() {
                   Web3
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-yellow-400 text-sm sm:text-base font-semibold group-hover:gap-3 transition-all">
                 Explore Project
                 <Rocket className="w-4 h-4" />
@@ -74,15 +83,16 @@ export default function Home() {
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
                 <Vote className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              
+
               <h3 className="text-xl sm:text-2xl font-bold text-blue-400 mb-2 sm:mb-3">
                 Voting System
               </h3>
-              
+
               <p className="text-sm sm:text-base text-slate-300 mb-3 sm:mb-4">
-                Decentralized voting system ensuring transparency and preventing fraud.
+                Decentralized voting system ensuring transparency and preventing
+                fraud.
               </p>
-              
+
               <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                 <span className="px-2 sm:px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs text-blue-400">
                   Ethereum
@@ -94,7 +104,7 @@ export default function Home() {
                   Web3
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-blue-400 text-sm sm:text-base font-semibold group-hover:gap-3 transition-all">
                 Explore Project
                 <Rocket className="w-4 h-4" />
@@ -108,15 +118,16 @@ export default function Home() {
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
                 <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              
+
               <h3 className="text-xl sm:text-2xl font-bold text-green-400 mb-2 sm:mb-3">
                 Donate System
               </h3>
-              
+
               <p className="text-sm sm:text-base text-slate-300 mb-3 sm:mb-4">
-                Transparent charity donation platform with blockchain-verified transactions.
+                Transparent charity donation platform with blockchain-verified
+                transactions.
               </p>
-              
+
               <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                 <span className="px-2 sm:px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-xs text-green-400">
                   Charity
@@ -128,7 +139,7 @@ export default function Home() {
                   Web3
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-green-400 text-sm sm:text-base font-semibold group-hover:gap-3 transition-all">
                 Explore Project
                 <Rocket className="w-4 h-4" />
@@ -142,15 +153,16 @@ export default function Home() {
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
                 <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              
+
               <h3 className="text-xl sm:text-2xl font-bold text-indigo-400 mb-2 sm:mb-3">
                 University Certificate
               </h3>
-              
+
               <p className="text-sm sm:text-base text-slate-300 mb-3 sm:mb-4">
-                Hash-based certificate verification system. Store and verify document authenticity.
+                Hash-based certificate verification system. Store and verify
+                document authenticity.
               </p>
-              
+
               <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                 <span className="px-2 sm:px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-full text-xs text-indigo-400">
                   SHA-256
@@ -162,7 +174,7 @@ export default function Home() {
                   Web3
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-indigo-400 text-sm sm:text-base font-semibold group-hover:gap-3 transition-all">
                 Explore Project
                 <Rocket className="w-4 h-4" />
@@ -174,11 +186,11 @@ export default function Home() {
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
               <Blocks className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
             </div>
-            
+
             <h3 className="text-xl sm:text-2xl font-bold text-slate-400 mb-2 sm:mb-3">
               Coming Soon
             </h3>
-            
+
             <p className="text-sm sm:text-base text-slate-500">
               More blockchain projects in development...
             </p>
@@ -190,22 +202,32 @@ export default function Home() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent px-4">
             Built with Modern Tech
           </h2>
-          
+
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3 lg:gap-4 mt-6 sm:mt-8 px-4">
             <div className="px-4 sm:px-6 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl">
-              <span className="text-slate-300 text-sm sm:text-base font-semibold">Solidity</span>
+              <span className="text-slate-300 text-sm sm:text-base font-semibold">
+                Solidity
+              </span>
             </div>
             <div className="px-4 sm:px-6 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl">
-              <span className="text-slate-300 text-sm sm:text-base font-semibold">Web3.js</span>
+              <span className="text-slate-300 text-sm sm:text-base font-semibold">
+                Web3.js
+              </span>
             </div>
             <div className="px-4 sm:px-6 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl">
-              <span className="text-slate-300 text-sm sm:text-base font-semibold">Next.js</span>
+              <span className="text-slate-300 text-sm sm:text-base font-semibold">
+                Next.js
+              </span>
             </div>
             <div className="px-4 sm:px-6 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl">
-              <span className="text-slate-300 text-sm sm:text-base font-semibold">IPFS</span>
+              <span className="text-slate-300 text-sm sm:text-base font-semibold">
+                IPFS
+              </span>
             </div>
             <div className="px-4 sm:px-6 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl">
-              <span className="text-slate-300 text-sm sm:text-base font-semibold">MetaMask</span>
+              <span className="text-slate-300 text-sm sm:text-base font-semibold">
+                MetaMask
+              </span>
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { DONATE_ABI } from "../../../../lib/abi3";
 import Link from "next/link";
 import { ArrowLeft, UserCheck, Plus, Trash2, Send, Wallet, Shield } from "lucide-react";
 import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../../lib/metamask";
+import GlobalWalletSwitcher from "../../../components/GlobalWalletSwitcher";
 
 export default function DonateAdmin() {
   const [account, setAccount] = useState("");
@@ -220,10 +221,11 @@ export default function DonateAdmin() {
             </div>
           </div>
 
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 inline-block">
-            <p className="text-sm text-emerald-700 font-semibold mb-1">Admin Address</p>
-            <p className="text-emerald-900 font-mono text-sm break-all">{account}</p>
-          </div>
+          {account && (
+            <div className="inline-block">
+              <GlobalWalletSwitcher account={account} onAccountChange={loadBlockchain} compact={true} />
+            </div>
+          )}
         </div>
 
         {/* Contract Balance */}

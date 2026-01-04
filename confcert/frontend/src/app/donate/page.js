@@ -5,6 +5,7 @@ import { DONATE_ABI } from "../../../lib/abi3";
 import Link from "next/link";
 import { ArrowLeft, Heart, DollarSign, Users, TrendingUp, Settings } from "lucide-react";
 import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../lib/metamask";
+import GlobalWalletSwitcher from "../../components/GlobalWalletSwitcher";
 
 export default function Donate() {
   const [account, setAccount] = useState("");
@@ -184,12 +185,11 @@ export default function Donate() {
             </div>
 
             {/* Wallet Info */}
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-              <p className="text-sm text-green-700 font-semibold mb-1">Connected Wallet</p>
-              <p className="text-green-900 font-mono text-sm break-all">
-                {account || "Not connected"}
-              </p>
-            </div>
+            {account && (
+              <div className="mb-6">
+                <GlobalWalletSwitcher account={account} onAccountChange={loadBlockchain} compact={true} />
+              </div>
+            )}
 
             {/* Donation Form */}
             <div className="space-y-4">

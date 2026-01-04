@@ -6,6 +6,7 @@ import { CONF_CERT_ABI } from "../../../../lib/abi.js";
 import Link from "next/link";
 import { Upload, Wallet, ArrowLeft, Loader2, FileSpreadsheet, X, Plus, Edit3 } from "lucide-react";
 import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../../lib/metamask";
+import GlobalWalletSwitcher from "../../../components/GlobalWalletSwitcher";
 
 export default function BulkIssue() {
   const [account, setAccount] = useState("");
@@ -359,10 +360,7 @@ export default function BulkIssue() {
                 </button>
               </div>
             ) : (
-              <div className="p-4 bg-linear-to-r from-yellow-100 to-yellow-200 rounded-xl border-2 border-yellow-300">
-                <p className="text-sm text-yellow-700 mb-1 font-semibold">Connected Wallet</p>
-                <p className="text-yellow-900 font-mono text-sm break-all">{account}</p>
-              </div>
+              <GlobalWalletSwitcher account={account} onAccountChange={(newAccount) => setAccount(newAccount)} compact={true} />
             )}
 
             {/* Form Fields */}

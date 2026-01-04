@@ -6,6 +6,7 @@ import { VOTING_ABI } from "../../../lib/abi2";
 import Link from "next/link";
 import { ArrowLeft, Vote, Trophy, User, Settings } from "lucide-react";
 import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../lib/metamask";
+import GlobalWalletSwitcher from "../../components/GlobalWalletSwitcher";
 
 export default function Voting() {
   const [account, setAccount] = useState("");
@@ -131,19 +132,7 @@ export default function Voting() {
         </div>
 
         {/* Wallet Info */}
-        <div className="bg-linear-to-r from-blue-100 to-blue-200 border-2 border-blue-300 rounded-2xl p-6 mb-4 sm:mb-6 lg:mb-8 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-12 min-h-11 sm:min-h-12 bg-linear-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-              <User className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-blue-700 font-semibold">Connected Wallet</p>
-              <p className="text-blue-900 font-mono text-sm break-all">
-                {account || "Not connected"}
-              </p>
-            </div>
-          </div>
-        </div>
+        {account && <GlobalWalletSwitcher account={account} onAccountChange={loadBlockchain} compact={true} />}
 
         {/* Candidates Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">

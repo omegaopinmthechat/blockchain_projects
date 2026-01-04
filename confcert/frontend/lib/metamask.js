@@ -82,3 +82,51 @@ export async function checkPendingConnection() {
   
   return null;
 }
+
+// Switch MetaMask account
+export async function switchMetaMaskAccount() {
+  if (typeof window === 'undefined') return { success: false, error: "Window not available" };
+  
+  if (!window.ethereum) {
+    return { 
+      success: false, 
+      error: "MetaMask not installed",
+      installUrl: "https://metamask.io/download/"
+    };
+  }
+  
+  try {
+    // Request to switch accounts (opens MetaMask account selector)
+    const accounts = await window.ethereum.request({ 
+      method: "wallet_requestPermissions",
+      params: [{ eth_accounts: {} }]
+    });
+    
+    // Get the newly selected accounts
+    const newAccounts = await window.ethereum.request({ 
+      method: "eth_accounts" 
+    });
+    
+    return { success: true, accounts: newAccounts };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+// Get current connected account
+export async function getCurrentAccount() {
+  if (typeof window === 'undefined') return null;
+  
+  if (!window.ethereum) return null;
+  
+  try {
+    const accounts = await window.ethereum.request({ 
+      method: "eth_accounts" 
+    });
+    return accounts.length > 0 ? accounts[0] : null;
+  } catch (error) {
+    console.error("Error getting current account:", error);
+    return null;
+  }
+}
+

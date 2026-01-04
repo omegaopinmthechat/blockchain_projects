@@ -5,6 +5,7 @@ import { CERTIFICATE_HASH_ABI } from "../../../../lib/abi4";
 import Link from "next/link";
 import { ArrowLeft, Upload, Shield, CheckCircle } from "lucide-react";
 import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../../lib/metamask";
+import GlobalWalletSwitcher from "../../../components/GlobalWalletSwitcher";
 
 export default function StoreCertificate() {
   const [account, setAccount] = useState("");
@@ -157,10 +158,11 @@ export default function StoreCertificate() {
             </div>
           </div>
 
-          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 inline-block">
-            <p className="text-sm text-indigo-700 font-semibold mb-1">University Wallet</p>
-            <p className="text-indigo-900 font-mono text-sm break-all">{account}</p>
-          </div>
+          {account && (
+            <div className="inline-block">
+              <GlobalWalletSwitcher account={account} onAccountChange={loadBlockchain} compact={true} />
+            </div>
+          )}
         </div>
 
         {/* Upload Card */}

@@ -5,6 +5,7 @@ import { VOTING_ABI } from "../../../../lib/abi2";
 import Link from "next/link";
 import { ArrowLeft, Plus, Shield, Trophy } from "lucide-react";
 import { connectMetaMaskWallet, isMobile, checkPendingConnection } from "../../../../lib/metamask";
+import GlobalWalletSwitcher from "../../../components/GlobalWalletSwitcher";
 
 export default function VotingAdmin() {
   const [account, setAccount] = useState("");
@@ -127,16 +128,16 @@ export default function VotingAdmin() {
             ? "bg-linear-to-r from-green-100 to-green-200 border-green-300" 
             : "bg-linear-to-r from-red-100 to-red-200 border-red-300"
         }`}>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-4">
             <Shield className={`w-6 h-6 sm:w-8 sm:h-8 ${isAdmin ? "text-green-600" : "text-red-600"}`} />
             <div>
               <p className="text-sm font-semibold">Admin Status</p>
               <p className="font-mono text-sm break-all">
                 {isAdmin ? "You are the admin" : "You are not the admin"}
               </p>
-              <p className="text-xs mt-1 opacity-75">Connected: {account}</p>
             </div>
           </div>
+          {account && <GlobalWalletSwitcher account={account} onAccountChange={loadBlockchain} compact={true} />}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">

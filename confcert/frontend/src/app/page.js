@@ -252,11 +252,51 @@ export default function Home() {
             </motion.div>
           </Link>
 
+          <Link href="/assignment">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              whileHover={{ scale: 1.03 }}
+              className="group bg-linear-to-b from-slate-800 to-slate-900 border-2 border-cyan-500/30 hover:border-cyan-400 rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-5px_rgba(6,182,212,0.3)] hover:shadow-[0_20px_60px_-5px_rgba(6,182,212,0.5)] transition-all duration-300 cursor-pointer active:scale-95"
+            >
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-cyan-400 to-cyan-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform duration-300">
+                <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              </div>
+
+              <h3 className="text-xl sm:text-2xl font-bold text-cyan-400 mb-2 sm:mb-3">
+                Assignment Vault
+              </h3>
+
+              <p className="text-sm sm:text-base text-slate-300 mb-3 sm:mb-4">
+                Timestamped assignment submissions with IPFS storage and blockchain proof.
+              </p>
+
+              <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
+                <span className="px-2 sm:px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-full text-xs text-cyan-400">
+                  Timestamp
+                </span>
+                <span className="px-2 sm:px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-full text-xs text-cyan-400">
+                  IPFS
+                </span>
+                <span className="px-2 sm:px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-full text-xs text-cyan-400">
+                  Proof
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 text-cyan-400 text-sm sm:text-base font-semibold group-hover:gap-3 transition-all">
+                Explore Project
+                <Rocket className="w-4 h-4" />
+              </div>
+            </motion.div>
+          </Link>
+
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
             whileHover={{ scale: 1.03 }}
             className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-6 sm:p-8 opacity-50"
           >

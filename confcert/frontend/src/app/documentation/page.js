@@ -565,6 +565,122 @@ contract SmartRentalAgreement {
           content: "View function returning total ETH balance held by the contract. Useful for verifying funds are properly deposited and tracking overall contract state."
         }
       ]
+    },
+    {
+      id: "assignment",
+      name: "Assignment Vault - Timestamped Assignment Submission",
+      description: "A blockchain-based assignment submission system that creates immutable timestamps for student work, stores files on IPFS, and allows assignment of work to specific recipients.",
+      address: "CONTRACT_ADDRESS_HERE",
+      color: "teal",
+      features: [
+        "Submit assignments with IPFS file storage",
+        "Assign submissions to specific recipient addresses",
+        "Blockchain timestamp proves submission time",
+        "Unique submission ID for each assignment",
+        "Public verification of any submission",
+        "Permanent and tamper-proof record keeping"
+      ],
+      code: `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.31;
+
+contract AssignmentVault {
+
+    struct Submission {
+        address student;
+        address assignedTo;   
+        string cid;         
+        uint256 timestamp;
+    }
+
+    uint256 public submissionCount;
+
+    mapping(uint256 => Submission) public submissions;
+
+    event AssignmentStamped(
+        uint256 indexed id,
+        address indexed student,
+        address indexed assignedTo,
+        string cid,
+        uint256 timestamp
+    );
+
+    function submitAssignment(
+        address _assignedTo,
+        string memory _cid
+    ) public {
+        require(_assignedTo != address(0), "Invalid recipient");
+        require(bytes(_cid).length > 0, "CID required");
+
+        submissionCount++;
+
+        submissions[submissionCount] = Submission(
+            msg.sender,
+            _assignedTo,
+            _cid,
+            block.timestamp
+        );
+
+        emit AssignmentStamped(
+            submissionCount,
+            msg.sender,
+            _assignedTo,
+            _cid,
+            block.timestamp
+        );
+    }
+
+    function getSubmission(uint256 _id)
+        public
+        view
+        returns (
+            address student,
+            address assignedTo,
+            string memory cid,
+            uint256 timestamp
+        )
+    {
+        Submission memory s = submissions[_id];
+        return (s.student, s.assignedTo, s.cid, s.timestamp);
+    }
+}`,
+      explanation: [
+        {
+          title: "Submission Struct",
+          content: "Contains all assignment submission details: student address (who submitted), assignedTo address (recipient/teacher), cid (IPFS content identifier for the file), and timestamp (when submitted on blockchain)."
+        },
+        {
+          title: "State Variables",
+          content: "submissionCount tracks total number of assignments submitted, starting at 0 and incrementing with each new submission. submissions mapping stores all submission data indexed by submission ID."
+        },
+        {
+          title: "AssignmentStamped Event",
+          content: "Emitted whenever a new assignment is submitted. Contains indexed parameters for efficient filtering: submission id, student address, and assignedTo address. Also includes CID and timestamp for complete tracking."
+        },
+        {
+          title: "submitAssignment Function",
+          content: "Student submits an assignment by providing recipient address and IPFS CID. Validates recipient is not zero address and CID is not empty. Increments submissionCount, creates new Submission struct with msg.sender as student and current block.timestamp, stores in mapping, and emits event. Returns nothing but submission ID can be derived from event logs."
+        },
+        {
+          title: "getSubmission Function",
+          content: "Public view function to retrieve complete submission details by ID. Takes submission ID as parameter and returns tuple of (student address, assignedTo address, IPFS CID, timestamp). Anyone can call this function to verify any submission. Returns zero values if submission doesn't exist."
+        },
+        {
+          title: "Timestamp Proof",
+          content: "Uses block.timestamp to create immutable proof of submission time. Once recorded on blockchain, timestamp cannot be altered, providing definitive evidence of when assignment was submitted. This prevents disputes about late submissions or tampering with submission times."
+        },
+        {
+          title: "IPFS Integration",
+          content: "Contract stores only the IPFS CID (Content Identifier), not the actual file. The file is uploaded to IPFS separately by the frontend, which ensures decentralized storage. CID acts as a cryptographic fingerprint - if file content changes, CID changes. This ensures file integrity and permanent availability."
+        },
+        {
+          title: "Recipient Assignment",
+          content: "Each submission is assigned to a specific address (teacher, evaluator, or institution). This creates a clear record of who the work was submitted to. The assignedTo field is immutable after submission, providing accountability and proper assignment routing."
+        },
+        {
+          title: "Use Cases",
+          content: "Perfect for academic institutions to track student submissions with tamper-proof timestamps. Useful for freelancers proving work delivery times. Can be used in competitions or contests to verify entry submission times. Provides legal proof of intellectual property creation dates."
+        }
+      ]
     }
   ];
 

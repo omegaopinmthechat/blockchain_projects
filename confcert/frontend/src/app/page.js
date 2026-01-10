@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { motion } from 'framer-motion';
-import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen, Linkedin } from "lucide-react";
+import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen, Linkedin, Video } from "lucide-react";
 
 export default function Home() {
   return (
@@ -30,15 +30,47 @@ export default function Home() {
             </p>
           </div>
 
-          <Link href="/documentation">
-            <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm sm:text-base rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg active:scale-95">
-              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">
-                View Documentation & Deploy Guide
-              </span>
-              <span className="sm:hidden">Documentation</span>
-            </button>
-          </Link>
+          <div className="relative inline-block mb-16 sm:mb-20">
+            <Link href="/documentation">
+              <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm sm:text-base rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg active:scale-95">
+                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">
+                  View Documentation & Deploy Guide
+                </span>
+                <span className="sm:hidden">Documentation</span>
+              </button>
+            </Link>
+
+            {/* Red Sticker Badge */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ 
+                type: "spring",
+                stiffness: 200,
+                damping: 10,
+                delay: 0.5
+              }}
+              className="absolute -top-3 -left-2 sm:-top-4 sm:-left-3"
+            >
+              <div className="relative">
+                {/* Sticker with wavy edges */}
+                <div 
+                  className="bg-red-600 px-2 sm:px-3 py-1 sm:py-1.5 -rotate-12 shadow-lg"
+                  style={{
+                    clipPath: 'polygon(8% 5%, 15% 2%, 25% 4%, 35% 1%, 45% 3%, 55% 1%, 65% 4%, 75% 2%, 85% 5%, 92% 3%, 96% 10%, 98% 20%, 99% 50%, 98% 80%, 96% 90%, 92% 97%, 85% 95%, 75% 98%, 65% 96%, 55% 99%, 45% 97%, 35% 99%, 25% 96%, 15% 98%, 8% 95%, 4% 90%, 2% 80%, 1% 50%, 2% 20%, 4% 10%)',
+                  }}
+                >
+                  <div className="flex items-center gap-1">
+                    <Video className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
+                    <span className="text-white font-bold text-[8px] sm:text-[10px] whitespace-nowrap leading-tight">
+                      Video<br/>Tutorials
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
 
         {/* Projects Grid */}

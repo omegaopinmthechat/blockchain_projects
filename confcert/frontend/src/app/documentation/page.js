@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Code, BookOpen, Rocket, Copy, CheckCircle } from "lucide-react";
+import { ArrowLeft, Code, BookOpen, Rocket, Copy, CheckCircle, PlayCircle } from "lucide-react";
 
 export default function Documentation() {
   const [copiedCode, setCopiedCode] = useState(null);
@@ -11,6 +11,27 @@ export default function Documentation() {
     setCopiedCode(id);
     setTimeout(() => setCopiedCode(null), 2000);
   };
+
+  const videoTutorials = [
+    {
+      id: "metamask-wallet",
+      title: "Creating a MetaMask Wallet",
+      embedUrl: "https://www.youtube.com/embed/LPrLHBxqCxk",
+      description: "Learn how to create and set up your MetaMask wallet for blockchain transactions"
+    },
+    {
+      id: "deploy-contract",
+      title: "Deploy Smart Contract on Sepolia ETH Testnet (Remix)",
+      embedUrl: "https://www.youtube.com/embed/PrY0_EqtS7Y",
+      description: "Step-by-step guide to deploying your smart contract using MetaMask on Sepolia testnet"
+    },
+    {
+      id: "etherscan",
+      title: "How to Operate Etherscan",
+      embedUrl: "https://www.youtube.com/embed/0TFqwR65F94",
+      description: "Master Etherscan to track transactions and verify smart contracts"
+    }
+  ];
 
   const projects = [
     {
@@ -751,6 +772,72 @@ contract AssignmentVault {
                 Complete guide to smart contracts, code explanations, and deployment
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Video Tutorials Section */}
+        <div className="mb-4 sm:mb-6 lg:mb-12 bg-linear-to-b from-slate-800 to-slate-900 border-2 border-purple-500/30 rounded-2xl p-4 sm:p-6 lg:p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+              <PlayCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Video Tutorials
+              </h2>
+              <p className="text-slate-400 text-sm sm:text-base mt-1">
+                Watch step-by-step guides to get started with blockchain development
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 max-w-3xl mx-auto">
+            {videoTutorials.map((video, index) => (
+              <div key={video.id} className="bg-slate-800/50 border border-slate-700 hover:border-purple-500/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20">
+                <div className="relative w-full" style={{ paddingBottom: '45%' }}>
+                  <iframe
+                    className="absolute top-0 left-0 w-full h-full"
+                    src={video.embedUrl}
+                    title={video.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
+                </div>
+                <div className="p-4 sm:p-6">
+                  <div className="flex items-start gap-2 mb-2">
+                    <div className="shrink-0 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                      {index + 1}
+                    </div>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-200 leading-tight">
+                      {video.title}
+                    </h3>
+                  </div>
+                  <p className="text-slate-400 text-sm mt-2">
+                    {video.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 bg-purple-500/10 border border-purple-500/30 rounded-xl p-6">
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-purple-400 mb-2">Quick Tips</h3>
+            <ul className="space-y-2 text-purple-200 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-purple-400 mt-1">•</span>
+                Watch the MetaMask tutorial first to set up your wallet
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-400 mt-1">•</span>
+                Follow the deployment guide to deploy your first smart contract
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-400 mt-1">•</span>
+                Use Etherscan to verify and interact with deployed contracts
+              </li>
+            </ul>
           </div>
         </div>
 

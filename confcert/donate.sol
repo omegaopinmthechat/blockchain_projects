@@ -29,7 +29,6 @@ contract CharityDonation {
         admin = msg.sender;
     }
 
-    // Donate ETH
     function donate() external payable {
         require(msg.value > 0, "Donation must be greater than 0");
 
@@ -39,20 +38,17 @@ contract CharityDonation {
         emit DonationReceived(msg.sender, msg.value);
     }
 
-    // Admin approves charity wallet
     function addCharity(address _charity) external onlyAdmin {
         require(_charity != address(0), "Invalid address");
         approvedCharities[_charity] = true;
         emit CharityAdded(_charity);
     }
 
-    // Admin removes charity
     function removeCharity(address _charity) external onlyAdmin {
         approvedCharities[_charity] = false;
         emit CharityRemoved(_charity);
     }
 
-    // Charity withdraws funds TO ANY ADDRESS
     function withdraw(address _to, uint256 amount) external onlyCharity {
         require(_to != address(0), "Invalid recipient");
         require(amount <= address(this).balance, "Insufficient balance");

@@ -208,7 +208,7 @@ export default function FaucetPage() {
         {/* Faucet Info Card */}
         {faucetInfo?.configured && (
           <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-blue-500/20 shadow-xl hover:shadow-2xl transition-all duration-300">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
               <div className="group hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 rounded-xl p-4">
                 <div className="text-blue-300/70 text-sm mb-2 font-medium">Amount per claim</div>
                 <div className="text-white text-2xl font-bold flex items-center justify-center gap-2">
@@ -221,12 +221,6 @@ export default function FaucetPage() {
                 <div className="text-white text-2xl font-bold flex items-center justify-center gap-2">
                   <Timer className="w-6 h-6 text-purple-400 group-hover:animate-spin" />
                   {faucetInfo.cooldownHours}h
-                </div>
-              </div>
-              <div className="group hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/25 rounded-xl p-4">
-                <div className="text-blue-300/70 text-sm mb-2 font-medium">Faucet balance</div>
-                <div className="text-white text-2xl font-bold">
-                  {parseFloat(faucetInfo.balance).toFixed(4)} ETH
                 </div>
               </div>
             </div>

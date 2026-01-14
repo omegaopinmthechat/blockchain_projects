@@ -2,12 +2,15 @@
 import Link from "next/link";
 import { motion } from 'framer-motion';
 import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen, Linkedin, Video } from "lucide-react";
+import StarBackground from "@/components/StarBackground";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen relative">
+      <StarBackground starCount={120} />
+
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="text-center mb-12 sm:mb-16">
           <div className="inline-block mb-4 sm:mb-6 px-4 sm:px-6 py-2 bg-linear-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-full">
             <span className="text-blue-300 font-semibold text-xs sm:text-sm">
@@ -86,7 +89,7 @@ export default function Home() {
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mt-12 sm:mt-16">
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mt-12 sm:mt-16">
           {/* ConfCert Project */}
           <Link href="/confcert">
             <motion.div
@@ -359,7 +362,7 @@ export default function Home() {
         </div>
 
         {/* About Section */}
-        <div className="mt-12 sm:mt-16 lg:mt-20 text-center">
+        <div className="relative z-10 mt-12 sm:mt-16 lg:mt-20 text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent px-4">
             Built with Modern Tech
           </h2>
@@ -394,7 +397,7 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <div className="mt-12 sm:mt-16 text-center">
+        <div className="relative z-10 mt-12 sm:mt-16 text-center">
           <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-6 sm:p-8">
             <p className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-300 mb-4 sm:mb-6">
               Made by Amar Sankar Maitra

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Code, BookOpen, Rocket, Copy, CheckCircle, PlayCircle } from "lucide-react";
+import StarBackground from "@/components/StarBackground";
 
 export default function Documentation() {
   const [copiedCode, setCopiedCode] = useState(null);
@@ -749,8 +750,9 @@ contract AssignmentVault {
   ];
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
-      <div className="max-w-7xl mx-auto px-8 py-12">
+    <div className="min-h-screen relative">
+      <StarBackground starCount={120} />
+      <div className="relative z-10 max-w-7xl mx-auto px-8 py-12">
         {/* Header */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           <Link href="/">

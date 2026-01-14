@@ -231,8 +231,8 @@ export default function FaucetPage() {
         )}
 
         {/* Main Faucet Card */}
-        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-blue-100 hover:shadow-3xl transition-all duration-300 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-cyan-500/5 rounded-3xl"></div>
+        <div className="bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-700 hover:shadow-3xl transition-all duration-300 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-800/5 via-transparent to-gray-700/5 rounded-3xl"></div>
           <div className="relative p-8 sm:p-10">
             {/* Network Badge */}
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-5 py-2.5 rounded-full text-sm font-bold mb-6 shadow-lg">
@@ -241,26 +241,26 @@ export default function FaucetPage() {
             </div>
 
             {/* Info Box */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 mb-8 border-2 border-blue-200/50 shadow-inner">
-              <h3 className="font-bold text-gray-800 mb-4 text-lg flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-blue-600" />
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 mb-8 border-2 border-gray-600/50 shadow-inner">
+              <h3 className="font-bold text-gray-200 mb-4 text-lg flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-blue-400" />
                 How it works:
               </h3>
-              <ul className="space-y-3 text-gray-700">
+              <ul className="space-y-3 text-gray-300">
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm leading-relaxed">Enter your Sepolia wallet address</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm leading-relaxed">Solve a cryptographic puzzle (Proof-of-Work) to prevent abuse</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm leading-relaxed">Receive {faucetInfo?.dripAmount || '0.05'} SepoliaETH instantly</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm leading-relaxed">Wait 24 hours before claiming again</span>
                 </li>
               </ul>
@@ -268,7 +268,7 @@ export default function FaucetPage() {
 
             {/* Address Input */}
             <div className="mb-6">
-              <label className="block text-gray-800 font-bold mb-3 text-sm">
+              <label className="block text-gray-200 font-bold mb-3 text-sm">
                 Wallet Address
               </label>
               <div className="flex gap-3">
@@ -277,7 +277,7 @@ export default function FaucetPage() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="0x..."
-                  className="flex-1 px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-200/50 outline-none transition-all duration-300 text-sm font-mono bg-white shadow-inner hover:shadow-md focus:shadow-lg"
+                  className="flex-1 px-5 py-4 border-2 border-gray-600 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 text-sm font-mono bg-gray-800 text-gray-200 shadow-inner hover:shadow-md focus:shadow-lg placeholder-gray-500"
                 />
                 <button
                   onClick={connectMetaMask}
@@ -397,20 +397,12 @@ export default function FaucetPage() {
           </div>
 
           {/* Footer */}
-          <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-8 py-6 border-t-2 border-blue-100 hover:from-blue-50 hover:to-cyan-50 transition-all duration-300">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600">
+          <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-8 py-6 border-t-2 border-gray-700 hover:from-gray-900 hover:to-gray-800 transition-all duration-300">
+            <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
               <div className="flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-blue-600 animate-pulse" />
+                <AlertCircle className="w-4 h-4 text-blue-400 animate-pulse" />
                 <span className="font-medium">Test ETH has no real value</span>
               </div>
-              <a
-                href="https://sepolia.etherscan.io/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 font-bold hover:underline transition-colors duration-300 hover:scale-105 inline-flex items-center gap-1"
-              >
-                Sepolia Explorer →
-              </a>
             </div>
           </div>
         </div>
@@ -425,14 +417,22 @@ export default function FaucetPage() {
             <p className="text-blue-200/80 text-sm mb-3 leading-relaxed">
               Install MetaMask to get started with Ethereum
             </p>
-            <a
-              href="https://metamask.io/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-300 hover:text-blue-200 text-sm font-bold inline-flex items-center gap-1 hover:gap-2 transition-all duration-300 hover:scale-105"
-            >
-              Download MetaMask →
-            </a>
+            <div className="flex flex-col gap-2">
+              <a
+                href="https://metamask.io/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-300 hover:text-blue-200 text-sm font-bold inline-flex items-center gap-1 hover:gap-2 transition-all duration-300 hover:scale-105"
+              >
+                Download MetaMask →
+              </a>
+              <Link
+                href="/documentation"
+                className="text-blue-300 hover:text-blue-200 text-sm font-bold inline-flex items-center gap-1 hover:gap-2 transition-all duration-300 hover:scale-105"
+              >
+                Step-by-step tutorial on how to create a metamask wallet →
+              </Link>
+            </div>
           </div>
         </div>
       </div>

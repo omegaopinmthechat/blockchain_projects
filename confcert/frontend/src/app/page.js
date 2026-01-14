@@ -30,7 +30,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="relative inline-block mb-16 sm:mb-20">
+          <div className="relative inline-block mb-8 sm:mb-12">
             <Link href="/documentation">
               <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm sm:text-base rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg active:scale-95">
                 <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -45,7 +45,7 @@ export default function Home() {
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ 
+              transition={{
                 type: "spring",
                 stiffness: 200,
                 damping: 10,
@@ -55,7 +55,7 @@ export default function Home() {
             >
               <div className="relative">
                 {/* Sticker with wavy edges */}
-                <div 
+                <div
                   className="bg-red-600 px-2 sm:px-3 py-1 sm:py-1.5 -rotate-12 shadow-lg"
                   style={{
                     clipPath: 'polygon(8% 5%, 15% 2%, 25% 4%, 35% 1%, 45% 3%, 55% 1%, 65% 4%, 75% 2%, 85% 5%, 92% 3%, 96% 10%, 98% 20%, 99% 50%, 98% 80%, 96% 90%, 92% 97%, 85% 95%, 75% 98%, 65% 96%, 55% 99%, 45% 97%, 35% 99%, 25% 96%, 15% 98%, 8% 95%, 4% 90%, 2% 80%, 1% 50%, 2% 20%, 4% 10%)',
@@ -70,6 +70,18 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
+          </div>
+
+          {/* Faucet Section */}
+          <div className="text-center mb-8 sm:mb-12">
+            <p className="text-sm sm:text-base text-slate-300 mb-4">
+              Do not have SepoliaETH on your account? Get 0.05 instantly every 24 hours:
+            </p>
+            <Link href="/faucet">
+              <button className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-base sm:text-lg rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg active:scale-95">
+                <span>Get Free SepoliaETH</span>
+              </button>
+            </Link>
           </div>
         </div>
 

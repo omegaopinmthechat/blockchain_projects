@@ -2,6 +2,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Code, BookOpen, Rocket, Copy, CheckCircle, PlayCircle } from "lucide-react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import StarBackground from "@/components/StarBackground";
 
 export default function Documentation() {
@@ -703,6 +705,244 @@ contract AssignmentVault {
           content: "Perfect for academic institutions to track student submissions with tamper-proof timestamps. Useful for freelancers proving work delivery times. Can be used in competitions or contests to verify entry submission times. Provides legal proof of intellectual property creation dates."
         }
       ]
+    },
+    {
+      id: "land-registry",
+      name: "Land Registry - Ownership and Transfer Ledger",
+      description: "A registrar-controlled land record system that stores current ownership and keeps complete on-chain ownership history with deed CIDs.",
+      address: "CONTRACT_ADDRESS_HERE",
+      color: "amber",
+      features: [
+        "Registrar-only land registration and transfer control",
+        "Per-plot current owner snapshot",
+        "Immutable ownership history trail",
+        "Deed CID support for document traceability",
+        "Public read access for owner and history lookup"
+      ],
+      code: `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract LandRegistry {
+
+    address public registrar;
+
+    constructor() {
+        registrar = msg.sender;
+    }
+
+    modifier onlyRegistrar() {
+        require(msg.sender == registrar, "Only registrar allowed");
+        _;
+    }
+
+    struct OwnerRecord {
+        string ownerName;
+        string nationalId;
+        string deedCID;
+        uint256 timestamp;
+    }
+
+    struct Land {
+        uint256 plotId;
+        string location;
+        bool exists;
+        string currentOwnerName;
+        string currentOwnerNationalId;
+    }
+
+    mapping(uint256 => Land) public lands;
+    mapping(uint256 => OwnerRecord[]) private ownershipHistory;
+
+    event LandRegistered(uint256 indexed plotId, string ownerName, string deedCID);
+    event OwnershipTransferred(uint256 indexed plotId, string newOwnerName, string deedCID);
+
+    // Register new land
+    function registerLand(
+        uint256 _plotId,
+        string memory _location,
+        string memory _ownerName,
+        string memory _nationalId,
+        string memory _deedCID
+    ) public onlyRegistrar {
+
+        require(!lands[_plotId].exists, "Land already exists");
+
+        lands[_plotId] = Land({
+            plotId: _plotId,
+            location: _location,
+            exists: true,
+            currentOwnerName: _ownerName,
+            currentOwnerNationalId: _nationalId
+        });
+
+        ownershipHistory[_plotId].push(
+            OwnerRecord({
+                ownerName: _ownerName,
+                nationalId: _nationalId,
+                deedCID: _deedCID,
+                timestamp: block.timestamp
+            })
+        );
+
+        emit LandRegistered(_plotId, _ownerName, _deedCID);
+    }
+
+    // Transfer ownership (Registrar controlled)
+    function transferOwnership(
+        uint256 _plotId,
+        string memory _newOwnerName,
+        string memory _newNationalId,
+        string memory _newDeedCID
+    ) public onlyRegistrar {
+
+        require(lands[_plotId].exists, "Land does not exist");
+
+        lands[_plotId].currentOwnerName = _newOwnerName;
+        lands[_plotId].currentOwnerNationalId = _newNationalId;
+
+        ownershipHistory[_plotId].push(
+            OwnerRecord({
+                ownerName: _newOwnerName,
+                nationalId: _newNationalId,
+                deedCID: _newDeedCID,
+                timestamp: block.timestamp
+            })
+        );
+
+        emit OwnershipTransferred(_plotId, _newOwnerName, _newDeedCID);
+    }
+
+    function getOwnershipHistory(uint256 _plotId)
+        public
+        view
+        returns (OwnerRecord[] memory)
+    {
+        require(lands[_plotId].exists, "Land does not exist");
+        return ownershipHistory[_plotId];
+    }
+
+    function getCurrentOwner(uint256 _plotId)
+        public
+        view
+        returns (string memory, string memory)
+    {
+        require(lands[_plotId].exists, "Land does not exist");
+        return (
+            lands[_plotId].currentOwnerName,
+            lands[_plotId].currentOwnerNationalId
+        );
+    }
+}`,
+      explanation: [
+        {
+          title: "Registrar Access Control",
+          content: "The deployer becomes registrar in the constructor, and onlyRegistrar blocks unauthorized registration or transfer actions. This keeps write operations centrally controlled."
+        },
+        {
+          title: "Core Data Models",
+          content: "Land stores live state for each plot (location, exists flag, current owner fields). OwnerRecord stores historical snapshots (name, national ID, deed CID, timestamp) for auditability."
+        },
+        {
+          title: "registerLand Function",
+          content: "Creates a new plot entry only if it does not already exist, sets current owner details, then appends the first ownership record with block timestamp and deed CID."
+        },
+        {
+          title: "transferOwnership Function",
+          content: "Updates current owner details for an existing plot and appends a new OwnerRecord so every ownership change is permanently tracked on-chain."
+        },
+        {
+          title: "Read Functions",
+          content: "getCurrentOwner returns the active owner snapshot, while getOwnershipHistory returns the full historical list of owners for a plot, both gated by existence checks."
+        },
+        {
+          title: "Events and Traceability",
+          content: "LandRegistered and OwnershipTransferred emit plot ID, owner name, and deed CID so indexers and frontends can reliably monitor registry activity."
+        }
+      ]
+    },
+    {
+      id: "simple-nft",
+      name: "Simple NFT - Minimal Mint and Transfer",
+      description: "A lightweight NFT-like ownership contract showing the core mechanics of minting, balance tracking, and owner-authorized transfers.",
+      address: "CONTRACT_ADDRESS_HERE",
+      color: "orange",
+      features: [
+        "Incremental token ID minting",
+        "Owner mapping per token",
+        "Wallet balance accounting",
+        "Owner-only transfer enforcement",
+        "Simple owner lookup by token ID"
+      ],
+      code: `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.31;
+
+// msg.sender -> address calling the function
+
+contract SimpleNFT {
+
+    // tokenId => owner address
+    // each NFT has a unique ID and owner
+    mapping(uint256 => address) public ownerOf;
+
+    // address => number of NFTs owned
+    mapping(address => uint256) public balanceOf;
+
+    // total number of NFTs created
+    uint256 public totalSupply;
+
+    // mint function -> creates a new NFT
+    function mint() public {
+
+        // create new token ID (1,2,3,...)
+        uint256 tokenId = totalSupply + 1;
+
+        // assign ownership to person who called function
+        ownerOf[tokenId] = msg.sender;
+
+        // increase balance of owner
+        balanceOf[msg.sender]++;
+
+        // increase total supply
+        totalSupply++;
+    }
+
+    // transfer NFT to another address
+    function transferNFT(address to, uint256 tokenId) public {
+    require(ownerOf[tokenId] == msg.sender, "Not owner");
+
+    ownerOf[tokenId] = to;
+
+    balanceOf[msg.sender]--;
+    balanceOf[to]++;
+}
+
+    // view function to check owner of a token
+    function getOwner(uint256 tokenId) public view returns(address) {
+        return ownerOf[tokenId];
+    }
+}`,
+      explanation: [
+        {
+          title: "State Variables",
+          content: "ownerOf maps each token ID to its owner address, balanceOf tracks how many tokens each address holds, and totalSupply counts all minted tokens."
+        },
+        {
+          title: "mint Function",
+          content: "Generates the next token ID from totalSupply + 1, assigns ownership to msg.sender, increments sender balance, and increases total supply."
+        },
+        {
+          title: "transferNFT Function",
+          content: "Only the current owner can transfer a token. The function verifies ownership, updates token owner, decrements sender balance, and increments recipient balance."
+        },
+        {
+          title: "getOwner Function",
+          content: "A read-only helper returning the owner address for any token ID. Useful for UI checks and verification flows."
+        },
+        {
+          title: "Learning Scope",
+          content: "This contract demonstrates core NFT logic but does not implement full ERC-721 features like approvals, metadata URIs, safe transfer hooks, or standard events."
+        }
+      ]
     }
   ];
 
@@ -947,10 +1187,26 @@ contract AssignmentVault {
                     )}
                   </button>
                 </div>
-                <div className="bg-slate-950 border border-slate-700 rounded-xl p-6 overflow-x-auto touch-pan-x">
-                  <pre className="text-sm text-slate-300">
-                    <code>{project.code}</code>
-                  </pre>
+                <div className="code-theme-one-dark-pro rounded-xl p-6 overflow-x-auto touch-pan-x">
+                  <SyntaxHighlighter
+                    language="solidity"
+                    style={oneDark}
+                    customStyle={{
+                      margin: 0,
+                      padding: 0,
+                      background: "transparent",
+                      fontSize: "0.875rem",
+                    }}
+                    codeTagProps={{
+                      style: {
+                        fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+                      },
+                    }}
+                    showLineNumbers={false}
+                    wrapLongLines={false}
+                  >
+                    {project.code}
+                  </SyntaxHighlighter>
                 </div>
               </div>
 

@@ -1,0 +1,20 @@
+{
+  "name": "solidity-playground-backend",
+  "version": "1.0.0",
+  "description": "Simple Solidity playground backend - no wallet, no fees",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "ganache": "^7.9.1",
+    "solc": "^0.8.21",
+    "web3": "^4.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

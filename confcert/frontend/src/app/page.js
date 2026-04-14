@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { motion } from 'framer-motion';
-import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen, Linkedin, Video } from "lucide-react";
+import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen, Linkedin, Video, Code } from "lucide-react";
 import StarBackground from "@/components/StarBackground";
 
 export default function Home() {
@@ -73,6 +73,18 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
+          </div>
+
+          <div className="text-center mb-6 sm:mb-8">
+            <Link href="/solidity-lab">
+              <button className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-base sm:text-lg rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg active:scale-95">
+                <Code className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>solidity playground</span>
+              </button>
+            </Link>
+            <p className="mt-3 text-sm sm:text-base text-amber-200">
+              write and test solidity codes for free and no wallet needed
+            </p>
           </div>
 
           {/* Faucet Section */}
@@ -343,7 +355,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
             whileHover={{ scale: 1.03 }}
             className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-6 sm:p-8 opacity-50"
           >

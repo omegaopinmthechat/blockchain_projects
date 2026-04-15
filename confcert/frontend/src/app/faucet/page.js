@@ -63,7 +63,8 @@ export default function FaucetPage() {
       }
     } catch (error) {
       console.error('Failed to fetch faucet info:', error);
-      setFaucetError('Cannot connect to backend server. Make sure backend is running on port 5500.');
+      setIsServiceDown(true);
+      setFaucetError('Cannot connect to backend server. Faucet service is unavailable.');
       // Set default info so button can still work for testing
       setFaucetInfo({ 
         configured: false, 
@@ -187,7 +188,7 @@ export default function FaucetPage() {
       }
 
     } catch (error) {
-      if (isServiceDownError(error?.message)) {
+      if (isServiceDownError(error?.message) || error.message === 'Failed to get challenge' || error.message === 'Failed to fetch') {
         setIsServiceDown(true);
         setStatus({ message: '', type: '' });
         setTxHash('');

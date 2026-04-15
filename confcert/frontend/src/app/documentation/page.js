@@ -992,7 +992,7 @@ contract SimpleNFT {
   return (
     <div className="min-h-screen relative">
       <StarBackground starCount={120} />
-      <div className="relative z-10 max-w-7xl mx-auto px-8 py-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Header */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           <Link href="/">
@@ -1018,7 +1018,7 @@ contract SimpleNFT {
         </div>
 
         {/* Video Tutorials Section */}
-        <div className="mb-4 sm:mb-6 lg:mb-12 bg-linear-to-b from-slate-800 to-slate-900 border-2 border-purple-500/30 rounded-2xl p-4 sm:p-6 lg:p-8">
+        <div className="mb-12 lg:mb-12 lg:bg-linear-to-b lg:from-slate-800 lg:to-slate-900 lg:border-2 lg:border-purple-500/30 lg:rounded-2xl lg:p-8">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
               <PlayCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
@@ -1084,7 +1084,7 @@ contract SimpleNFT {
         </div>
 
         {/* Deployment Guide */}
-        <div className="mb-4 sm:mb-6 lg:mb-12 bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-6 lg:p-8">
+        <div className="mb-12 lg:mb-12 lg:bg-linear-to-b lg:from-slate-800 lg:to-slate-900 lg:border-2 lg:border-slate-700 lg:rounded-2xl lg:p-8">
           <div className="flex items-center gap-3 mb-6">
             <Rocket className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
             <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-200">
@@ -1134,7 +1134,7 @@ contract SimpleNFT {
         {/* Projects */}
         <div className="space-y-12">
           {projects.map((project) => (
-            <div key={project.id} className={`bg-linear-to-b from-slate-800 to-slate-900 border-2 border-${project.color}-500/30 rounded-2xl p-4 sm:p-6 lg:p-8`}>
+            <div key={project.id} className={`lg:bg-linear-to-b lg:from-slate-800 lg:to-slate-900 lg:border-2 lg:border-${project.color}-500/30 lg:rounded-2xl lg:p-8`}>
               {/* Project Header */}
               <div className="mb-6">
                 <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-${project.color}-400 mb-3`}>
@@ -1230,7 +1230,7 @@ contract SimpleNFT {
 
         {/* Footer */}
         <div className="mt-16 text-center">
-          <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-6 lg:p-8">
+          <div className="lg:bg-linear-to-b lg:from-slate-800 lg:to-slate-900 lg:border-2 lg:border-slate-700 lg:rounded-2xl lg:p-8">
             <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-200 mb-4">Ready to Deploy?</h3>
             <p className="text-slate-400 mb-6">
               Follow the deployment guide above and use the contract codes provided. All contracts are tested and production-ready.

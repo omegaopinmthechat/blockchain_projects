@@ -58,6 +58,21 @@ const DRIP_AMOUNT = ethers.parseEther('0.05'); // 0.05 Sepolia ETH
 const COOLDOWN_HOURS = 24; // 24 hours cooldown
 const POW_DIFFICULTY = 4; // Number of leading zeros required
 
+const isRpcServiceDownError = (error) => {
+  const message = String(error?.message || '').toLowerCase();
+  const shortMessage = String(error?.shortMessage || '').toLowerCase();
+  const responseStatus = String(error?.info?.responseStatus || '').toLowerCase();
+  const responseBody = String(error?.info?.responseBody || '').toLowerCase();
+
+  return (
+    message.includes('app is inactive') ||
+    message.includes('403 forbidden') ||
+    shortMessage.includes('403 forbidden') ||
+    responseStatus.includes('403 forbidden') ||
+    responseBody.includes('app is inactive')
+  );
+};
+
 app.get('/', (req, res)=>{
     res.send("Server is ok");
 })
@@ -97,6 +112,14 @@ app.get('/api/faucet/info', async (req, res) => {
   } catch (error) {
     console.error('❌ Faucet info error:', error.message);
     console.error('Full error:', error);
+
+    if (isRpcServiceDownError(error)) {
+      return res.status(503).json({
+        error: 'Faucet service is temporarily down',
+        code: 'FAUCET_SERVICE_DOWN'
+      });
+    }
+
     res.status(500).json({ error: 'Failed to fetch faucet info', details: error.message });
   }
 });
@@ -217,6 +240,13 @@ app.post('/api/faucet/claim', async (req, res) => {
     
   } catch (error) {
     console.error('Claim error:', error);
+
+    if (isRpcServiceDownError(error)) {
+      return res.status(503).json({
+        error: 'Faucet service is temporarily down',
+        code: 'FAUCET_SERVICE_DOWN'
+      });
+    }
     
     // Check if it's a known error
     if (error.code === 'INSUFFICIENT_FUNDS') {

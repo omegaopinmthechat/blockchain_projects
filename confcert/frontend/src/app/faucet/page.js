@@ -10,6 +10,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5500';
 export default function FaucetPage() {
   const [address, setAddress] = useState('');
   const [status, setStatus] = useState({ message: '', type: '' });
+  const [isServiceDown, setIsServiceDown] = useState(false);
   const [isMining, setIsMining] = useState(false);
   const [miningProgress, setMiningProgress] = useState(0);
   const [miningAttempts, setMiningAttempts] = useState(0);
@@ -23,15 +24,39 @@ export default function FaucetPage() {
     fetchFaucetInfo();
   }, []);
 
+  const isServiceDownError = (errorText = '') => {
+    const text = String(errorText).toLowerCase();
+    return (
+      text.includes('app is inactive') ||
+      text.includes('403 forbidden') ||
+      text.includes('server response 403') ||
+      text.includes('faucet service is temporarily down') ||
+      text.includes('faucet_service_down')
+    );
+  };
+
   const fetchFaucetInfo = async () => {
     setFaucetInfoLoading(true);
+    setIsServiceDown(false);
     setFaucetError('');
     try {
       const response = await fetch(`${API_URL}/api/faucet/info`);
+      const data = await response.json();
+
       if (!response.ok) {
+        const serverErrorText = [data?.error, data?.details, data?.code].filter(Boolean).join(' ');
+        if (isServiceDownError(serverErrorText)) {
+          setIsServiceDown(true);
+          setStatus({ message: '', type: '' });
+          setFaucetError('');
+          setTxHash('');
+          setFaucetInfo({ configured: false, dripAmount: '0.05', cooldownHours: 24 });
+          return;
+        }
+
         throw new Error('Backend server not responding');
       }
-      const data = await response.json();
+
       setFaucetInfo(data);
       if (!data.configured) {
         setFaucetError('Faucet not configured on server. Please check backend .env file.');
@@ -96,6 +121,10 @@ export default function FaucetPage() {
   };
 
   const handleClaim = async () => {
+    if (isServiceDown) {
+      return;
+    }
+
     if (!address || !address.match(/^0x[a-fA-F0-9]{40}$/)) {
       setStatus({ message: 'Please enter a valid Ethereum address', type: 'error' });
       return;
@@ -146,10 +175,25 @@ export default function FaucetPage() {
         });
         fetchFaucetInfo(); // Refresh balance
       } else {
+        const serverErrorText = [result?.error, result?.details, result?.code].filter(Boolean).join(' ');
+        if (isServiceDownError(serverErrorText)) {
+          setIsServiceDown(true);
+          setStatus({ message: '', type: '' });
+          setTxHash('');
+          return;
+        }
+
         throw new Error(result.error || 'Claim failed');
       }
 
     } catch (error) {
+      if (isServiceDownError(error?.message)) {
+        setIsServiceDown(true);
+        setStatus({ message: '', type: '' });
+        setTxHash('');
+        return;
+      }
+
       setStatus({
         message: error.message || 'An error occurred',
         type: 'error'
@@ -235,62 +279,80 @@ export default function FaucetPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-gray-800/5 via-transparent to-gray-700/5 rounded-3xl"></div>
           <div className="relative p-8 sm:p-10">
             {/* Network Badge */}
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-5 py-2.5 rounded-full text-sm font-bold mb-6 shadow-lg">
-              <Zap className="w-4 h-4" />
-              Sepolia Testnet
-            </div>
+            {!isServiceDown && (
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-5 py-2.5 rounded-full text-sm font-bold mb-6 shadow-lg">
+                <Zap className="w-4 h-4" />
+                Sepolia Testnet
+              </div>
+            )}
+
+            {isServiceDown && (
+              <div className="p-6 rounded-2xl border-2 bg-amber-50 border-amber-300 shadow-lg shadow-amber-100 flex items-start gap-3">
+                <AlertCircle className="w-6 h-6 text-amber-700 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="font-bold text-amber-900 text-lg">Faucet service is temporarily down</p>
+                  <p className="text-amber-800 text-sm mt-1">
+                    The faucet is currently unavailable.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Info Box */}
-            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 mb-8 border-2 border-gray-600/50 shadow-inner">
-              <h3 className="font-bold text-gray-200 mb-4 text-lg flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-blue-400" />
-                How it works:
-              </h3>
-              <ul className="space-y-3 text-gray-300">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm leading-relaxed">Enter your Sepolia wallet address</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm leading-relaxed">Solve a cryptographic puzzle (Proof-of-Work) to prevent abuse</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm leading-relaxed">Receive {faucetInfo?.dripAmount || '0.05'} SepoliaETH instantly</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm leading-relaxed">Wait 24 hours before claiming again</span>
-                </li>
-              </ul>
-            </div>
+            {!isServiceDown && (
+              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 mb-8 border-2 border-gray-600/50 shadow-inner">
+                <h3 className="font-bold text-gray-200 mb-4 text-lg flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-blue-400" />
+                  How it works:
+                </h3>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm leading-relaxed">Enter your Sepolia wallet address</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm leading-relaxed">Solve a cryptographic puzzle (Proof-of-Work) to prevent abuse</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm leading-relaxed">Receive {faucetInfo?.dripAmount || '0.05'} SepoliaETH instantly</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm leading-relaxed">Wait 24 hours before claiming again</span>
+                  </li>
+                </ul>
+              </div>
+            )}
 
             {/* Address Input */}
-            <div className="mb-6">
-              <label className="block text-gray-200 font-bold mb-3 text-sm">
-                Wallet Address
-              </label>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="0x..."
-                  className="flex-1 px-5 py-4 border-2 border-gray-600 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 text-sm font-mono bg-gray-800 text-gray-200 shadow-inner hover:shadow-md focus:shadow-lg placeholder-gray-500"
-                />
-                <button
-                  onClick={connectMetaMask}
-                  className="px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-bold transition-all duration-300 flex items-center gap-2 whitespace-nowrap shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <Wallet className="w-5 h-5" />
-                  <span className="hidden sm:inline">Connect</span>
-                </button>
+            {!isServiceDown && (
+              <div className="mb-6">
+                <label className="block text-gray-200 font-bold mb-3 text-sm">
+                  Wallet Address
+                </label>
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="0x..."
+                    className="flex-1 px-5 py-4 border-2 border-gray-600 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 text-sm font-mono bg-gray-800 text-gray-200 shadow-inner hover:shadow-md focus:shadow-lg placeholder-gray-500"
+                  />
+                  <button
+                    onClick={connectMetaMask}
+                    className="px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-bold transition-all duration-300 flex items-center gap-2 whitespace-nowrap shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+                  >
+                    <Wallet className="w-5 h-5" />
+                    <span className="hidden sm:inline">Connect</span>
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Backend Status Warning */}
-            {faucetError && (
+            {!isServiceDown && faucetError && (
               <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-xl flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
@@ -301,32 +363,34 @@ export default function FaucetPage() {
             )}
 
             {/* Claim Button */}
-            <button
-              onClick={handleClaim}
-              disabled={isLoading || faucetInfoLoading}
-              className="w-full py-5 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 hover:from-blue-700 hover:via-cyan-700 hover:to-blue-700 text-white rounded-xl font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center gap-3 relative overflow-hidden group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
-              {faucetInfoLoading ? (
-                <>
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                  Connecting to backend...
-                </>
-              ) : isLoading ? (
-                <>
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Droplets className="w-6 h-6" />
-                  Claim SepoliaETH
-                </>
-              )}
-            </button>
+            {!isServiceDown && (
+              <button
+                onClick={handleClaim}
+                disabled={isLoading || faucetInfoLoading}
+                className="w-full py-5 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 hover:from-blue-700 hover:via-cyan-700 hover:to-blue-700 text-white rounded-xl font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center gap-3 relative overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                {faucetInfoLoading ? (
+                  <>
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    Connecting to backend...
+                  </>
+                ) : isLoading ? (
+                  <>
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Droplets className="w-6 h-6" />
+                    Claim SepoliaETH
+                  </>
+                )}
+              </button>
+            )}
 
             {/* Mining Progress */}
-            {isMining && (
+            {!isServiceDown && isMining && (
               <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-50 rounded-2xl border-2 border-blue-300/50 shadow-lg">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-gray-800 font-bold text-sm flex items-center gap-2">
@@ -352,7 +416,7 @@ export default function FaucetPage() {
             )}
 
             {/* Status Messages */}
-            {status.message && !isMining && (
+            {!isServiceDown && status.message && !isMining && (
               <div
                 className={`mt-6 p-5 rounded-2xl flex items-start gap-3 border-2 ${
                   status.type === 'success'
@@ -408,33 +472,35 @@ export default function FaucetPage() {
         </div>
 
         {/* Additional Resources */}
-        <div className="mt-8 max-w-md mx-auto">
-          <div className="bg-gradient-to-br from-blue-900/50 to-cyan-900/50 backdrop-blur-xl rounded-2xl p-6 border border-blue-400/30 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 hover:border-blue-400/50 group">
-            <h3 className="text-white font-bold mb-2 flex items-center gap-2 text-lg">
-              <Wallet className="w-5 h-5 text-blue-400 group-hover:animate-bounce" />
-              Need a wallet?
-            </h3>
-            <p className="text-blue-200/80 text-sm mb-3 leading-relaxed">
-              Install MetaMask to get started with Ethereum
-            </p>
-            <div className="flex flex-col gap-2">
-              <a
-                href="https://metamask.io/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-300 hover:text-blue-200 text-sm font-bold inline-flex items-center gap-1 hover:gap-2 transition-all duration-300 hover:scale-105"
-              >
-                Download MetaMask →
-              </a>
-              <Link
-                href="/documentation"
-                className="text-blue-300 hover:text-blue-200 text-sm font-bold inline-flex items-center gap-1 hover:gap-2 transition-all duration-300 hover:scale-105"
-              >
-                Step-by-step tutorial on how to create a metamask wallet →
-              </Link>
+        {!isServiceDown && (
+          <div className="mt-8 max-w-md mx-auto">
+            <div className="bg-gradient-to-br from-blue-900/50 to-cyan-900/50 backdrop-blur-xl rounded-2xl p-6 border border-blue-400/30 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 hover:border-blue-400/50 group">
+              <h3 className="text-white font-bold mb-2 flex items-center gap-2 text-lg">
+                <Wallet className="w-5 h-5 text-blue-400 group-hover:animate-bounce" />
+                Need a wallet?
+              </h3>
+              <p className="text-blue-200/80 text-sm mb-3 leading-relaxed">
+                Install MetaMask to get started with Ethereum
+              </p>
+              <div className="flex flex-col gap-2">
+                <a
+                  href="https://metamask.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-300 hover:text-blue-200 text-sm font-bold inline-flex items-center gap-1 hover:gap-2 transition-all duration-300 hover:scale-105"
+                >
+                  Download MetaMask →
+                </a>
+                <Link
+                  href="/documentation"
+                  className="text-blue-300 hover:text-blue-200 text-sm font-bold inline-flex items-center gap-1 hover:gap-2 transition-all duration-300 hover:scale-105"
+                >
+                  Step-by-step tutorial on how to create a metamask wallet →
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <style jsx>{`

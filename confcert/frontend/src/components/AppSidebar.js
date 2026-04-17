@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   BookOpen,
   Code,
+  Download,
   Droplets,
   MessageSquare,
   Home,
@@ -31,6 +32,11 @@ const navItems = [
     href: "/solidity-lab",
     label: "Solidity Lab",
     icon: Code,
+  },
+  {
+    href: "/offline-playground",
+    label: "Offline Download",
+    icon: Download,
   },
   {
     href: "/faucet",

@@ -1,5 +1,7 @@
 "use strict";
 
+const FEEDBACK_URL = "https://smartcontractsbyamar.vercel.app/feedback";
+
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
   runtimeMode: "offline",
@@ -704,7 +706,7 @@ function initMonaco() {
   const vsBaseUrl = (
     loaderScript?.src
       ? loaderScript.src.replace(/\/loader\.js(?:\?.*)?$/, "")
-      : new URL("../../backend/node_modules/monaco-editor/min/vs", window.location.href).toString()
+      : new URL("../../node_modules/monaco-editor/min/vs", window.location.href).toString()
   ).replace(/\/$/, "");
 
   const workerBootstrap =
@@ -931,6 +933,8 @@ document.querySelectorAll(".tpl-btn").forEach((btn) => {
   updateCurrentFileLabel();
 
   addLog("info", "Solidity Playground starting in offline mode…");
+  addLog("warning", "The app is a beta version and might contain bugs.");
+  addLog("info", "Please share feedback:", FEEDBACK_URL);
   await waitForOfflineEngine();
   initMonaco();
 })();

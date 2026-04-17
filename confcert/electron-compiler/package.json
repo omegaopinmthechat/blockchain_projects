@@ -6,17 +6,16 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "postinstall": "npm --prefix backend install",
     "setup": "npm install",
     "build:mac": "electron-builder --mac",
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux"
   },
   "dependencies": {
-    "electron": "^41.2.1",
     "monaco-editor": "^0.45.0"
   },
   "devDependencies": {
+    "electron": "^41.2.1",
     "electron-builder": "^24.9.1"
   },
   "build": {
@@ -27,7 +26,6 @@
     },
     "files": [
       "src/**/*",
-      "backend/**/*",
       "assets/**/*"
     ],
     "extraResources": [
@@ -46,6 +44,16 @@
     "win": {
       "icon": "assets/final_icon.png",
       "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Solidity Playground",
+      "uninstallDisplayName": "Solidity Playground",
+      "deleteAppDataOnUninstall": false
     },
     "linux": {
       "icon": "assets/final_icon.png",

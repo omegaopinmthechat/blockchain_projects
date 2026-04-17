@@ -7,11 +7,21 @@ let runtimeModules = null;
 const activeSessions = new Map();
 
 function resolveRuntimeFile(fileName) {
-  const candidates = [
+  const candidates = [];
+
+  // In packaged apps, prefer extraResources/backend because it carries runtime deps.
+  if (app.isPackaged) {
+    candidates.push(path.join(process.resourcesPath, "backend", fileName));
+  }
+
+  candidates.push(
     path.join(__dirname, "../../backend", fileName),
-    path.join(app.getAppPath(), "backend", fileName),
-    path.join(process.resourcesPath, "backend", fileName),
-  ];
+    path.join(app.getAppPath(), "backend", fileName)
+  );
+
+  if (!app.isPackaged) {
+    candidates.push(path.join(process.resourcesPath, "backend", fileName));
+  }
 
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) {
@@ -350,6 +360,11 @@ function createWindow() {
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
 
+  mainWindow.on("page-title-updated", (event) => {
+    event.preventDefault();
+    mainWindow.setTitle("Solidity Playground");
+  });
+
   mainWindow.webContents.on("before-input-event", (event, input) => {
     const key = (input.key || "").toUpperCase();
     const isF12 = key === "F12";
@@ -373,6 +388,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  app.setName("Solidity Playground");
   registerIPCHandlers();
   Menu.setApplicationMenu(null);
   createWindow();

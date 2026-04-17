@@ -4,7 +4,6 @@ const DEFAULT_FEEDBACK_URL = "http://localhost:5502";
 
 function getFeedbackServiceUrl() {
   const raw =
-    process.env.FEEDBACK_BACKEND_URL ||
     process.env.NEXT_PUBLIC_FEEDBACK_BACKEND_URL ||
     DEFAULT_FEEDBACK_URL;
 

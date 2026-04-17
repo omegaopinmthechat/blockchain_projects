@@ -1,0 +1,12 @@
+{
+  "name": "solidity-playground-runtime",
+  "version": "1.0.0",
+  "description": "Solidity playground runtime - in-memory EVM",
+  "main": "executor.js",
+  "dependencies": {
+    "ganache": "^7.9.1",
+    "monaco-editor": "^0.45.0",
+    "solc": "^0.8.21",
+    "web3": "^4.2.0"
+  }
+}

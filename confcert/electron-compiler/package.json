@@ -1,0 +1,55 @@
+{
+  "name": "solidity-playground-electron",
+  "version": "1.0.0",
+  "description": "Offline Solidity Playground — Electron Desktop App",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "postinstall": "npm --prefix backend install",
+    "setup": "npm install",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
+  },
+  "dependencies": {
+    "electron": "^41.2.1",
+    "monaco-editor": "^0.45.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.solidityplayground.app",
+    "productName": "Solidity Playground",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "backend/**/*",
+      "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "backend",
+        "to": "backend",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "assets/final_icon.png"
+    },
+    "win": {
+      "icon": "assets/final_icon.png",
+      "target": "nsis"
+    },
+    "linux": {
+      "icon": "assets/final_icon.png",
+      "target": "AppImage"
+    }
+  }
+}

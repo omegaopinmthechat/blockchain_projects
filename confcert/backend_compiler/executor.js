@@ -170,6 +170,11 @@ function toSerializable(value) {
     const numericKeys = [];
 
     for (const [key, item] of Object.entries(value)) {
+      // Ignore Web3 tuple metadata so actual tuple values are preserved.
+      if (key === "__length__" || key === "length") {
+        continue;
+      }
+
       if (/^\d+$/.test(key)) {
         numericKeys.push(key);
       } else {
@@ -181,9 +186,13 @@ function toSerializable(value) {
       return named;
     }
 
-    return numericKeys
-      .sort((a, b) => Number(a) - Number(b))
-      .map((key) => toSerializable(value[key]));
+    if (numericKeys.length > 0) {
+      return numericKeys
+        .sort((a, b) => Number(a) - Number(b))
+        .map((key) => toSerializable(value[key]));
+    }
+
+    return {};
   }
 
   return value;

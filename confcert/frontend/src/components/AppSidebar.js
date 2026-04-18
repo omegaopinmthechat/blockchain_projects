@@ -35,7 +35,7 @@ const navItems = [
   },
   {
     href: "/offline-playground",
-    label: "Offline Download",
+    label: "Playground download",
     icon: Download,
   },
   {

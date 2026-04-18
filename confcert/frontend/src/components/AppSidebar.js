@@ -8,7 +8,7 @@ import {
   Code,
   Download,
   Droplets,
-  MessageSquare,
+  Headset,
   Home,
   Compass,
   Menu,
@@ -44,9 +44,9 @@ const navItems = [
     icon: Droplets,
   },
   {
-    href: "/feedback",
-    label: "Feedback",
-    icon: MessageSquare,
+    href: "/support",
+    label: "Support",
+    icon: Headset,
   },
 ];
 

@@ -49,7 +49,6 @@
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "include": "build/installer.nsh",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Solidity Playground",

@@ -18,7 +18,11 @@ import {
 } from "lucide-react";
 import StarBackground from "@/components/StarBackground";
 
-const DOWNLOAD_URL =
+const LATEST_DOWNLOAD_URL =
+  "https://github.com/omegaopinmthechat/blockchain_projects/releases/download/v1.1.0/Solidity.Playground.Setup.1.1.0.exe";
+const LATEST_RELEASE_URL =
+  "https://github.com/omegaopinmthechat/blockchain_projects/releases/tag/v1.1.0";
+const LEGACY_DOWNLOAD_URL =
   "https://github.com/omegaopinmthechat/blockchain_projects/releases/download/v1.0.0/Solidity.Playground.Setup.1.0.0.exe";
 
 const featureCards = [
@@ -148,7 +152,7 @@ export default function OfflinePlaygroundPage() {
 
               <div className="flex flex-wrap gap-2.5 sm:gap-3">
                 <span className="rounded-full border border-emerald-500/35 bg-emerald-500/12 px-3 py-1.5 text-xs font-semibold text-emerald-300">
-                  Version 1.0.0
+                  Version 1.1.0
                 </span>
                 <span className="rounded-full border border-blue-500/35 bg-blue-500/12 px-3 py-1.5 text-xs font-semibold text-blue-300">
                   Windows Installer (.exe)
@@ -178,7 +182,7 @@ export default function OfflinePlaygroundPage() {
                 </div>
                 <div>
                   <p className="text-lg font-semibold text-slate-100">Ready To Install</p>
-                  <p className="text-sm text-slate-400">Official v1.0.0 desktop setup</p>
+                  <p className="text-sm text-slate-400">Official v1.1.0 desktop setup</p>
                 </div>
               </div>
 
@@ -203,23 +207,32 @@ export default function OfflinePlaygroundPage() {
 
               <div className="flex flex-col gap-3">
                 <a
-                  href={DOWNLOAD_URL}
+                  href={LATEST_DOWNLOAD_URL}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-linear-to-r from-emerald-500 to-green-500 px-5 py-3 text-sm font-bold text-white shadow-[0_14px_36px_-20px_rgba(34,197,94,0.8)] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_20px_42px_-20px_rgba(34,197,94,0.9)]"
                 >
                   <Download className="h-4 w-4" />
-                  Download Setup 1.0.0
+                  Download Setup 1.1.0
                 </a>
 
                 <a
-                  href="https://github.com/omegaopinmthechat/blockchain_projects/releases/tag/v1.0.0"
+                  href={LATEST_RELEASE_URL}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-800/80 px-5 py-2.5 text-sm font-semibold text-slate-200 transition-all duration-300 hover:bg-slate-700"
                 >
                   Open Release Page
                   <ExternalLink className="h-4 w-4" />
+                </a>
+
+                <a
+                  href={LEGACY_DOWNLOAD_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-600/80 bg-slate-900/70 px-5 py-2 text-xs font-semibold text-slate-300 transition-all duration-300 hover:bg-slate-800"
+                >
+                  Need older build? Download Setup 1.0.0
                 </a>
               </div>
             </div>

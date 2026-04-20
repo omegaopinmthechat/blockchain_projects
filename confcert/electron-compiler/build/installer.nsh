@@ -21,8 +21,6 @@ Var InstallFinished
 !macroend
 
 Function RepairOrUninstallPageCreate
-  !insertmacro MUI_HEADER_TEXT "Setup Options" "Install, repair, or remove $(^Name)"
-
   nsDialogs::Create 1018
   Pop $RepairPageDialog
   ${If} $RepairPageDialog == error

@@ -111,6 +111,20 @@ async function runSafely(handler) {
   }
 }
 
+function getSenderWindow(event) {
+  return BrowserWindow.fromWebContents(event.sender) || mainWindow;
+}
+
+function sendWindowState(targetWindow) {
+  if (!targetWindow || targetWindow.isDestroyed()) {
+    return;
+  }
+
+  targetWindow.webContents.send("window:state", {
+    isMaximized: targetWindow.isMaximized(),
+  });
+}
+
 function registerIPCHandlers() {
   ipcMain.handle("playground:health", async () => {
     return runSafely(async () => {
@@ -337,6 +351,56 @@ function registerIPCHandlers() {
       };
     });
   });
+
+  ipcMain.handle("window:minimize", async (event) => {
+    return runSafely(async () => {
+      const targetWindow = getSenderWindow(event);
+      if (targetWindow) {
+        targetWindow.minimize();
+      }
+      return { success: true };
+    });
+  });
+
+  ipcMain.handle("window:toggle-maximize", async (event) => {
+    return runSafely(async () => {
+      const targetWindow = getSenderWindow(event);
+      if (!targetWindow) {
+        return { success: false, error: "Window not found." };
+      }
+
+      if (targetWindow.isMaximized()) {
+        targetWindow.unmaximize();
+      } else {
+        targetWindow.maximize();
+      }
+
+      return {
+        success: true,
+        isMaximized: targetWindow.isMaximized(),
+      };
+    });
+  });
+
+  ipcMain.handle("window:is-maximized", async (event) => {
+    return runSafely(async () => {
+      const targetWindow = getSenderWindow(event);
+      return {
+        success: true,
+        isMaximized: Boolean(targetWindow && targetWindow.isMaximized()),
+      };
+    });
+  });
+
+  ipcMain.handle("window:close", async (event) => {
+    return runSafely(async () => {
+      const targetWindow = getSenderWindow(event);
+      if (targetWindow) {
+        targetWindow.close();
+      }
+      return { success: true };
+    });
+  });
 }
 
 function createWindow() {
@@ -346,7 +410,8 @@ function createWindow() {
     minWidth: 360,
     minHeight: 560,
     backgroundColor: "#0f1117",
-    titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "default",
+    frame: false,
+    titleBarStyle: "hidden",
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -360,9 +425,21 @@ function createWindow() {
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
 
+  mainWindow.webContents.on("did-finish-load", () => {
+    sendWindowState(mainWindow);
+  });
+
   mainWindow.on("page-title-updated", (event) => {
     event.preventDefault();
     mainWindow.setTitle("Solidity Playground");
+  });
+
+  mainWindow.on("maximize", () => {
+    sendWindowState(mainWindow);
+  });
+
+  mainWindow.on("unmaximize", () => {
+    sendWindowState(mainWindow);
   });
 
   mainWindow.webContents.on("before-input-event", (event, input) => {

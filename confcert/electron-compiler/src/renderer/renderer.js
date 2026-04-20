@@ -1,6 +1,29 @@
 "use strict";
 
 const FEEDBACK_URL = "https://smartcontractsbyamar.vercel.app/feedback";
+const UI_PREFS_STORAGE_KEY = "solidityPlaygroundUIPrefsV1";
+const DEFAULT_UI_FONT_SIZE = 18;
+const DEFAULT_TERMINAL_HEIGHT = 220;
+const MIN_TERMINAL_HEIGHT = 90;
+const MAX_TERMINAL_HEIGHT = 520;
+const TERMINAL_HEIGHT_STEP = 24;
+
+const EDITOR_FONT_OPTIONS = {
+  consolas: "Consolas, 'Courier New', monospace",
+  cascadia: "'Cascadia Code', Consolas, 'Courier New', monospace",
+  jetbrains: "'JetBrains Mono', Consolas, 'Courier New', monospace",
+  fira: "'Fira Code', Consolas, 'Courier New', monospace",
+  courier: "'Courier New', monospace",
+};
+
+const DEFAULT_UI_PREFS = {
+  theme: "dark",
+  editorFontSize: 13,
+  editorFontKey: "consolas",
+  terminalHeight: DEFAULT_TERMINAL_HEIGHT,
+  terminalHidden: false,
+  terminalLastOpenHeight: DEFAULT_TERMINAL_HEIGHT,
+};
 
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
@@ -21,6 +44,15 @@ const state = {
   busy: { compile: false, deploy: false, call: false, reset: false },
   editor: null,
   plainEditor: null,
+  monaco: null,
+  ui: {
+    theme: DEFAULT_UI_PREFS.theme,
+    editorFontSize: DEFAULT_UI_PREFS.editorFontSize,
+    editorFontKey: DEFAULT_UI_PREFS.editorFontKey,
+    terminalHeight: DEFAULT_UI_PREFS.terminalHeight,
+    terminalHidden: DEFAULT_UI_PREFS.terminalHidden,
+    terminalLastOpenHeight: DEFAULT_UI_PREFS.terminalLastOpenHeight,
+  },
 };
 
 // ─── Templates ────────────────────────────────────────────────────────────────
@@ -123,6 +155,317 @@ function getFileLabel(filePath) {
   return parts.length ? parts[parts.length - 1] : "Untitled.sol";
 }
 
+function clampNumber(value, min, max, fallback) {
+  if (!Number.isFinite(value)) {
+    return fallback;
+  }
+  return Math.min(max, Math.max(min, Math.round(value)));
+}
+
+function clampTerminalHeight(value, fallback) {
+  if (!Number.isFinite(value)) {
+    return fallback;
+  }
+
+  return Math.min(MAX_TERMINAL_HEIGHT, Math.max(0, Math.round(Number(value))));
+}
+
+function normalizeTheme(value) {
+  return value === "light" ? "light" : "dark";
+}
+
+function normalizeFontKey(value) {
+  if (Object.prototype.hasOwnProperty.call(EDITOR_FONT_OPTIONS, value)) {
+    return value;
+  }
+  return DEFAULT_UI_PREFS.editorFontKey;
+}
+
+function getEditorFontFamily() {
+  return EDITOR_FONT_OPTIONS[state.ui.editorFontKey] || EDITOR_FONT_OPTIONS[DEFAULT_UI_PREFS.editorFontKey];
+}
+
+function getMonacoThemeName(theme) {
+  return theme === "light" ? "sol-tokyonight-light" : "sol-vscode-dark";
+}
+
+function loadUiPreferences() {
+  let parsed = {};
+
+  try {
+    parsed = JSON.parse(localStorage.getItem(UI_PREFS_STORAGE_KEY) || "{}");
+  } catch (_) {
+    parsed = {};
+  }
+
+  state.ui.theme = normalizeTheme(parsed.theme);
+  state.ui.editorFontSize = clampNumber(Number(parsed.editorFontSize), 11, 24, DEFAULT_UI_PREFS.editorFontSize);
+  state.ui.editorFontKey = normalizeFontKey(parsed.editorFontKey);
+  state.ui.terminalHeight = clampTerminalHeight(Number(parsed.terminalHeight), DEFAULT_UI_PREFS.terminalHeight);
+  state.ui.terminalHidden = Boolean(parsed.terminalHidden);
+  state.ui.terminalLastOpenHeight = clampTerminalHeight(
+    Number(parsed.terminalLastOpenHeight),
+    DEFAULT_UI_PREFS.terminalLastOpenHeight
+  );
+
+  if (state.ui.terminalHeight >= MIN_TERMINAL_HEIGHT) {
+    state.ui.terminalLastOpenHeight = state.ui.terminalHeight;
+  }
+}
+
+function saveUiPreferences() {
+  try {
+    localStorage.setItem(UI_PREFS_STORAGE_KEY, JSON.stringify(state.ui));
+  } catch (_) {
+    // Ignore localStorage write failures.
+  }
+}
+
+function syncAppearanceInputs() {
+  const themeSelect = document.getElementById("theme-select");
+  const fontFamilySelect = document.getElementById("font-family-select");
+  const editorFontSizeRange = document.getElementById("editor-font-size-range");
+  const editorFontSizeValue = document.getElementById("editor-font-size-value");
+
+  if (themeSelect) {
+    themeSelect.value = state.ui.theme;
+  }
+
+  if (fontFamilySelect) {
+    fontFamilySelect.value = state.ui.editorFontKey;
+  }
+
+  if (editorFontSizeRange) {
+    editorFontSizeRange.value = String(state.ui.editorFontSize);
+  }
+
+  if (editorFontSizeValue) {
+    editorFontSizeValue.textContent = `${state.ui.editorFontSize}px`;
+  }
+}
+
+function applyTerminalPanelLayout() {
+  const panel = document.querySelector(".terminal-panel");
+  if (!panel) {
+    return;
+  }
+
+  const hidden = Boolean(state.ui.terminalHidden);
+
+  if (hidden) {
+    document.documentElement.style.setProperty("--terminal-height", "0px");
+    panel.classList.add("is-collapsed");
+    return;
+  }
+
+  const height = clampTerminalHeight(state.ui.terminalHeight, DEFAULT_TERMINAL_HEIGHT);
+  state.ui.terminalHeight = Math.max(MIN_TERMINAL_HEIGHT, height);
+  if (state.ui.terminalHeight >= MIN_TERMINAL_HEIGHT) {
+    state.ui.terminalLastOpenHeight = state.ui.terminalHeight;
+  }
+
+  document.documentElement.style.setProperty("--terminal-height", `${state.ui.terminalHeight}px`);
+  panel.classList.remove("is-collapsed");
+}
+
+function applyUiPreferences(options = {}) {
+  const shouldPersist = options.persist !== false;
+
+  document.body.setAttribute("data-theme", state.ui.theme);
+  document.documentElement.style.setProperty("--ui-font-size", `${DEFAULT_UI_FONT_SIZE}px`);
+  document.documentElement.style.setProperty("--editor-font-size", `${state.ui.editorFontSize}px`);
+  document.documentElement.style.setProperty("--editor-font-family", getEditorFontFamily());
+
+  applyTerminalPanelLayout();
+
+  if (state.editor) {
+    state.editor.updateOptions({
+      fontSize: state.ui.editorFontSize,
+      fontFamily: getEditorFontFamily(),
+    });
+  }
+
+  if (state.monaco) {
+    state.monaco.editor.setTheme(getMonacoThemeName(state.ui.theme));
+  }
+
+  if (state.plainEditor) {
+    state.plainEditor.style.fontSize = `${state.ui.editorFontSize}px`;
+    state.plainEditor.style.fontFamily = getEditorFontFamily();
+  }
+
+  syncAppearanceInputs();
+
+  if (shouldPersist) {
+    saveUiPreferences();
+  }
+}
+
+function initAppearanceControls() {
+  const themeSelect = document.getElementById("theme-select");
+  const fontFamilySelect = document.getElementById("font-family-select");
+  const editorFontSizeRange = document.getElementById("editor-font-size-range");
+
+  if (themeSelect) {
+    themeSelect.addEventListener("change", (event) => {
+      state.ui.theme = normalizeTheme(event.target.value);
+      applyUiPreferences();
+    });
+  }
+
+  if (fontFamilySelect) {
+    fontFamilySelect.addEventListener("change", (event) => {
+      state.ui.editorFontKey = normalizeFontKey(event.target.value);
+      applyUiPreferences();
+    });
+  }
+
+  if (editorFontSizeRange) {
+    editorFontSizeRange.addEventListener("input", (event) => {
+      state.ui.editorFontSize = clampNumber(Number(event.target.value), 11, 24, DEFAULT_UI_PREFS.editorFontSize);
+      applyUiPreferences();
+    });
+  }
+
+  syncAppearanceInputs();
+}
+
+function changeEditorFontSizeBy(delta) {
+  const nextSize = clampNumber(
+    state.ui.editorFontSize + delta,
+    11,
+    24,
+    DEFAULT_UI_PREFS.editorFontSize
+  );
+
+  if (nextSize === state.ui.editorFontSize) {
+    return;
+  }
+
+  state.ui.editorFontSize = nextSize;
+  applyUiPreferences();
+}
+
+function toggleTerminalVisibility() {
+  if (state.ui.terminalHidden) {
+    state.ui.terminalHidden = false;
+    const restoreHeight = clampTerminalHeight(
+      state.ui.terminalLastOpenHeight,
+      DEFAULT_TERMINAL_HEIGHT
+    );
+    state.ui.terminalHeight = Math.max(MIN_TERMINAL_HEIGHT, restoreHeight);
+  } else {
+    if (state.ui.terminalHeight >= MIN_TERMINAL_HEIGHT) {
+      state.ui.terminalLastOpenHeight = state.ui.terminalHeight;
+    }
+    state.ui.terminalHidden = true;
+  }
+
+  applyUiPreferences();
+}
+
+function changeTerminalHeightBy(direction) {
+  if (direction > 0 && state.ui.terminalHidden) {
+    state.ui.terminalHidden = false;
+    const restoreHeight = clampTerminalHeight(
+      state.ui.terminalLastOpenHeight,
+      DEFAULT_TERMINAL_HEIGHT
+    );
+    state.ui.terminalHeight = Math.max(MIN_TERMINAL_HEIGHT, restoreHeight);
+    applyUiPreferences();
+    return;
+  }
+
+  if (state.ui.terminalHidden) {
+    return;
+  }
+
+  const currentHeight = clampTerminalHeight(
+    state.ui.terminalHeight,
+    DEFAULT_TERMINAL_HEIGHT
+  );
+
+  const nextHeight = clampTerminalHeight(
+    currentHeight + (direction * TERMINAL_HEIGHT_STEP),
+    DEFAULT_TERMINAL_HEIGHT
+  );
+
+  if (direction < 0 && nextHeight < MIN_TERMINAL_HEIGHT) {
+    state.ui.terminalLastOpenHeight = Math.max(MIN_TERMINAL_HEIGHT, currentHeight);
+    state.ui.terminalHidden = true;
+    applyUiPreferences();
+    return;
+  }
+
+  state.ui.terminalHeight = Math.max(MIN_TERMINAL_HEIGHT, nextHeight);
+  state.ui.terminalLastOpenHeight = state.ui.terminalHeight;
+  applyUiPreferences();
+}
+
+function setWindowMaximizedState(isMaximized) {
+  const maximizeBtn = document.getElementById("btn-window-maximize");
+  const restoreBtn = document.getElementById("btn-window-restore");
+  if (!maximizeBtn || !restoreBtn) {
+    return;
+  }
+
+  maximizeBtn.classList.toggle("is-hidden", Boolean(isMaximized));
+  restoreBtn.classList.toggle("is-hidden", !Boolean(isMaximized));
+}
+
+function initWindowControls() {
+  const controls = window.electronAPI && window.electronAPI.windowControls;
+  if (!controls) {
+    return;
+  }
+
+  const minimizeBtn = document.getElementById("btn-window-minimize");
+  const maximizeBtn = document.getElementById("btn-window-maximize");
+  const restoreBtn = document.getElementById("btn-window-restore");
+  const closeBtn = document.getElementById("btn-window-close");
+
+  if (minimizeBtn) {
+    minimizeBtn.addEventListener("click", async () => {
+      await controls.minimize();
+    });
+  }
+
+  const handleToggleMaximize = async () => {
+    const result = await controls.toggleMaximize();
+    if (result && typeof result.isMaximized === "boolean") {
+      setWindowMaximizedState(result.isMaximized);
+    }
+  };
+
+  if (maximizeBtn) {
+    maximizeBtn.addEventListener("click", handleToggleMaximize);
+  }
+
+  if (restoreBtn) {
+    restoreBtn.addEventListener("click", handleToggleMaximize);
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", async () => {
+      await controls.close();
+    });
+  }
+
+  if (typeof controls.onStateChange === "function") {
+    controls.onStateChange((payload = {}) => {
+      if (typeof payload.isMaximized === "boolean") {
+        setWindowMaximizedState(payload.isMaximized);
+      }
+    });
+  }
+
+  controls.isMaximized().then((result) => {
+    if (result && typeof result.isMaximized === "boolean") {
+      setWindowMaximizedState(result.isMaximized);
+    }
+  });
+}
+
 function updateCurrentFileLabel() {
   const el = document.getElementById("current-file");
   if (!el) {
@@ -159,6 +502,8 @@ function setEditorValue(nextValue) {
 function ensurePlainEditor(note) {
   if (state.plainEditor) {
     state.plainEditor.classList.remove("hidden");
+    state.plainEditor.style.fontSize = `${state.ui.editorFontSize}px`;
+    state.plainEditor.style.fontFamily = getEditorFontFamily();
     return;
   }
 
@@ -166,6 +511,8 @@ function ensurePlainEditor(note) {
   const textarea = document.createElement("textarea");
   textarea.className = "plain-editor";
   textarea.spellcheck = false;
+  textarea.style.fontSize = `${state.ui.editorFontSize}px`;
+  textarea.style.fontFamily = getEditorFontFamily();
   textarea.value = state.code || "";
   textarea.addEventListener("input", () => {
     state.code = textarea.value;
@@ -348,7 +695,7 @@ function renderFunctionSelect() {
   sel.innerHTML = `<option value="">Select a function…</option>` +
     fns.map((fn) => {
       const sig = toFunctionSignature(fn);
-      const badge = isReadOnly(fn) ? " 👁" : fn.stateMutability === "payable" ? " 💰" : "";
+      const badge = isReadOnly(fn) ? " [read]" : fn.stateMutability === "payable" ? " [payable]" : "";
       return `<option value="${sig}">${sig}${badge}</option>`;
     }).join("");
   sel.value = state.selectedFnSig;
@@ -732,6 +1079,8 @@ function initMonaco() {
   require(
     ["vs/editor/editor.main"],
     function (monaco) {
+      state.monaco = monaco;
+
       // Register Solidity language
       if (!monaco.languages.getLanguages().some((l) => l.id === "solidity")) {
         monaco.languages.register({ id: "solidity" });
@@ -768,27 +1117,52 @@ function initMonaco() {
         autoClosingPairs: [{ open: "{", close: "}" }, { open: "[", close: "]" }, { open: "(", close: ")" }, { open: '"', close: '"' }, { open: "'", close: "'" }],
       });
 
-      monaco.editor.defineTheme("one-dark-pro-sol", {
+      monaco.editor.defineTheme("sol-vscode-dark", {
         base: "vs-dark",
         inherit: true,
         rules: [
-          { token: "comment", foreground: "7F848E", fontStyle: "italic" },
-          { token: "keyword", foreground: "C678DD" },
-          { token: "type", foreground: "56B6C2" },
-          { token: "number", foreground: "D19A66" },
-          { token: "string", foreground: "98C379" },
-          { token: "operator", foreground: "ABB2BF" },
-          { token: "identifier", foreground: "ABB2BF" },
+          { token: "comment", foreground: "6A9955" },
+          { token: "keyword", foreground: "C586C0" },
+          { token: "type", foreground: "4EC9B0" },
+          { token: "number", foreground: "B5CEA8" },
+          { token: "string", foreground: "CE9178" },
+          { token: "operator", foreground: "D4D4D4" },
+          { token: "identifier", foreground: "D4D4D4" },
         ],
         colors: {
-          "editor.background": "#282C34",
-          "editor.foreground": "#ABB2BF",
-          "editorLineNumber.foreground": "#636D83",
-          "editorLineNumber.activeForeground": "#ABB2BF",
-          "editorCursor.foreground": "#61AFEF",
-          "editor.selectionBackground": "#3E4451",
-          "editorLineHighlightBackground": "#2C313C",
-          "editor.indentGuide.background": "#3B4048",
+          "editor.background": "#1E1E1E",
+          "editor.foreground": "#D4D4D4",
+          "editorLineNumber.foreground": "#858585",
+          "editorLineNumber.activeForeground": "#C6C6C6",
+          "editorCursor.foreground": "#AEAFAD",
+          "editor.selectionBackground": "#264F78",
+          "editorLineHighlightBackground": "#2A2D2E",
+          "editorIndentGuide.background": "#404040",
+        },
+      });
+
+      monaco.editor.defineTheme("sol-tokyonight-light", {
+        base: "vs",
+        inherit: true,
+        rules: [
+          { token: "comment", foreground: "888B94" },
+          { token: "keyword", foreground: "65359D" },
+          { token: "type", foreground: "006C86" },
+          { token: "number", foreground: "965027" },
+          { token: "string", foreground: "385F0D" },
+          { token: "operator", foreground: "006C86" },
+          { token: "identifier", foreground: "343B58" },
+        ],
+        colors: {
+          "editor.background": "#E6E7ED",
+          "editor.foreground": "#343B59",
+          "editorLineNumber.foreground": "#9DA0AB",
+          "editorLineNumber.activeForeground": "#363C4D",
+          "editorCursor.foreground": "#363C4D",
+          "editor.selectionBackground": "#ACB0BF40",
+          "editorLineHighlightBackground": "#DCDEE3",
+          "editorIndentGuide.background": "#D0D4E3",
+          "editorIndentGuide.activeBackground": "#BDC1CF",
         },
       });
 
@@ -800,9 +1174,9 @@ function initMonaco() {
       state.editor = monaco.editor.create(document.getElementById("editor-mount"), {
         value: state.code,
         language: "solidity",
-        theme: "one-dark-pro-sol",
-        fontSize: 13,
-        fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+        theme: getMonacoThemeName(state.ui.theme),
+        fontSize: state.ui.editorFontSize,
+        fontFamily: getEditorFontFamily(),
         lineNumbers: "on",
         minimap: { enabled: false },
         scrollBeyondLastLine: false,
@@ -813,11 +1187,10 @@ function initMonaco() {
         padding: { top: 12, bottom: 12 },
         renderLineHighlight: "line",
         smoothScrolling: true,
-        cursorBlinking: "smooth",
-        cursorSmoothCaretAnimation: "on",
+        cursorBlinking: "blink",
       });
 
-      monaco.editor.setTheme("one-dark-pro-sol");
+      applyUiPreferences({ persist: false });
 
       state.editor.onDidChangeModelContent(() => {
         state.code = state.editor.getValue();
@@ -875,11 +1248,71 @@ document.getElementById("fn-select").addEventListener("change", (e) => {
   renderFunctionArgs(fnAbi);
 });
 
+const editorMount = document.getElementById("editor-mount");
+if (editorMount) {
+  editorMount.addEventListener(
+    "wheel",
+    (event) => {
+      if (!(event.ctrlKey || event.metaKey)) {
+        return;
+      }
+
+      event.preventDefault();
+      const delta = event.deltaY < 0 ? 1 : -1;
+      changeEditorFontSizeBy(delta);
+    },
+    { passive: false }
+  );
+}
+
+const terminalPanel = document.querySelector(".terminal-panel");
+if (terminalPanel) {
+  terminalPanel.addEventListener(
+    "wheel",
+    (event) => {
+      if (!(event.ctrlKey || event.metaKey)) {
+        return;
+      }
+
+      event.preventDefault();
+      const delta = event.deltaY < 0 ? 1 : -1;
+      changeTerminalHeightBy(delta);
+    },
+    { passive: false }
+  );
+}
+
 window.addEventListener("keydown", (e) => {
   const hasModifier = e.ctrlKey || e.metaKey;
   if (!hasModifier) return;
 
+  if (e.code === "Backquote") {
+    e.preventDefault();
+    toggleTerminalVisibility();
+    return;
+  }
+
   const key = e.key.toLowerCase();
+  const isZoomInShortcut = key === "+" || key === "=" || e.code === "NumpadAdd";
+  const isZoomOutShortcut =
+    key === "-" ||
+    key === "_" ||
+    key === "subtract" ||
+    e.code === "Minus" ||
+    e.code === "NumpadSubtract";
+
+  if (isZoomInShortcut) {
+    e.preventDefault();
+    changeEditorFontSizeBy(1);
+    return;
+  }
+
+  if (isZoomOutShortcut) {
+    e.preventDefault();
+    changeEditorFontSizeBy(-1);
+    return;
+  }
+
   if (key === "o") {
     e.preventDefault();
     openSolFile();
@@ -929,11 +1362,16 @@ document.querySelectorAll(".tpl-btn").forEach((btn) => {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 (async function init() {
+  loadUiPreferences();
+  applyUiPreferences({ persist: false });
+  initAppearanceControls();
+  initWindowControls();
+
   state.code = TEMPLATES.counter;
   updateCurrentFileLabel();
 
   addLog("info", "Solidity Playground starting in offline mode…");
-  addLog("warning", "The app is a beta version and might contain bugs.");
+  addLog("info", "Version: 1.1");
   addLog("info", "Please share feedback:", FEEDBACK_URL);
   await waitForOfflineEngine();
   initMonaco();

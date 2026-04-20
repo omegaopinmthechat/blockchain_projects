@@ -228,14 +228,138 @@
       display: none;
     }
 
+    .menubar-nav {
+      height: 28px;
+      background: var(--header-bg);
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      position: relative;
+      -webkit-app-region: no-drag;
+      user-select: none;
+      z-index: 20;
+    }
+
+    .mn-item {
+      position: relative;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--text-dim);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .mn-item:hover,
+    .mn-item.mn-active {
+      background: var(--panel-bg-alt);
+      color: var(--text);
+    }
+
+    .mn-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 3px;
+      min-width: 190px;
+      z-index: 999;
+      padding: 4px 0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+    }
+
+    .mn-dropdown.open { display: block; }
+
+    .mn-dd-item {
+      padding: 5px 20px 5px 28px;
+      font-size: 12px;
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      white-space: nowrap;
+    }
+
+    .mn-dd-item:hover {
+      background: var(--panel-bg-alt);
+      color: var(--text);
+    }
+
+    .mn-dd-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    .mn-dd-kbd {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
     .workspace {
       display: flex;
       flex: 1;
-      gap: 8px;
-      padding: 8px;
+      gap: 0;
+      padding: 0;
       overflow: hidden;
       background: var(--app-bg);
     }
+
+    .activity-bar {
+      width: 48px;
+      flex-shrink: 0;
+      background: var(--header-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 4px;
+      gap: 2px;
+      -webkit-app-region: no-drag;
+    }
+
+    .act-btn {
+      width: 34px;
+      height: 34px;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      opacity: 0.65;
+      transition: opacity 0.15s, background 0.15s;
+    }
+
+    .act-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .act-btn:hover {
+      opacity: 1;
+      background: var(--panel-bg-alt);
+    }
+
+    .act-btn.act-active {
+      opacity: 1;
+      border-left: 2px solid var(--button-primary);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .act-spacer { flex: 1; }
 
     .sidebar {
       width: 336px;
@@ -249,6 +373,10 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 8px;
+    }
+
+    .sidebar.is-hidden {
+      display: none;
     }
 
     .sidebar-section {
@@ -275,6 +403,18 @@
       height: 6px;
       border-radius: 50%;
       background: var(--text-muted);
+    }
+
+    .section-title-icon {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.95;
+      flex-shrink: 0;
     }
 
     .inp {
@@ -395,6 +535,100 @@
       text-overflow: ellipsis;
     }
 
+    .file-manager-head {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .explorer-root {
+      margin-top: 0;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .btn-explorer-refresh {
+      padding: 7px 9px;
+      min-width: 74px;
+      font-size: calc(11px * var(--sidebar-scale));
+      margin-bottom: 0;
+    }
+
+    .file-tree {
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--panel-bg-alt);
+      max-height: 240px;
+      overflow: auto;
+    }
+
+    .file-tree-item {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: calc(11px * var(--sidebar-scale));
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+      padding: 6px 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-tree-item:last-child {
+      border-bottom: none;
+    }
+
+    .file-tree-item.file {
+      cursor: pointer;
+    }
+
+    .file-tree-item.file:hover {
+      background: var(--button-muted);
+      color: var(--text);
+    }
+
+    .file-tree-item.file.readonly {
+      cursor: default;
+      color: var(--text-muted);
+      opacity: 0.9;
+    }
+
+    .file-tree-item.file.readonly:hover {
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .file-tree-item.active {
+      background: var(--selection-bg);
+      color: var(--text);
+    }
+
+    .file-tree-item.directory {
+      color: var(--text-muted);
+    }
+
+    .file-tree-item-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .file-tree-empty {
+      padding: 9px;
+      color: var(--text-muted);
+      font-size: calc(11px * var(--sidebar-scale));
+      text-align: center;
+    }
+
     .spinner {
       display: inline-block;
       width: 12px;
@@ -481,10 +715,86 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
+      border-radius: 0;
+      border: none;
       background: var(--panel-bg);
     }
+
+    .tab-bar {
+      height: 34px;
+      background: var(--header-bg);
+      display: flex;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-app-region: no-drag;
+    }
+
+    .editor-tab {
+      height: 31px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--header-bg);
+      border-right: 1px solid var(--border);
+      border-top: 2px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .tab-file-name {
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .editor-tab.active {
+      background: var(--editor-bg);
+      color: var(--text);
+      border-top-color: var(--button-primary);
+    }
+
+    .tab-close-btn {
+      font-size: 11px;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      opacity: 0;
+    }
+
+    .editor-tab:hover .tab-close-btn { opacity: 0.7; }
+    .editor-tab.active .tab-close-btn { opacity: 0.5; }
+    .tab-close-btn:hover {
+      background: var(--button-muted);
+      opacity: 1 !important;
+    }
+
+    .breadcrumb-bar {
+      height: 22px;
+      background: var(--editor-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 4px;
+      flex-shrink: 0;
+      -webkit-app-region: no-drag;
+    }
+
+    .bc-seg { font-size: 11px; color: var(--text-muted); }
+    .bc-sep { font-size: 11px; color: var(--border-strong); }
+    .bc-fn { font-size: 11px; color: var(--status-result); }
 
     #editor-mount {
       flex: 1;
@@ -509,6 +819,24 @@
 
     .plain-editor::selection { background: var(--selection-bg); }
     .plain-editor.hidden { display: none; }
+
+    .resize-grip {
+      height: 4px;
+      background: transparent;
+      cursor: ns-resize;
+      flex-shrink: 0;
+      transition: background 0.15s;
+      -webkit-app-region: no-drag;
+    }
+
+    .resize-grip:hover {
+      background: var(--button-primary);
+      opacity: 0.4;
+    }
+
+    .resize-grip.is-hidden {
+      display: none;
+    }
 
     .terminal-panel {
       height: var(--terminal-height);
@@ -628,6 +956,32 @@
 
     #toast.show { transform: translateY(0); opacity: 1; }
 
+    .statusbar {
+      height: 22px;
+      background: var(--button-primary);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 10px;
+      flex-shrink: 0;
+      -webkit-app-region: no-drag;
+      user-select: none;
+    }
+
+    .sb-item {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      padding: 0 2px;
+    }
+
+    .sb-item:hover { color: #ffffff; }
+
+    .sb-sep {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
     .empty-state {
       padding: 10px;
       background: var(--panel-bg-alt);
@@ -652,6 +1006,22 @@
         flex-direction: column;
       }
 
+      .activity-bar {
+        width: 100%;
+        height: 40px;
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding-top: 0;
+        padding-left: 4px;
+      }
+
+      .act-btn.act-active {
+        border-left: none;
+        border-bottom: 2px solid var(--button-primary);
+        border-radius: 4px 4px 0 0;
+      }
+
       .sidebar {
         width: 100%;
         max-height: 45vh;
@@ -664,10 +1034,9 @@
     }
 
     @media (max-width: 768px) {
-      .workspace { gap: 6px; padding: 6px; }
+      .workspace { gap: 0; padding: 0; }
       .sidebar { max-height: none; }
       .sidebar-section { padding: 8px; }
-      .terminal-panel { height: 180px; }
     }
 
     @media (max-width: 560px) {
@@ -684,7 +1053,6 @@
       }
 
       .btn-row { grid-template-columns: 1fr; }
-      .terminal-panel { height: 160px; }
 
       header .feedback-link,
       header .beta-pill {
@@ -734,13 +1102,35 @@
     </div>
   </header>
 
+  <nav class="menubar-nav" id="menubar-nav" aria-label="Menu bar">
+    <div class="mn-item" data-menu="file">File</div>
+    <div class="mn-item" data-menu="edit">Edit</div>
+    <div class="mn-item" data-menu="view">View</div>
+    <div class="mn-item" data-menu="compile">Compile</div>
+    <div class="mn-item" data-menu="deploy">Deploy</div>
+    <div class="mn-item" data-menu="help">Help</div>
+  </nav>
+
   <div class="workspace">
 
+    <div class="activity-bar" aria-label="Primary Activity">
+      <button class="act-btn act-active" data-panel="explorer" title="Explorer" aria-label="Explorer">
+        <svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z" /></svg>
+      </button>
+      <button class="act-btn" data-panel="compile" title="Compile, Deploy & Function Tester" aria-label="Compile, Deploy & Function Tester">
+        <svg viewBox="0 0 24 24"><path d="M22 2L11 13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+      </button>
+      <div class="act-spacer"></div>
+      <button class="act-btn" data-panel="settings" title="Appearance" aria-label="Appearance">
+        <svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" /><path d="M3 13h2l1 2 2 1v2h8v-2l2-1 1-2h2v-2h-2l-1-2-2-1V6H8v2L6 9 5 11H3z" /></svg>
+      </button>
+    </div>
+
     <!-- ── Sidebar ── -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
 
       <!-- File actions -->
-      <div class="sidebar-section">
+      <div class="sidebar-section" data-panel-group="explorer">
         <div class="section-title"><span class="dot"></span>File</div>
 
         <div class="btn-row" style="margin-bottom:6px;">
@@ -748,12 +1138,22 @@
           <button class="btn btn-reset" id="btn-save">Save</button>
         </div>
 
+        <button class="btn btn-reset" id="btn-open-folder" style="margin-top:6px;">Open Folder</button>
         <button class="btn btn-reset" id="btn-save-as">Save As .sol</button>
         <div class="file-meta" id="current-file" title="Unsaved document">File: Unsaved document</div>
+
+        <div class="section-title" style="margin-top:10px;"><span class="dot"></span>File Manager</div>
+        <div class="file-manager-head">
+          <div class="file-meta explorer-root" id="explorer-root" title="No folder loaded">Folder: Not loaded</div>
+          <button class="btn btn-reset btn-explorer-refresh" id="btn-refresh-files">Refresh</button>
+        </div>
+        <div class="file-tree" id="file-tree">
+          <div class="file-tree-empty">Open Folder to load project files.</div>
+        </div>
       </div>
 
       <!-- Appearance -->
-      <div class="sidebar-section">
+      <div class="sidebar-section" data-panel-group="settings">
         <div class="section-title"><span class="dot"></span>Appearance</div>
 
         <div class="field-wrap">
@@ -786,7 +1186,7 @@
       </div>
 
       <!-- Compile & Deploy -->
-      <div class="sidebar-section">
+      <div class="sidebar-section" data-panel-group="compile">
         <div class="section-title"><span class="dot"></span>Compile & Deploy</div>
 
         <div id="contract-select-wrap" class="field-wrap" style="display:none;">
@@ -816,7 +1216,7 @@
       </div>
 
       <!-- Active deployment info -->
-      <div class="sidebar-section" id="deployment-section" style="display:none;">
+      <div class="sidebar-section" id="deployment-section" data-panel-group="compile" style="display:none;">
         <div class="section-title"><span class="dot"></span>Active Deployment</div>
         <div class="deploy-badge">
           <div class="label">Contract Address</div>
@@ -830,8 +1230,13 @@
       </div>
 
       <!-- Function Tester -->
-      <div class="sidebar-section">
-        <div class="section-title"><span class="dot"></span>Function Tester</div>
+      <div class="sidebar-section" data-panel-group="compile">
+        <div class="section-title">
+          <svg class="section-title-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Function Tester
+        </div>
 
         <div id="fn-no-deploy" class="empty-state">Deploy a contract first.</div>
 
@@ -867,10 +1272,20 @@
 
     <!-- ── Editor + Terminal ── -->
     <div class="editor-area">
+      <div class="tab-bar" id="tab-bar"></div>
+
+      <div class="breadcrumb-bar" id="breadcrumb-bar">
+        <span class="bc-seg">contracts</span>
+        <span class="bc-sep">></span>
+        <span class="bc-seg" id="bc-contract">Untitled.sol</span>
+      </div>
+
       <div id="editor-mount"></div>
 
       <!-- Terminal -->
-      <div class="terminal-panel">
+      <div class="resize-grip" id="terminal-resizer" title="Drag to resize terminal"></div>
+
+      <div class="terminal-panel" id="terminal-panel">
         <div class="terminal-header">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2.5"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
           <span class="t-title">Terminal</span>
@@ -881,6 +1296,16 @@
     </div>
 
   </div>
+
+  <footer class="statusbar" id="statusbar">
+    <span class="sb-item" id="sb-deploy">No deployment</span>
+    <span class="sb-sep">|</span>
+    <span class="sb-item" id="sb-compiler">Solidity 0.8.21</span>
+    <span class="sb-sep">|</span>
+    <span class="sb-item" id="sb-network">Ganache Localhost:8545</span>
+    <span class="sb-sep">|</span>
+    <span class="sb-item" id="sb-cursor">Ln 1, Col 1</span>
+  </footer>
 </div>
 
 <div id="toast"></div>

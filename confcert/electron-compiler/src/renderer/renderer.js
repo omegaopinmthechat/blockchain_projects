@@ -7,6 +7,7 @@ const DEFAULT_TERMINAL_HEIGHT = 220;
 const MIN_TERMINAL_HEIGHT = 90;
 const MAX_TERMINAL_HEIGHT = 520;
 const TERMINAL_HEIGHT_STEP = 24;
+const SIDEBAR_PANELS = ["explorer", "compile", "settings"];
 
 const EDITOR_FONT_OPTIONS = {
   consolas: "Consolas, 'Courier New', monospace",
@@ -16,6 +17,14 @@ const EDITOR_FONT_OPTIONS = {
   courier: "'Courier New', monospace",
 };
 
+const EDITOR_FONT_LABELS = {
+  consolas: "Consolas",
+  cascadia: "Cascadia Code",
+  jetbrains: "JetBrains Mono",
+  fira: "Fira Code",
+  courier: "Courier New",
+};
+
 const DEFAULT_UI_PREFS = {
   theme: "dark",
   editorFontSize: 13,
@@ -23,6 +32,8 @@ const DEFAULT_UI_PREFS = {
   terminalHeight: DEFAULT_TERMINAL_HEIGHT,
   terminalHidden: false,
   terminalLastOpenHeight: DEFAULT_TERMINAL_HEIGHT,
+  sidebarHidden: false,
+  activeSidebarPanel: "explorer",
 };
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -30,6 +41,11 @@ const state = {
   runtimeMode: "offline",
   code: "",
   currentFilePath: "",
+  tabs: [],
+  activeTabId: "",
+  nextUntitledTabNumber: 1,
+  explorerRootPath: "",
+  explorerItems: [],
   abi: [],
   compiledContracts: [],
   selectedContract: "",
@@ -52,6 +68,8 @@ const state = {
     terminalHeight: DEFAULT_UI_PREFS.terminalHeight,
     terminalHidden: DEFAULT_UI_PREFS.terminalHidden,
     terminalLastOpenHeight: DEFAULT_UI_PREFS.terminalLastOpenHeight,
+    sidebarHidden: DEFAULT_UI_PREFS.sidebarHidden,
+    activeSidebarPanel: DEFAULT_UI_PREFS.activeSidebarPanel,
   },
 };
 
@@ -181,6 +199,75 @@ function normalizeFontKey(value) {
   return DEFAULT_UI_PREFS.editorFontKey;
 }
 
+function normalizeSidebarPanel(value) {
+  if (value === "tester") {
+    return "compile";
+  }
+  return SIDEBAR_PANELS.includes(value) ? value : DEFAULT_UI_PREFS.activeSidebarPanel;
+}
+
+function normalizePathForComparison(filePath) {
+  return String(filePath || "").replace(/\\/g, "/").toLowerCase();
+}
+
+function getParentDirectoryPath(filePath) {
+  const raw = String(filePath || "");
+  const slashIndex = Math.max(raw.lastIndexOf("/"), raw.lastIndexOf("\\"));
+
+  if (slashIndex < 0) {
+    return "";
+  }
+
+  if (slashIndex === 2 && /^[A-Za-z]:[\\/]/.test(raw)) {
+    return raw.slice(0, 3);
+  }
+
+  return raw.slice(0, slashIndex);
+}
+
+function getUpLevelDirectoryPath(dirPath) {
+  const normalized = String(dirPath || "").replace(/[\\/]+$/, "");
+  if (!normalized) {
+    return "";
+  }
+
+  const parent = getParentDirectoryPath(normalized);
+  if (!parent) {
+    return "";
+  }
+
+  if (normalizePathForComparison(parent) === normalizePathForComparison(normalized)) {
+    return "";
+  }
+
+  return parent;
+}
+
+function getFontDisplayName(fontKey) {
+  return EDITOR_FONT_LABELS[fontKey] || fontKey;
+}
+
+function setTheme(theme) {
+  const nextTheme = normalizeTheme(theme);
+  if (nextTheme === state.ui.theme) {
+    return;
+  }
+
+  state.ui.theme = nextTheme;
+  applyUiPreferences();
+}
+
+function setEditorFontKey(fontKey) {
+  const nextKey = normalizeFontKey(fontKey);
+  if (nextKey === state.ui.editorFontKey) {
+    return;
+  }
+
+  state.ui.editorFontKey = nextKey;
+  applyUiPreferences();
+  showToast(`Editor font: ${getFontDisplayName(nextKey)}`);
+}
+
 function getEditorFontFamily() {
   return EDITOR_FONT_OPTIONS[state.ui.editorFontKey] || EDITOR_FONT_OPTIONS[DEFAULT_UI_PREFS.editorFontKey];
 }
@@ -207,6 +294,8 @@ function loadUiPreferences() {
     Number(parsed.terminalLastOpenHeight),
     DEFAULT_UI_PREFS.terminalLastOpenHeight
   );
+  state.ui.sidebarHidden = Boolean(parsed.sidebarHidden);
+  state.ui.activeSidebarPanel = normalizeSidebarPanel(parsed.activeSidebarPanel);
 
   if (state.ui.terminalHeight >= MIN_TERMINAL_HEIGHT) {
     state.ui.terminalLastOpenHeight = state.ui.terminalHeight;
@@ -244,8 +333,501 @@ function syncAppearanceInputs() {
   }
 }
 
+function getActiveTab() {
+  return state.tabs.find((tab) => tab.id === state.activeTabId) || null;
+}
+
+function createTabEntry({ filePath = "", content = "" } = {}) {
+  const safePath = typeof filePath === "string" ? filePath : "";
+  const untitledIndex = state.nextUntitledTabNumber;
+
+  if (!safePath) {
+    state.nextUntitledTabNumber += 1;
+  }
+
+  return {
+    id: `tab_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,
+    filePath: safePath,
+    title: safePath
+      ? getFileLabel(safePath)
+      : (untitledIndex === 1 ? "Untitled.sol" : `Untitled-${untitledIndex}.sol`),
+    content: typeof content === "string" ? content : "",
+  };
+}
+
+function initializeEditorTabs(initialContent) {
+  state.tabs = [];
+  state.activeTabId = "";
+  state.nextUntitledTabNumber = 1;
+
+  const firstTab = createTabEntry({ content: initialContent || "" });
+  state.tabs.push(firstTab);
+  state.activeTabId = firstTab.id;
+  state.code = firstTab.content;
+  state.currentFilePath = "";
+}
+
+function syncActiveTabContentFromEditor() {
+  const activeTab = getActiveTab();
+  if (!activeTab) {
+    return;
+  }
+
+  const value = state.editor
+    ? state.editor.getValue()
+    : (state.plainEditor ? state.plainEditor.value : state.code || "");
+
+  activeTab.content = value;
+  state.code = value;
+  state.currentFilePath = activeTab.filePath || "";
+}
+
+function renderTabBar() {
+  const tabBar = document.getElementById("tab-bar");
+  if (!tabBar) {
+    return;
+  }
+
+  tabBar.innerHTML = "";
+
+  state.tabs.forEach((tab) => {
+    const tabEl = document.createElement("div");
+    tabEl.className = `editor-tab${tab.id === state.activeTabId ? " active" : ""}`;
+    tabEl.dataset.tabId = tab.id;
+    tabEl.title = tab.filePath || tab.title;
+
+    const nameEl = document.createElement("span");
+    nameEl.className = "tab-file-name";
+    nameEl.textContent = tab.title;
+
+    const closeEl = document.createElement("span");
+    closeEl.className = "tab-close-btn";
+    closeEl.setAttribute("aria-label", "Close tab");
+    closeEl.textContent = "x";
+
+    tabEl.appendChild(nameEl);
+    tabEl.appendChild(closeEl);
+    tabBar.appendChild(tabEl);
+  });
+}
+
+function activateTab(tabId, options = {}) {
+  const nextTab = state.tabs.find((tab) => tab.id === tabId);
+  if (!nextTab) {
+    return;
+  }
+
+  if (options.syncCurrent !== false) {
+    syncActiveTabContentFromEditor();
+  }
+
+  state.activeTabId = nextTab.id;
+  state.currentFilePath = nextTab.filePath || "";
+  state.code = nextTab.content || "";
+
+  setEditorValue(nextTab.content || "");
+  updateCurrentFileLabel();
+  renderExplorerTree();
+}
+
+function findOpenTabByFilePath(filePath) {
+  const key = normalizePathForComparison(filePath);
+  if (!key) {
+    return null;
+  }
+
+  return state.tabs.find(
+    (tab) => tab.filePath && normalizePathForComparison(tab.filePath) === key
+  ) || null;
+}
+
+function openDocumentInTab(filePath, content) {
+  syncActiveTabContentFromEditor();
+
+  let tab = findOpenTabByFilePath(filePath);
+  if (tab) {
+    tab.filePath = filePath;
+    tab.title = getFileLabel(filePath);
+    tab.content = typeof content === "string" ? content : "";
+    activateTab(tab.id, { syncCurrent: false });
+    return tab;
+  }
+
+  tab = createTabEntry({ filePath, content });
+  state.tabs.push(tab);
+  activateTab(tab.id, { syncCurrent: false });
+  return tab;
+}
+
+function closeTabById(tabId) {
+  const index = state.tabs.findIndex((tab) => tab.id === tabId);
+  if (index < 0) {
+    return;
+  }
+
+  syncActiveTabContentFromEditor();
+
+  const closingActiveTab = state.activeTabId === tabId;
+  state.tabs.splice(index, 1);
+
+  if (!state.tabs.length) {
+    const replacementTab = createTabEntry({ content: "" });
+    state.tabs.push(replacementTab);
+    state.activeTabId = replacementTab.id;
+    state.currentFilePath = "";
+    state.code = "";
+    setEditorValue("");
+    updateCurrentFileLabel();
+    renderExplorerTree();
+    return;
+  }
+
+  if (closingActiveTab) {
+    const fallbackTab = state.tabs[Math.max(0, index - 1)] || state.tabs[0];
+    activateTab(fallbackTab.id, { syncCurrent: false });
+    return;
+  }
+
+  renderTabBar();
+}
+
+function initTabBar() {
+  const tabBar = document.getElementById("tab-bar");
+  if (!tabBar) {
+    return;
+  }
+
+  tabBar.addEventListener("click", (event) => {
+    const tabEl = event.target.closest(".editor-tab");
+    if (!tabEl) {
+      return;
+    }
+
+    const tabId = tabEl.dataset.tabId;
+    if (!tabId) {
+      return;
+    }
+
+    const closeBtn = event.target.closest(".tab-close-btn");
+    if (closeBtn) {
+      event.stopPropagation();
+      closeTabById(tabId);
+      return;
+    }
+
+    if (tabId !== state.activeTabId) {
+      activateTab(tabId);
+    }
+  });
+}
+
+function renderExplorerTree() {
+  const rootLabel = document.getElementById("explorer-root");
+  const tree = document.getElementById("file-tree");
+
+  if (rootLabel) {
+    if (state.explorerRootPath) {
+      rootLabel.textContent = `Folder: ${state.explorerRootPath}`;
+      rootLabel.title = state.explorerRootPath;
+    } else {
+      rootLabel.textContent = "Folder: Not loaded";
+      rootLabel.title = "No folder loaded";
+    }
+  }
+
+  if (!tree) {
+    return;
+  }
+
+  tree.innerHTML = "";
+
+  if (!state.explorerRootPath) {
+    const empty = document.createElement("div");
+    empty.className = "file-tree-empty";
+    empty.textContent = "Open Folder to load project files.";
+    tree.appendChild(empty);
+    return;
+  }
+
+  if (!state.explorerItems.length) {
+    const empty = document.createElement("div");
+    empty.className = "file-tree-empty";
+    empty.textContent = "No files found in this folder.";
+    tree.appendChild(empty);
+    return;
+  }
+
+  const activePathKey = normalizePathForComparison(state.currentFilePath);
+  const upLevelPath = getUpLevelDirectoryPath(state.explorerRootPath);
+
+  if (upLevelPath) {
+    const upRow = document.createElement("div");
+    upRow.className = "file-tree-item directory up-level";
+    upRow.dataset.dirPath = upLevelPath;
+    upRow.title = upLevelPath;
+
+    const upLabel = document.createElement("span");
+    upLabel.className = "file-tree-item-label";
+    upLabel.textContent = "..";
+
+    upRow.appendChild(upLabel);
+    tree.appendChild(upRow);
+  }
+
+  state.explorerItems.forEach((item) => {
+    const row = document.createElement("div");
+    row.className = `file-tree-item ${item.type}`;
+    row.style.paddingLeft = `${8 + (Number(item.depth) || 0) * 14}px`;
+
+    const label = document.createElement("span");
+    label.className = "file-tree-item-label";
+    label.textContent = item.type === "directory"
+      ? `> ${item.name}`
+      : item.name;
+
+    row.appendChild(label);
+
+    if (item.type === "file") {
+      const openable = item.openable !== false;
+      row.dataset.filePath = item.path;
+      row.dataset.openable = openable ? "true" : "false";
+      row.classList.toggle("readonly", !openable);
+      row.title = openable ? item.path : `${item.path} (Preview unsupported)`;
+
+      if (normalizePathForComparison(item.path) === activePathKey) {
+        row.classList.add("active");
+      }
+    } else if (item.type === "directory") {
+      row.dataset.dirPath = item.path;
+      row.title = item.path;
+    }
+
+    tree.appendChild(row);
+  });
+}
+
+async function openDirectoryInExplorer(dirPath) {
+  const targetDir = typeof dirPath === "string" ? dirPath.trim() : "";
+  if (!targetDir) {
+    return;
+  }
+
+  state.explorerRootPath = targetDir;
+  await refreshExplorerTree();
+}
+
+async function refreshExplorerTree() {
+  if (!state.explorerRootPath) {
+    state.explorerItems = [];
+    renderExplorerTree();
+    return;
+  }
+
+  const tree = document.getElementById("file-tree");
+  if (tree) {
+    tree.innerHTML = '<div class="file-tree-empty">Loading files…</div>';
+  }
+
+  if (!window.electronAPI?.playground?.listFiles) {
+    state.explorerItems = [];
+    renderExplorerTree();
+    addLog("error", "Sidebar file manager is unavailable in this build.");
+    return;
+  }
+
+  try {
+    const result = await window.electronAPI.playground.listFiles({
+      dirPath: state.explorerRootPath,
+    });
+
+    if (!result || result.success === false) {
+      state.explorerItems = [];
+      renderExplorerTree();
+      addLog("error", result?.error || "Failed to load file manager entries.");
+      return;
+    }
+
+    state.explorerItems = Array.isArray(result.items) ? result.items : [];
+    renderExplorerTree();
+  } catch (err) {
+    state.explorerItems = [];
+    renderExplorerTree();
+    addLog("error", `File manager refresh failed: ${err.message}`);
+  }
+}
+
+async function syncExplorerRootFromFilePath(filePath) {
+  const parentDir = getParentDirectoryPath(filePath);
+  if (!parentDir) {
+    return;
+  }
+
+  if (state.explorerRootPath) {
+    const rootKey = normalizePathForComparison(state.explorerRootPath).replace(/\/+$/, "");
+    const fileKey = normalizePathForComparison(filePath);
+
+    if (fileKey === rootKey || fileKey.startsWith(`${rootKey}/`)) {
+      renderExplorerTree();
+      return;
+    }
+  }
+
+  const nextKey = normalizePathForComparison(parentDir);
+  const currentKey = normalizePathForComparison(state.explorerRootPath);
+  state.explorerRootPath = parentDir;
+
+  if (nextKey !== currentKey) {
+    await refreshExplorerTree();
+  } else {
+    renderExplorerTree();
+  }
+}
+
+async function openFolderInExplorer() {
+  if (!window.electronAPI?.playground?.openFolder) {
+    addLog("error", "Open Folder is unavailable in this build.");
+    return;
+  }
+
+  try {
+    const activeTab = getActiveTab();
+    const data = await window.electronAPI.playground.openFolder({
+      defaultPath: state.explorerRootPath || activeTab?.filePath || state.currentFilePath || undefined,
+    });
+
+    if (!data || data.success === false) {
+      addLog("error", data?.error || "Failed to open folder.");
+      return;
+    }
+
+    if (data.canceled || !data.dirPath) {
+      return;
+    }
+
+    state.explorerRootPath = data.dirPath;
+    await refreshExplorerTree();
+
+    state.ui.activeSidebarPanel = "explorer";
+    state.ui.sidebarHidden = false;
+    applyUiPreferences();
+
+    showToast(`Opened folder: ${data.dirPath}`);
+    addLog("success", `Opened folder: ${data.dirPath}`);
+  } catch (err) {
+    addLog("error", `Open folder failed: ${err.message}`);
+  }
+}
+
+async function openFileFromPath(filePath, options = {}) {
+  if (!window.electronAPI?.playground?.readFile) {
+    addLog("error", "File open from sidebar is unavailable in this build.");
+    return;
+  }
+
+  try {
+    const result = await window.electronAPI.playground.readFile({ filePath });
+
+    if (!result || result.success === false) {
+      addLog("error", result?.error || "Failed to open file.");
+      return;
+    }
+
+    const resolvedPath = result.filePath || filePath;
+    const content = typeof result.content === "string" ? result.content : "";
+    openDocumentInTab(resolvedPath, content);
+
+    if (options.syncExplorerRoot !== false) {
+      await syncExplorerRootFromFilePath(resolvedPath);
+    } else {
+      renderExplorerTree();
+    }
+
+    showToast(`Opened ${getFileLabel(resolvedPath)}`);
+    addLog("success", `Opened ${getFileLabel(resolvedPath)}`);
+  } catch (err) {
+    addLog("error", `Open file failed: ${err.message}`);
+  }
+}
+
+function applySidebarLayout() {
+  const sidebar = document.getElementById("sidebar") || document.querySelector(".sidebar");
+  const activePanel = normalizeSidebarPanel(state.ui.activeSidebarPanel);
+
+  state.ui.activeSidebarPanel = activePanel;
+
+  document.querySelectorAll(".act-btn[data-panel]").forEach((btn) => {
+    btn.classList.toggle("act-active", btn.dataset.panel === activePanel);
+  });
+
+  if (sidebar) {
+    sidebar.classList.toggle("is-hidden", Boolean(state.ui.sidebarHidden));
+    sidebar.querySelectorAll(".sidebar-section[data-panel-group]").forEach((section) => {
+      const group = section.dataset.panelGroup;
+      let show = group === activePanel;
+
+      if (section.id === "deployment-section" && !state.deployment) {
+        show = false;
+      }
+
+      section.style.display = show ? "" : "none";
+    });
+  }
+}
+
+function updateTabLabel() {
+  renderTabBar();
+}
+
+function updateBreadcrumb() {
+  const bcContract = document.getElementById("bc-contract");
+  if (!bcContract) {
+    return;
+  }
+
+  const fileName = getFileLabel(state.currentFilePath || "Untitled.sol");
+  bcContract.textContent = state.selectedContract ? `${fileName} > ${state.selectedContract}` : fileName;
+}
+
+function updateStatusBar() {
+  const deployEl = document.getElementById("sb-deploy");
+  const compilerEl = document.getElementById("sb-compiler");
+
+  if (deployEl) {
+    deployEl.textContent = state.deployment
+      ? `${state.deployment.contractName} @ ${shortAddr(state.deployment.contractAddress)}`
+      : "No deployment";
+  }
+
+  if (compilerEl) {
+    const contractName = state.compilerMeta?.contractName;
+    compilerEl.textContent = contractName ? `Solidity 0.8.21 • ${contractName}` : "Solidity 0.8.21";
+  }
+}
+
+function updateCursorStatus(line, column) {
+  const cursorEl = document.getElementById("sb-cursor");
+  if (!cursorEl) {
+    return;
+  }
+
+  const safeLine = Math.max(1, Number(line) || 1);
+  const safeColumn = Math.max(1, Number(column) || 1);
+  cursorEl.textContent = `Ln ${safeLine}, Col ${safeColumn}`;
+}
+
+function getTextareaCursorPosition(textarea) {
+  const cursor = Math.max(0, textarea.selectionStart || 0);
+  const before = textarea.value.slice(0, cursor);
+  const lines = before.split("\n");
+  return {
+    line: lines.length,
+    column: (lines[lines.length - 1] || "").length + 1,
+  };
+}
+
 function applyTerminalPanelLayout() {
   const panel = document.querySelector(".terminal-panel");
+  const grip = document.getElementById("terminal-resizer");
   if (!panel) {
     return;
   }
@@ -255,6 +837,9 @@ function applyTerminalPanelLayout() {
   if (hidden) {
     document.documentElement.style.setProperty("--terminal-height", "0px");
     panel.classList.add("is-collapsed");
+    if (grip) {
+      grip.classList.add("is-hidden");
+    }
     return;
   }
 
@@ -266,6 +851,9 @@ function applyTerminalPanelLayout() {
 
   document.documentElement.style.setProperty("--terminal-height", `${state.ui.terminalHeight}px`);
   panel.classList.remove("is-collapsed");
+  if (grip) {
+    grip.classList.remove("is-hidden");
+  }
 }
 
 function applyUiPreferences(options = {}) {
@@ -276,6 +864,7 @@ function applyUiPreferences(options = {}) {
   document.documentElement.style.setProperty("--editor-font-size", `${state.ui.editorFontSize}px`);
   document.documentElement.style.setProperty("--editor-font-family", getEditorFontFamily());
 
+  applySidebarLayout();
   applyTerminalPanelLayout();
 
   if (state.editor) {
@@ -466,20 +1055,170 @@ function initWindowControls() {
   });
 }
 
+function toggleSidebar() {
+  state.ui.sidebarHidden = !state.ui.sidebarHidden;
+  applyUiPreferences();
+}
+
+function initActivityBar() {
+  document.querySelectorAll(".act-btn[data-panel]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const panel = normalizeSidebarPanel(btn.dataset.panel);
+      if (state.ui.activeSidebarPanel === panel && !state.ui.sidebarHidden) {
+        state.ui.sidebarHidden = true;
+      } else {
+        state.ui.activeSidebarPanel = panel;
+        state.ui.sidebarHidden = false;
+      }
+      applyUiPreferences();
+    });
+  });
+}
+
+async function copySourceToClipboard() {
+  const code = getEditorValue();
+  try {
+    await navigator.clipboard.writeText(code);
+    showToast("Copied to clipboard!");
+    addLog("info", "Source code copied.");
+  } catch (_) {
+    showToast("Copy failed.");
+  }
+}
+
+function initMenuBar() {
+  const nav = document.getElementById("menubar-nav");
+  if (!nav) {
+    return;
+  }
+
+  const fontMenuItems = Object.keys(EDITOR_FONT_OPTIONS).map((fontKey) => {
+    return {
+      label: `Font: ${getFontDisplayName(fontKey)}`,
+      kbd: "",
+      action: () => setEditorFontKey(fontKey),
+    };
+  });
+
+  const MENUS = {
+    file: [
+      { label: "Open File", kbd: "Ctrl+O", action: openSolFile },
+      { label: "Open Folder", kbd: "Ctrl+Shift+O", action: openFolderInExplorer },
+      { sep: true },
+      { label: "Save", kbd: "Ctrl+S", action: saveSolFile },
+      { label: "Save As", kbd: "Ctrl+Shift+S", action: saveSolFileAs },
+    ],
+    edit: [
+      { label: "Copy Source", kbd: "Ctrl+Shift+C", action: copySourceToClipboard },
+    ],
+    view: [
+      { label: "Toggle Sidebar", kbd: "Ctrl+B", action: toggleSidebar },
+      { label: "Toggle Terminal", kbd: "Ctrl+`", action: toggleTerminalVisibility },
+      { sep: true },
+      { label: "Theme: Dark", kbd: "", action: () => setTheme("dark") },
+      { label: "Theme: Light", kbd: "", action: () => setTheme("light") },
+      { sep: true },
+      ...fontMenuItems,
+    ],
+    compile: [
+      { label: "Compile Source", kbd: "Ctrl+Enter", action: compileSource },
+    ],
+    deploy: [
+      { label: "Deploy Contract", kbd: "Ctrl+D", action: deploySource },
+      { label: "Reset Session", kbd: "Ctrl+R", action: resetSession },
+    ],
+    help: [
+      { label: "Send Feedback", kbd: "", action: () => window.open(FEEDBACK_URL, "_blank", "noopener") },
+    ],
+  };
+
+  let openMenuState = null;
+
+  const closeMenus = () => {
+    if (!openMenuState) {
+      return;
+    }
+    openMenuState.dropdown.classList.remove("open");
+    openMenuState.button.classList.remove("mn-active");
+    openMenuState = null;
+  };
+
+  const openMenu = (button, dropdown) => {
+    closeMenus();
+    dropdown.classList.add("open");
+    button.classList.add("mn-active");
+    openMenuState = { button, dropdown };
+  };
+
+  Object.entries(MENUS).forEach(([name, items]) => {
+    const button = nav.querySelector(`.mn-item[data-menu="${name}"]`);
+    if (!button) {
+      return;
+    }
+
+    const dropdown = document.createElement("div");
+    dropdown.className = "mn-dropdown";
+
+    items.forEach((item) => {
+      if (item.sep) {
+        const sep = document.createElement("div");
+        sep.className = "mn-dd-sep";
+        dropdown.appendChild(sep);
+        return;
+      }
+
+      const row = document.createElement("div");
+      row.className = "mn-dd-item";
+      row.innerHTML = `<span>${item.label}</span><span class="mn-dd-kbd">${item.kbd || ""}</span>`;
+      row.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        closeMenus();
+        await item.action();
+      });
+      dropdown.appendChild(row);
+    });
+
+    button.appendChild(dropdown);
+
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (openMenuState && openMenuState.button === button) {
+        closeMenus();
+      } else {
+        openMenu(button, dropdown);
+      }
+    });
+
+    button.addEventListener("mouseenter", () => {
+      if (openMenuState && openMenuState.button !== button) {
+        openMenu(button, dropdown);
+      }
+    });
+  });
+
+  document.addEventListener("click", closeMenus);
+  window.addEventListener("blur", closeMenus);
+}
+
 function updateCurrentFileLabel() {
   const el = document.getElementById("current-file");
-  if (!el) {
-    return;
+  const activeTab = getActiveTab();
+  const activePath = activeTab?.filePath || "";
+
+  state.currentFilePath = activePath;
+
+  if (el) {
+    if (activePath) {
+      el.textContent = `File: ${activePath}`;
+      el.title = activePath;
+    } else {
+      el.textContent = "File: Unsaved document";
+      el.title = "Unsaved document";
+    }
   }
 
-  if (state.currentFilePath) {
-    el.textContent = `File: ${state.currentFilePath}`;
-    el.title = state.currentFilePath;
-    return;
-  }
-
-  el.textContent = "File: Unsaved document";
-  el.title = "Unsaved document";
+  updateTabLabel();
+  updateBreadcrumb();
 }
 
 function getEditorValue() {
@@ -490,6 +1229,11 @@ function getEditorValue() {
 
 function setEditorValue(nextValue) {
   state.code = nextValue;
+  const activeTab = getActiveTab();
+  if (activeTab) {
+    activeTab.content = nextValue;
+  }
+
   if (state.editor) {
     state.editor.setValue(nextValue);
     return;
@@ -504,6 +1248,8 @@ function ensurePlainEditor(note) {
     state.plainEditor.classList.remove("hidden");
     state.plainEditor.style.fontSize = `${state.ui.editorFontSize}px`;
     state.plainEditor.style.fontFamily = getEditorFontFamily();
+    const cursor = getTextareaCursorPosition(state.plainEditor);
+    updateCursorStatus(cursor.line, cursor.column);
     return;
   }
 
@@ -516,10 +1262,25 @@ function ensurePlainEditor(note) {
   textarea.value = state.code || "";
   textarea.addEventListener("input", () => {
     state.code = textarea.value;
+    const activeTab = getActiveTab();
+    if (activeTab) {
+      activeTab.content = textarea.value;
+    }
+    const cursor = getTextareaCursorPosition(textarea);
+    updateCursorStatus(cursor.line, cursor.column);
+  });
+  textarea.addEventListener("keyup", () => {
+    const cursor = getTextareaCursorPosition(textarea);
+    updateCursorStatus(cursor.line, cursor.column);
+  });
+  textarea.addEventListener("click", () => {
+    const cursor = getTextareaCursorPosition(textarea);
+    updateCursorStatus(cursor.line, cursor.column);
   });
   mount.appendChild(textarea);
 
   state.plainEditor = textarea;
+  updateCursorStatus(1, 1);
   if (note) addLog("warning", note);
 }
 
@@ -728,6 +1489,8 @@ function showDeployment(deployment) {
   document.getElementById("fn-no-deploy").style.display = "none";
   document.getElementById("fn-controls").style.display = "block";
   renderFunctionSelect();
+  applySidebarLayout();
+  updateStatusBar();
 }
 
 function clearDeployment() {
@@ -746,6 +1509,9 @@ function clearDeployment() {
 
   const fnValue = document.getElementById("fn-value");
   if (fnValue) fnValue.value = "0";
+
+  applySidebarLayout();
+  updateStatusBar();
 }
 
 function showCompilerMeta(meta) {
@@ -756,6 +1522,8 @@ function showCompilerMeta(meta) {
   const warnEl = document.getElementById("ci-warn");
   warnEl.textContent = (meta.warnings || []).length > 0
     ? `⚠ ${meta.warnings.length} warning(s)` : "";
+  updateStatusBar();
+  updateBreadcrumb();
 }
 
 async function clearForFreshCompile() {
@@ -784,6 +1552,8 @@ async function clearForFreshCompile() {
   document.getElementById("constructor-args-wrap").innerHTML = "";
 
   clearDeployment();
+  updateStatusBar();
+  updateBreadcrumb();
 }
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
@@ -944,8 +1714,9 @@ async function openSolFile() {
   }
 
   try {
+    const activeTab = getActiveTab();
     const data = await window.electronAPI.playground.openFile({
-      defaultPath: state.currentFilePath || undefined,
+      defaultPath: activeTab?.filePath || state.currentFilePath || undefined,
     });
 
     if (!data || data.success === false) {
@@ -957,12 +1728,12 @@ async function openSolFile() {
       return;
     }
 
-    await clearForFreshCompile();
-    setEditorValue(typeof data.content === "string" ? data.content : "");
-    state.currentFilePath = data.filePath || "";
-    updateCurrentFileLabel();
+    const filePath = data.filePath || "";
+    const content = typeof data.content === "string" ? data.content : "";
+    openDocumentInTab(filePath, content);
+    await syncExplorerRootFromFilePath(filePath);
 
-    const name = getFileLabel(state.currentFilePath);
+    const name = getFileLabel(filePath);
     showToast(`Opened ${name}`);
     addLog("success", `Opened ${name}`);
   } catch (err) {
@@ -977,10 +1748,12 @@ async function saveSolFileAs() {
   }
 
   try {
+    syncActiveTabContentFromEditor();
+    const activeTab = getActiveTab();
     const code = getEditorValue();
     const data = await window.electronAPI.playground.saveFileAs({
       content: code,
-      filePath: state.currentFilePath || "contract.sol",
+      filePath: activeTab?.filePath || state.currentFilePath || "contract.sol",
     });
 
     if (!data || data.success === false) {
@@ -992,8 +1765,16 @@ async function saveSolFileAs() {
       return false;
     }
 
-    state.currentFilePath = data.filePath || state.currentFilePath;
+    const targetPath = data.filePath || activeTab?.filePath || state.currentFilePath;
+    if (activeTab) {
+      activeTab.filePath = targetPath || "";
+      activeTab.title = getFileLabel(targetPath);
+      activeTab.content = code;
+    }
+
+    state.currentFilePath = targetPath || "";
     updateCurrentFileLabel();
+    await syncExplorerRootFromFilePath(state.currentFilePath);
 
     const name = getFileLabel(state.currentFilePath);
     showToast(`Saved ${name}`);
@@ -1011,7 +1792,10 @@ async function saveSolFile() {
     return;
   }
 
-  if (!state.currentFilePath) {
+  syncActiveTabContentFromEditor();
+  const activeTab = getActiveTab();
+
+  if (!activeTab?.filePath) {
     await saveSolFileAs();
     return;
   }
@@ -1019,7 +1803,7 @@ async function saveSolFile() {
   try {
     const code = getEditorValue();
     const data = await window.electronAPI.playground.saveFile({
-      filePath: state.currentFilePath,
+      filePath: activeTab.filePath,
       content: code,
     });
 
@@ -1028,8 +1812,13 @@ async function saveSolFile() {
       return;
     }
 
-    state.currentFilePath = data.filePath || state.currentFilePath;
+    const targetPath = data.filePath || activeTab.filePath;
+    activeTab.filePath = targetPath;
+    activeTab.title = getFileLabel(targetPath);
+    activeTab.content = code;
+    state.currentFilePath = targetPath;
     updateCurrentFileLabel();
+    await syncExplorerRootFromFilePath(state.currentFilePath);
 
     const name = getFileLabel(state.currentFilePath);
     showToast(`Saved ${name}`);
@@ -1193,8 +1982,19 @@ function initMonaco() {
       applyUiPreferences({ persist: false });
 
       state.editor.onDidChangeModelContent(() => {
-        state.code = state.editor.getValue();
+        const value = state.editor.getValue();
+        state.code = value;
+        const activeTab = getActiveTab();
+        if (activeTab) {
+          activeTab.content = value;
+        }
       });
+
+      state.editor.onDidChangeCursorPosition((event) => {
+        updateCursorStatus(event.position.lineNumber, event.position.column);
+      });
+
+      updateCursorStatus(1, 1);
 
       // Ctrl+Enter -> compile
       state.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, compileSource);
@@ -1214,20 +2014,42 @@ document.getElementById("btn-deploy").addEventListener("click", deploySource);
 document.getElementById("btn-run").addEventListener("click", runFunction);
 document.getElementById("btn-reset").addEventListener("click", resetSession);
 document.getElementById("btn-open").addEventListener("click", openSolFile);
+document.getElementById("btn-open-folder").addEventListener("click", openFolderInExplorer);
 document.getElementById("btn-save").addEventListener("click", saveSolFile);
 document.getElementById("btn-save-as").addEventListener("click", saveSolFileAs);
 
 const copyBtn = document.getElementById("btn-copy");
 if (copyBtn) {
-  copyBtn.addEventListener("click", async () => {
-    const code = getEditorValue();
-    try {
-      await navigator.clipboard.writeText(code);
-      showToast("Copied to clipboard!");
-      addLog("info", "Source code copied.");
-    } catch (_) {
-      showToast("Copy failed.");
+  copyBtn.addEventListener("click", copySourceToClipboard);
+}
+
+const refreshFilesBtn = document.getElementById("btn-refresh-files");
+if (refreshFilesBtn) {
+  refreshFilesBtn.addEventListener("click", () => {
+    refreshExplorerTree();
+  });
+}
+
+const fileTree = document.getElementById("file-tree");
+if (fileTree) {
+  fileTree.addEventListener("click", (event) => {
+    const directoryRow = event.target.closest(".file-tree-item.directory");
+    if (directoryRow && directoryRow.dataset.dirPath) {
+      openDirectoryInExplorer(directoryRow.dataset.dirPath);
+      return;
     }
+
+    const row = event.target.closest(".file-tree-item.file");
+    if (!row || !row.dataset.filePath) {
+      return;
+    }
+
+    if (row.dataset.openable !== "true") {
+      showToast("This file type cannot be opened in the editor.");
+      return;
+    }
+
+    openFileFromPath(row.dataset.filePath, { syncExplorerRoot: false });
   });
 }
 
@@ -1238,6 +2060,7 @@ document.getElementById("btn-clear-terminal").addEventListener("click", () => {
 
 document.getElementById("contract-select").addEventListener("change", (e) => {
   state.selectedContract = e.target.value;
+  updateBreadcrumb();
 });
 
 document.getElementById("fn-select").addEventListener("change", (e) => {
@@ -1282,6 +2105,66 @@ if (terminalPanel) {
   );
 }
 
+const terminalResizer = document.getElementById("terminal-resizer");
+if (terminalResizer) {
+  let dragging = false;
+  let startY = 0;
+  let startHeight = DEFAULT_TERMINAL_HEIGHT;
+
+  terminalResizer.addEventListener("mousedown", (event) => {
+    if (event.button !== 0) {
+      return;
+    }
+
+    if (state.ui.terminalHidden) {
+      state.ui.terminalHidden = false;
+      state.ui.terminalHeight = Math.max(
+        MIN_TERMINAL_HEIGHT,
+        clampTerminalHeight(state.ui.terminalLastOpenHeight, DEFAULT_TERMINAL_HEIGHT)
+      );
+      applyUiPreferences({ persist: false });
+    }
+
+    dragging = true;
+    startY = event.clientY;
+    startHeight = clampTerminalHeight(state.ui.terminalHeight, DEFAULT_TERMINAL_HEIGHT);
+
+    document.body.style.cursor = "ns-resize";
+    document.body.style.userSelect = "none";
+    event.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (event) => {
+    if (!dragging) {
+      return;
+    }
+
+    const delta = startY - event.clientY;
+    const nextHeight = clampTerminalHeight(startHeight + delta, DEFAULT_TERMINAL_HEIGHT);
+
+    if (nextHeight < MIN_TERMINAL_HEIGHT) {
+      state.ui.terminalHidden = true;
+    } else {
+      state.ui.terminalHidden = false;
+      state.ui.terminalHeight = Math.min(MAX_TERMINAL_HEIGHT, Math.max(MIN_TERMINAL_HEIGHT, nextHeight));
+      state.ui.terminalLastOpenHeight = state.ui.terminalHeight;
+    }
+
+    applyUiPreferences({ persist: false });
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (!dragging) {
+      return;
+    }
+
+    dragging = false;
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+    saveUiPreferences();
+  });
+}
+
 window.addEventListener("keydown", (e) => {
   const hasModifier = e.ctrlKey || e.metaKey;
   if (!hasModifier) return;
@@ -1313,9 +2196,45 @@ window.addEventListener("keydown", (e) => {
     return;
   }
 
+  if (key === "b") {
+    e.preventDefault();
+    toggleSidebar();
+    return;
+  }
+
+  if (key === "d") {
+    e.preventDefault();
+    deploySource();
+    return;
+  }
+
+  if (key === "r") {
+    e.preventDefault();
+    resetSession();
+    return;
+  }
+
+  if (key === "c" && e.shiftKey) {
+    e.preventDefault();
+    copySourceToClipboard();
+    return;
+  }
+
+  if (key === "o" && e.shiftKey) {
+    e.preventDefault();
+    openFolderInExplorer();
+    return;
+  }
+
   if (key === "o") {
     e.preventDefault();
     openSolFile();
+    return;
+  }
+
+  if (key === "w") {
+    e.preventDefault();
+    closeTabById(state.activeTabId);
     return;
   }
 
@@ -1363,12 +2282,22 @@ document.querySelectorAll(".tpl-btn").forEach((btn) => {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 (async function init() {
   loadUiPreferences();
+  state.code = TEMPLATES.counter;
+  initializeEditorTabs(state.code);
+
   applyUiPreferences({ persist: false });
+  initMenuBar();
+  initActivityBar();
   initAppearanceControls();
   initWindowControls();
+  initTabBar();
 
-  state.code = TEMPLATES.counter;
+  renderTabBar();
+  renderExplorerTree();
+
   updateCurrentFileLabel();
+  updateStatusBar();
+  updateCursorStatus(1, 1);
 
   addLog("info", "Solidity Playground starting in offline mode…");
   addLog("info", "Version: 1.1");

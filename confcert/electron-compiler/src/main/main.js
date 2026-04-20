@@ -2,6 +2,29 @@ const { app, BrowserWindow, ipcMain, shell, Menu, dialog } = require("electron")
 const path = require("path");
 const fs = require("fs");
 
+const EXPLORER_IGNORED_DIRS = new Set([
+  "node_modules",
+  ".git",
+  ".next",
+  "dist",
+  "build",
+]);
+
+const TEXT_FILE_EXTENSIONS = new Set([
+  ".sol",
+  ".txt",
+  ".md",
+  ".json",
+  ".js",
+  ".mjs",
+  ".cjs",
+  ".ts",
+  ".tsx",
+  ".jsx",
+  ".yml",
+  ".yaml",
+]);
+
 let mainWindow;
 let runtimeModules = null;
 const activeSessions = new Map();
@@ -81,6 +104,79 @@ function ensureSolExtension(filePath) {
   return path.extname(filePath).toLowerCase() === ".sol"
     ? filePath
     : `${filePath}.sol`;
+}
+
+function isTextFilePath(filePath) {
+  const ext = path.extname(filePath || "").toLowerCase();
+  return TEXT_FILE_EXTENSIONS.has(ext);
+}
+
+async function listExplorerItems(rootDir) {
+  const rootPath = path.resolve(rootDir);
+  const maxDepth = 5;
+  const maxItems = 1200;
+  const items = [];
+
+  async function walk(currentDir, depth) {
+    if (depth > maxDepth || items.length >= maxItems) {
+      return;
+    }
+
+    let dirEntries = [];
+    try {
+      dirEntries = await fs.promises.readdir(currentDir, { withFileTypes: true });
+    } catch (_) {
+      return;
+    }
+
+    dirEntries.sort((a, b) => {
+      if (a.isDirectory() && !b.isDirectory()) return -1;
+      if (!a.isDirectory() && b.isDirectory()) return 1;
+      return a.name.localeCompare(b.name);
+    });
+
+    for (const entry of dirEntries) {
+      if (items.length >= maxItems) {
+        break;
+      }
+
+      const fullPath = path.join(currentDir, entry.name);
+      const relativePath = path.relative(rootPath, fullPath).split(path.sep).join("/");
+
+      if (entry.isDirectory()) {
+        if (EXPLORER_IGNORED_DIRS.has(entry.name.toLowerCase())) {
+          continue;
+        }
+
+        items.push({
+          type: "directory",
+          name: entry.name,
+          path: fullPath,
+          relativePath,
+          depth,
+        });
+
+        await walk(fullPath, depth + 1);
+        continue;
+      }
+
+      if (!entry.isFile()) {
+        continue;
+      }
+
+      items.push({
+        type: "file",
+        name: entry.name,
+        path: fullPath,
+        relativePath,
+        depth,
+        openable: isTextFilePath(fullPath),
+      });
+    }
+  }
+
+  await walk(rootPath, 0);
+  return items;
 }
 
 async function disconnectSession(session) {
@@ -302,6 +398,31 @@ function registerIPCHandlers() {
     });
   });
 
+  ipcMain.handle("playground:folder-open", async (_event, payload = {}) => {
+    return runSafely(async () => {
+      const targetWindow = BrowserWindow.getFocusedWindow() || mainWindow;
+      const options = {
+        title: "Open Folder",
+        properties: ["openDirectory"],
+      };
+
+      if (typeof payload.defaultPath === "string" && payload.defaultPath.trim()) {
+        options.defaultPath = payload.defaultPath;
+      }
+
+      const result = await dialog.showOpenDialog(targetWindow, options);
+      if (result.canceled || !result.filePaths.length) {
+        return { success: true, canceled: true };
+      }
+
+      return {
+        success: true,
+        canceled: false,
+        dirPath: result.filePaths[0],
+      };
+    });
+  });
+
   ipcMain.handle("playground:file-save", async (_event, payload = {}) => {
     return runSafely(async () => {
       if (typeof payload.filePath !== "string" || !payload.filePath.trim()) {
@@ -348,6 +469,57 @@ function registerIPCHandlers() {
         success: true,
         canceled: false,
         filePath: targetPath,
+      };
+    });
+  });
+
+  ipcMain.handle("playground:file-read", async (_event, payload = {}) => {
+    return runSafely(async () => {
+      const rawPath = typeof payload.filePath === "string" ? payload.filePath.trim() : "";
+      if (!rawPath) {
+        return { success: false, error: "Missing filePath for read." };
+      }
+
+      const targetPath = path.resolve(rawPath);
+      const stats = await fs.promises.stat(targetPath);
+
+      if (!stats.isFile()) {
+        return { success: false, error: "Path is not a file." };
+      }
+
+      if (!isTextFilePath(targetPath)) {
+        return { success: false, error: "File type is not supported in editor." };
+      }
+
+      const content = await fs.promises.readFile(targetPath, "utf8");
+      return {
+        success: true,
+        filePath: targetPath,
+        directoryPath: path.dirname(targetPath),
+        content,
+      };
+    });
+  });
+
+  ipcMain.handle("playground:file-list", async (_event, payload = {}) => {
+    return runSafely(async () => {
+      const rawDir = typeof payload.dirPath === "string" ? payload.dirPath.trim() : "";
+      if (!rawDir) {
+        return { success: false, error: "Missing dirPath for file list." };
+      }
+
+      const dirPath = path.resolve(rawDir);
+      const stats = await fs.promises.stat(dirPath);
+
+      if (!stats.isDirectory()) {
+        return { success: false, error: "dirPath is not a directory." };
+      }
+
+      const items = await listExplorerItems(dirPath);
+      return {
+        success: true,
+        dirPath,
+        items,
       };
     });
   });

@@ -48,7 +48,7 @@
     ],
     "mac": {
       "category": "public.app-category.developer-tools",
-      "icon": "assets/final_icon.png"
+      "icon": "assets/final_icon.ico"
     },
     "win": {
       "target": [
@@ -70,12 +70,12 @@
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "shortcutName": "Solidity Playground",
-      "installerIcon": "assets/final_icon.png",
-      "uninstallerIcon": "assets/final_icon.png",
+      "installerIcon": "assets/final_icon.ico",
+      "uninstallerIcon": "assets/final_icon.ico",
       "artifactName": "${productName}-Installer-${version}.${ext}"
     },
     "linux": {
-      "icon": "assets/final_icon.png",
+      "icon": "assets/final_icon.ico",
       "target": "AppImage"
     }
   }

@@ -656,7 +656,7 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       devTools: false,
     },
-    icon: path.join(__dirname, "../../assets/final_icon.png"),
+    icon: path.join(__dirname, "../../assets/final_icon.ico"),
     title: "Solidity Playground",
   });
 

@@ -3,6 +3,10 @@
 const FEEDBACK_URL = "https://smartcontractsbyamar.vercel.app/feedback";
 const UI_PREFS_STORAGE_KEY = "solidityPlaygroundUIPrefsV1";
 const DEFAULT_UI_FONT_SIZE = 18;
+const DEFAULT_SIDEBAR_FONT_SIZE = 12;
+const DEFAULT_TERMINAL_FONT_SIZE = 12;
+const MIN_UI_FONT_SIZE = 10;
+const MAX_UI_FONT_SIZE = 20;
 const DEFAULT_TERMINAL_HEIGHT = 220;
 const MIN_TERMINAL_HEIGHT = 90;
 const MAX_TERMINAL_HEIGHT = 520;
@@ -29,6 +33,8 @@ const DEFAULT_UI_PREFS = {
   theme: "dark",
   editorFontSize: 13,
   editorFontKey: "consolas",
+  sidebarFontSize: DEFAULT_SIDEBAR_FONT_SIZE,
+  terminalFontSize: DEFAULT_TERMINAL_FONT_SIZE,
   terminalHeight: DEFAULT_TERMINAL_HEIGHT,
   terminalHidden: false,
   terminalLastOpenHeight: DEFAULT_TERMINAL_HEIGHT,
@@ -65,6 +71,8 @@ const state = {
     theme: DEFAULT_UI_PREFS.theme,
     editorFontSize: DEFAULT_UI_PREFS.editorFontSize,
     editorFontKey: DEFAULT_UI_PREFS.editorFontKey,
+    sidebarFontSize: DEFAULT_UI_PREFS.sidebarFontSize,
+    terminalFontSize: DEFAULT_UI_PREFS.terminalFontSize,
     terminalHeight: DEFAULT_UI_PREFS.terminalHeight,
     terminalHidden: DEFAULT_UI_PREFS.terminalHidden,
     terminalLastOpenHeight: DEFAULT_UI_PREFS.terminalLastOpenHeight,
@@ -288,6 +296,8 @@ function loadUiPreferences() {
   state.ui.theme = normalizeTheme(parsed.theme);
   state.ui.editorFontSize = clampNumber(Number(parsed.editorFontSize), 11, 24, DEFAULT_UI_PREFS.editorFontSize);
   state.ui.editorFontKey = normalizeFontKey(parsed.editorFontKey);
+  state.ui.sidebarFontSize = clampNumber(Number(parsed.sidebarFontSize), MIN_UI_FONT_SIZE, MAX_UI_FONT_SIZE, DEFAULT_SIDEBAR_FONT_SIZE);
+  state.ui.terminalFontSize = clampNumber(Number(parsed.terminalFontSize), MIN_UI_FONT_SIZE, MAX_UI_FONT_SIZE, DEFAULT_TERMINAL_FONT_SIZE);
   state.ui.terminalHeight = clampTerminalHeight(Number(parsed.terminalHeight), DEFAULT_UI_PREFS.terminalHeight);
   state.ui.terminalHidden = Boolean(parsed.terminalHidden);
   state.ui.terminalLastOpenHeight = clampTerminalHeight(
@@ -889,6 +899,8 @@ function applyUiPreferences(options = {}) {
   document.documentElement.style.setProperty("--ui-font-size", `${DEFAULT_UI_FONT_SIZE}px`);
   document.documentElement.style.setProperty("--editor-font-size", `${state.ui.editorFontSize}px`);
   document.documentElement.style.setProperty("--editor-font-family", getEditorFontFamily());
+  document.documentElement.style.setProperty("--sidebar-font-size", `${state.ui.sidebarFontSize}px`);
+  document.documentElement.style.setProperty("--terminal-font-size", `${state.ui.terminalFontSize}px`);
 
   applySidebarLayout();
   applyTerminalPanelLayout();
@@ -959,6 +971,83 @@ function changeEditorFontSizeBy(delta) {
 
   state.ui.editorFontSize = nextSize;
   applyUiPreferences();
+  showToast(`Editor font size: ${nextSize}px`);
+}
+
+function changeAllFontSizesBy(delta) {
+  // Change editor font size
+  const nextEditorSize = clampNumber(
+    state.ui.editorFontSize + delta,
+    11,
+    24,
+    DEFAULT_UI_PREFS.editorFontSize
+  );
+
+  // Change sidebar font size
+  const nextSidebarSize = clampNumber(
+    state.ui.sidebarFontSize + delta,
+    MIN_UI_FONT_SIZE,
+    MAX_UI_FONT_SIZE,
+    DEFAULT_SIDEBAR_FONT_SIZE
+  );
+
+  // Change terminal font size
+  const nextTerminalSize = clampNumber(
+    state.ui.terminalFontSize + delta,
+    MIN_UI_FONT_SIZE,
+    MAX_UI_FONT_SIZE,
+    DEFAULT_TERMINAL_FONT_SIZE
+  );
+
+  // Check if any size changed
+  const hasChanges = 
+    nextEditorSize !== state.ui.editorFontSize ||
+    nextSidebarSize !== state.ui.sidebarFontSize ||
+    nextTerminalSize !== state.ui.terminalFontSize;
+
+  if (!hasChanges) {
+    return;
+  }
+
+  state.ui.editorFontSize = nextEditorSize;
+  state.ui.sidebarFontSize = nextSidebarSize;
+  state.ui.terminalFontSize = nextTerminalSize;
+  applyUiPreferences();
+  showToast(`Application zoom: Editor ${nextEditorSize}px, UI ${nextSidebarSize}px`);
+}
+
+function changeSidebarFontSizeBy(delta) {
+  const nextSize = clampNumber(
+    state.ui.sidebarFontSize + delta,
+    MIN_UI_FONT_SIZE,
+    MAX_UI_FONT_SIZE,
+    DEFAULT_SIDEBAR_FONT_SIZE
+  );
+
+  if (nextSize === state.ui.sidebarFontSize) {
+    return;
+  }
+
+  state.ui.sidebarFontSize = nextSize;
+  applyUiPreferences();
+  showToast(`Sidebar font size: ${nextSize}px`);
+}
+
+function changeTerminalFontSizeBy(delta) {
+  const nextSize = clampNumber(
+    state.ui.terminalFontSize + delta,
+    MIN_UI_FONT_SIZE,
+    MAX_UI_FONT_SIZE,
+    DEFAULT_TERMINAL_FONT_SIZE
+  );
+
+  if (nextSize === state.ui.terminalFontSize) {
+    return;
+  }
+
+  state.ui.terminalFontSize = nextSize;
+  applyUiPreferences();
+  showToast(`Terminal font size: ${nextSize}px`);
 }
 
 function toggleTerminalVisibility() {
@@ -2024,6 +2113,24 @@ function initMonaco() {
 
       updateCursorStatus(1, 1);
 
+      // Add wheel event listener to Monaco editor DOM node
+      const editorDomNode = state.editor.getDomNode();
+      if (editorDomNode) {
+        editorDomNode.addEventListener(
+          "wheel",
+          (event) => {
+            if (!(event.ctrlKey || event.metaKey)) {
+              return;
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            const delta = event.deltaY < 0 ? 1 : -1;
+            changeEditorFontSizeBy(delta);
+          },
+          { passive: false, capture: true }
+        );
+      }
+
       // Ctrl+Enter -> compile
       state.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, compileSource);
       addLog("info", "Editor ready. Ctrl+S save, Ctrl+Shift+S save as, Ctrl+Enter compile.");
@@ -2127,7 +2234,24 @@ if (terminalPanel) {
 
       event.preventDefault();
       const delta = event.deltaY < 0 ? 1 : -1;
-      changeTerminalHeightBy(delta);
+      changeTerminalFontSizeBy(delta);
+    },
+    { passive: false }
+  );
+}
+
+const sidebar = document.getElementById("sidebar") || document.querySelector(".sidebar");
+if (sidebar) {
+  sidebar.addEventListener(
+    "wheel",
+    (event) => {
+      if (!(event.ctrlKey || event.metaKey)) {
+        return;
+      }
+
+      event.preventDefault();
+      const delta = event.deltaY < 0 ? 1 : -1;
+      changeSidebarFontSizeBy(delta);
     },
     { passive: false }
   );
@@ -2214,13 +2338,13 @@ window.addEventListener("keydown", (e) => {
 
   if (isZoomInShortcut) {
     e.preventDefault();
-    changeEditorFontSizeBy(1);
+    changeAllFontSizesBy(1);
     return;
   }
 
   if (isZoomOutShortcut) {
     e.preventDefault();
-    changeEditorFontSizeBy(-1);
+    changeAllFontSizesBy(-1);
     return;
   }
 

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const OWNER = "omegaopinmthechat";
 const REPO = "blockchain_projects";
-const CACHE_SECONDS = 900;
+const CACHE_SECONDS = 3600; // 1 hour cache
 
 const RELEASES_PAGE_URL = `https://github.com/${OWNER}/${REPO}/releases`;
 const RELEASES_LATEST_URL = `${RELEASES_PAGE_URL}/latest`;
@@ -171,11 +171,11 @@ export async function GET() {
     }
   }
 
-  const cacheSeconds = payload.downloadUrl ? CACHE_SECONDS : 60;
+  const cacheSeconds = payload.downloadUrl ? CACHE_SECONDS : 300;
 
   return NextResponse.json(payload, {
     headers: {
-      "Cache-Control": `public, s-maxage=${cacheSeconds}, stale-while-revalidate=86400`,
+      "Cache-Control": `public, s-maxage=${cacheSeconds}, stale-while-revalidate=604800`,
     },
   });
 }

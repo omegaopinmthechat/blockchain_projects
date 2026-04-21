@@ -582,12 +582,44 @@ function setupAutoUpdater() {
     return;
   }
 
-  // Enable automatic download
-  autoUpdater.autoDownload = true;
+  // Disable automatic download - ask user first
+  autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = true;
+
+  let downloadProgressWindow = null;
 
   autoUpdater.on("error", (error) => {
     console.error("[updater] error:", serializeError(error));
+    
+    // Close progress window if open
+    if (downloadProgressWindow && !downloadProgressWindow.isDestroyed()) {
+      downloadProgressWindow.close();
+      downloadProgressWindow = null;
+    }
+    
+    // Show user-friendly error message for download failures
+    const errorMsg = serializeError(error);
+    if (errorMsg.includes("404") || errorMsg.includes("Cannot download")) {
+      console.log("[updater] Update file not found on server. Skipping update.");
+      
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        dialog.showMessageBox(mainWindow, {
+          type: "info",
+          title: "Update Check",
+          message: "Update check completed. You have the latest available version.",
+          buttons: ["OK"],
+        }).catch(() => {});
+      }
+    } else {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        dialog.showMessageBox(mainWindow, {
+          type: "error",
+          title: "Update Error",
+          message: `Failed to download update: ${errorMsg}`,
+          buttons: ["OK"],
+        }).catch(() => {});
+      }
+    }
   });
 
   autoUpdater.on("checking-for-update", () => {
@@ -596,16 +628,113 @@ function setupAutoUpdater() {
 
   autoUpdater.on("update-available", (info) => {
     console.log(`[updater] update available: ${info?.version || "unknown"}`);
-    console.log("[updater] downloading update automatically...");
     
-    // Show notification that download started
+    // Ask user if they want to download
     if (mainWindow && !mainWindow.isDestroyed()) {
-      dialog.showMessageBox(mainWindow, {
-        type: "info",
-        title: "Update Available",
-        message: `Version ${info?.version || "unknown"} is available. Downloading automatically...`,
-        buttons: ["OK"],
-      });
+      dialog
+        .showMessageBox(mainWindow, {
+          type: "info",
+          title: "Update Available",
+          message: `Version ${info?.version || "unknown"} is available. Would you like to download it now?`,
+          detail: "The update will be downloaded in the background. You can continue working.",
+          buttons: ["Download Now", "Later"],
+          defaultId: 0,
+          cancelId: 1,
+        })
+        .then((result) => {
+          if (result.response === 0) {
+            // User clicked "Download Now"
+            console.log("[updater] User approved download, starting...");
+            autoUpdater.downloadUpdate();
+            
+            // Create progress window
+            downloadProgressWindow = new BrowserWindow({
+              width: 400,
+              height: 150,
+              parent: mainWindow,
+              modal: false,
+              show: false,
+              frame: false,
+              resizable: false,
+              backgroundColor: "#2d2d30",
+              webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true,
+              },
+            });
+
+            downloadProgressWindow.loadURL(
+              `data:text/html;charset=utf-8,${encodeURIComponent(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body {
+                      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                      background: #2d2d30;
+                      color: #cccccc;
+                      padding: 20px;
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                      height: 100vh;
+                    }
+                    .title {
+                      font-size: 14px;
+                      font-weight: 600;
+                      margin-bottom: 15px;
+                      text-align: center;
+                    }
+                    .progress-container {
+                      width: 100%;
+                      height: 8px;
+                      background: #3c3c3c;
+                      border-radius: 4px;
+                      overflow: hidden;
+                      margin-bottom: 10px;
+                    }
+                    .progress-bar {
+                      height: 100%;
+                      background: #0e639c;
+                      width: 0%;
+                      transition: width 0.3s ease;
+                    }
+                    .progress-text {
+                      font-size: 12px;
+                      text-align: center;
+                      color: #a9a9a9;
+                    }
+                    .speed-text {
+                      font-size: 11px;
+                      text-align: center;
+                      color: #808080;
+                      margin-top: 5px;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class="title">Downloading Update...</div>
+                  <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                  </div>
+                  <div class="progress-text" id="progressText">0%</div>
+                  <div class="speed-text" id="speedText"></div>
+                </body>
+                </html>
+              `)}`
+            );
+
+            downloadProgressWindow.once("ready-to-show", () => {
+              downloadProgressWindow.show();
+            });
+          } else {
+            console.log("[updater] User declined download");
+          }
+        })
+        .catch((error) => {
+          console.error("[updater] dialog error:", serializeError(error));
+        });
     }
   });
 
@@ -615,11 +744,29 @@ function setupAutoUpdater() {
 
   autoUpdater.on("download-progress", (progressObj) => {
     const percent = progressObj.percent ? progressObj.percent.toFixed(2) : "0";
-    console.log(`[updater] download progress: ${percent}%`);
+    const bytesPerSecond = progressObj.bytesPerSecond || 0;
+    const speedMB = (bytesPerSecond / 1024 / 1024).toFixed(2);
+    
+    console.log(`[updater] download progress: ${percent}% (${speedMB} MB/s)`);
+    
+    // Update progress window
+    if (downloadProgressWindow && !downloadProgressWindow.isDestroyed()) {
+      downloadProgressWindow.webContents.executeJavaScript(`
+        document.getElementById('progressBar').style.width = '${percent}%';
+        document.getElementById('progressText').textContent = '${percent}%';
+        document.getElementById('speedText').textContent = '${speedMB} MB/s';
+      `).catch(() => {});
+    }
   });
 
   autoUpdater.on("update-downloaded", (info) => {
     console.log(`[updater] update downloaded: ${info?.version || "unknown"}`);
+    
+    // Close progress window
+    if (downloadProgressWindow && !downloadProgressWindow.isDestroyed()) {
+      downloadProgressWindow.close();
+      downloadProgressWindow = null;
+    }
     
     // Show dialog to install now or later
     if (mainWindow && !mainWindow.isDestroyed()) {
@@ -627,7 +774,8 @@ function setupAutoUpdater() {
         .showMessageBox(mainWindow, {
           type: "info",
           title: "Update Ready",
-          message: `Version ${info?.version || "unknown"} has been downloaded. Restart now to install?`,
+          message: `Version ${info?.version || "unknown"} has been downloaded successfully!`,
+          detail: "The application needs to restart to install the update.",
           buttons: ["Restart Now", "Later"],
           defaultId: 0,
           cancelId: 1,

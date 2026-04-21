@@ -74,7 +74,7 @@
       "shortcutName": "Solidity Playground",
       "installerIcon": "assets/final_icon.ico",
       "uninstallerIcon": "assets/final_icon.ico",
-      "artifactName": "${productName}-Installer-${version}.${ext}"
+      "artifactName": "Solidity-Playground-Installer-${version}.${ext}"
     },
     "linux": {
       "icon": "assets/final_icon.ico",

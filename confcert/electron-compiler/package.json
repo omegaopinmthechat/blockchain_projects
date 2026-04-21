@@ -1,12 +1,13 @@
 {
   "name": "solidity-playground-electron",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Offline Solidity Playground — Electron Desktop App",
   "main": "src/main/main.js",
   "scripts": {
-    "start": "electron .",
-    "dev": "electron . --dev",
+    "start": "node sync-version.js && electron .",
+    "dev": "node sync-version.js && electron . --dev",
     "setup": "npm install",
+    "prebuild": "node sync-version.js",
     "build:mac": "electron-builder --mac",
     "build:win": "electron-builder --win",
     "build:win:publish": "electron-builder --win --publish always",
@@ -35,7 +36,8 @@
     },
     "files": [
       "src/**/*",
-      "assets/**/*"
+      "assets/**/*",
+      "version.js"
     ],
     "extraResources": [
       {

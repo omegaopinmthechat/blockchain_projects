@@ -1,0 +1,49 @@
+═══════════════════════════════════════════════════════════════
+  VERSION UPDATE - QUICK REFERENCE
+═══════════════════════════════════════════════════════════════
+
+📝 TO UPDATE VERSION (e.g., 1.1.2 → 1.1.3):
+
+   1. Open: version.js
+   2. Change line 4: const APP_VERSION = "1.1.3";
+   3. Save file
+   4. Done! ✅
+
+═══════════════════════════════════════════════════════════════
+
+🚀 COMMANDS (auto-sync version):
+
+   npm start              → Run app
+   npm run build:win      → Build Windows installer
+   npm run build:mac      → Build Mac installer
+   npm run build:linux    → Build Linux installer
+
+═══════════════════════════════════════════════════════════════
+
+📦 WHAT GETS UPDATED AUTOMATICALLY:
+
+   ✅ package.json version
+   ✅ Header badge (v1.1.3)
+   ✅ Terminal log (Version: 1.1.3)
+   ✅ Tooltip (Version 1.1.3)
+   ✅ Installer filename (Solidity Playground-Installer-1.1.3.exe)
+
+═══════════════════════════════════════════════════════════════
+
+⚠️  IMPORTANT:
+
+   • Only edit version.js
+   • Never manually edit package.json version
+   • Always run npm start or build commands (they auto-sync)
+
+═══════════════════════════════════════════════════════════════
+
+📂 FILES IN SYSTEM:
+
+   version.js          ← EDIT THIS ONLY
+   sync-version.js     ← Auto-sync script (don't edit)
+   package.json        ← Auto-updated by sync-version.js
+   index.html          ← Reads from version.js
+   renderer.js         ← Reads from version.js
+
+═══════════════════════════════════════════════════════════════

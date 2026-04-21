@@ -2,6 +2,7 @@
 
 const FEEDBACK_URL = "https://smartcontractsbyamar.vercel.app/feedback";
 const UI_PREFS_STORAGE_KEY = "solidityPlaygroundUIPrefsV1";
+const VERSION = window.APP_VERSION || "1.1.2"; // Fallback if version.js fails to load
 const DEFAULT_UI_FONT_SIZE = 18;
 const DEFAULT_SIDEBAR_FONT_SIZE = 12;
 const DEFAULT_TERMINAL_FONT_SIZE = 12;
@@ -2439,6 +2440,16 @@ document.querySelectorAll(".tpl-btn").forEach((btn) => {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 (async function init() {
+  // Set version in UI
+  const versionBadge = document.getElementById("version-badge");
+  const appStatus = document.getElementById("app-status-version");
+  if (versionBadge) {
+    versionBadge.textContent = `v${VERSION}`;
+  }
+  if (appStatus) {
+    appStatus.title = `Version ${VERSION}`;
+  }
+
   loadUiPreferences();
   state.code = TEMPLATES.counter;
   initializeEditorTabs(state.code);
@@ -2458,7 +2469,7 @@ document.querySelectorAll(".tpl-btn").forEach((btn) => {
   updateCursorStatus(1, 1);
 
   addLog("info", "Solidity Playground starting in offline mode…");
-  addLog("info", "Version: 1.1");
+  addLog("info", `Version: ${VERSION}`);
   addLog("info", "Please share feedback:", FEEDBACK_URL);
   await waitForOfflineEngine();
   initMonaco();

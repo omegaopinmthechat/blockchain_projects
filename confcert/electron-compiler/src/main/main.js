@@ -582,60 +582,72 @@ function setupAutoUpdater() {
     return;
   }
 
-  autoUpdater.autoDownload = false;
+  // Enable automatic download
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
 
   autoUpdater.on("error", (error) => {
     console.error("[updater] error:", serializeError(error));
   });
 
+  autoUpdater.on("checking-for-update", () => {
+    console.log("[updater] checking for updates...");
+  });
+
   autoUpdater.on("update-available", (info) => {
     console.log(`[updater] update available: ${info?.version || "unknown"}`);
-
-    dialog
-      .showMessageBox(mainWindow, {
+    console.log("[updater] downloading update automatically...");
+    
+    // Show notification that download started
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      dialog.showMessageBox(mainWindow, {
         type: "info",
         title: "Update Available",
-        message: "New version available. Download?",
-        buttons: ["Yes", "No"],
-        defaultId: 0,
-        cancelId: 1,
-      })
-      .then((result) => {
-        if (result.response === 0) {
-          autoUpdater.downloadUpdate().catch((error) => {
-            console.error("[updater] download failed:", serializeError(error));
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("[updater] prompt failed:", serializeError(error));
+        message: `Version ${info?.version || "unknown"} is available. Downloading automatically...`,
+        buttons: ["OK"],
       });
+    }
   });
 
   autoUpdater.on("update-not-available", () => {
     console.log("[updater] no updates available");
   });
 
-  autoUpdater.on("update-downloaded", () => {
-    dialog
-      .showMessageBox(mainWindow, {
-        type: "info",
-        title: "Install Update",
-        message: "Update downloaded. Restart now?",
-        buttons: ["Restart", "Later"],
-        defaultId: 0,
-        cancelId: 1,
-      })
-      .then((result) => {
-        if (result.response === 0) {
-          autoUpdater.quitAndInstall();
-        }
-      })
-      .catch((error) => {
-        console.error("[updater] restart prompt failed:", serializeError(error));
-      });
+  autoUpdater.on("download-progress", (progressObj) => {
+    const percent = progressObj.percent ? progressObj.percent.toFixed(2) : "0";
+    console.log(`[updater] download progress: ${percent}%`);
   });
 
+  autoUpdater.on("update-downloaded", (info) => {
+    console.log(`[updater] update downloaded: ${info?.version || "unknown"}`);
+    
+    // Show dialog to install now or later
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      dialog
+        .showMessageBox(mainWindow, {
+          type: "info",
+          title: "Update Ready",
+          message: `Version ${info?.version || "unknown"} has been downloaded. Restart now to install?`,
+          buttons: ["Restart Now", "Later"],
+          defaultId: 0,
+          cancelId: 1,
+        })
+        .then((result) => {
+          if (result.response === 0) {
+            // User clicked "Restart Now"
+            autoUpdater.quitAndInstall(false, true);
+          } else {
+            // User clicked "Later" - will install on next app quit
+            console.log("[updater] update will be installed on next app quit");
+          }
+        })
+        .catch((error) => {
+          console.error("[updater] restart prompt failed:", serializeError(error));
+        });
+    }
+  });
+
+  // Check for updates
   autoUpdater.checkForUpdates().catch((error) => {
     console.error("[updater] check failed:", serializeError(error));
   });

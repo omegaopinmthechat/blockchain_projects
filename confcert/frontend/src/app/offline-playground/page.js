@@ -28,8 +28,8 @@ const INITIAL_RELEASE_INFO = {
   downloadUrl: "",
   releaseUrl: RELEASES_PAGE_URL,
 };
-const LEGACY_DOWNLOAD_URL =
-  "https://github.com/omegaopinmthechat/blockchain_projects/releases/download/v1.0.0/Solidity.Playground.Setup.1.0.0.exe";
+const LTS_DOWNLOAD_URL =
+  "https://github.com/omegaopinmthechat/blockchain_projects/releases/download/v1.1.0/Solidity.Playground.Setup.1.1.0.exe";
 
 const featureCards = [
   {
@@ -299,14 +299,26 @@ export default function OfflinePlaygroundPage() {
                   <ExternalLink className="h-4 w-4" />
                 </a>
 
-                <a
-                  href={LEGACY_DOWNLOAD_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-600/80 bg-slate-900/70 px-5 py-2 text-xs font-semibold text-slate-300 transition-all duration-300 hover:bg-slate-800"
-                >
-                  Need older build? Download Setup 1.0.0
-                </a>
+                <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3">
+                  <div className="mb-2 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-blue-300" />
+                    <p className="text-xs font-semibold uppercase tracking-wider text-blue-300">
+                      LTS Version Available
+                    </p>
+                  </div>
+                  <p className="mb-2 text-xs leading-relaxed text-slate-300">
+                    <span className="font-semibold text-blue-200">LTS:</span> Long Term Support - Last stable version (1.1.0) recommended for production use.
+                  </p>
+                  <a
+                    href={LTS_DOWNLOAD_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-blue-500/40 bg-blue-500/20 px-4 py-2 text-xs font-semibold text-blue-200 transition-all duration-300 hover:bg-blue-500/30"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download LTS 1.1.0
+                  </a>
+                </div>
               </div>
             </div>
           </FadeUp>

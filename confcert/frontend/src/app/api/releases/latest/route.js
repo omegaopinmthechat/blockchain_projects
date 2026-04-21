@@ -126,6 +126,7 @@ async function resolveViaLatestReleaseRedirect() {
 
   if (!downloadUrl) {
     const candidateFileNames = [
+      `Solidity-Playground-Installer-${versionLabel}.exe`,
       `Solidity.Playground-Installer-${versionLabel}.exe`,
       `Solidity Playground-Installer-${versionLabel}.exe`,
       `Solidity Playground-Setup-${versionLabel}.exe`,

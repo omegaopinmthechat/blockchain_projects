@@ -60,7 +60,7 @@
         }
       ],
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "icon": "assets/final_icon.png"
+      "icon": "assets/final_icon.ico"
     },
     "nsis": {
       "oneClick": false,

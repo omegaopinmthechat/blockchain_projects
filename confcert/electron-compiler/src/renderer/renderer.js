@@ -152,6 +152,84 @@ contract SimpleVaultLab {
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+// VS Code Material Theme file icons
+function getFileIconSVG(fileName) {
+  if (!fileName) return getDefaultFileIcon();
+  const ext = fileName.split(".").pop()?.toLowerCase();
+  
+  switch (ext) {
+    case "sol":
+      return `<svg viewBox="0 0 24 24"><path d="M20.45 7.55L12 3.11 3.55 7.55 12 12l8.45-4.45M20.45 12L12 16.45 3.55 12 12 7.55l8.45 4.45M3.55 16.45L12 20.89l8.45-4.44L12 12l-8.45 4.45z"/></svg>`;
+    case "js":
+    case "jsx":
+      return `<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3V3m4.73 15.04c.4.85 1.19 1.55 2.54 1.55 1.5 0 2.53-.8 2.53-2.55v-5.78h-1.7V17c0 .86-.35 1.08-.9 1.08-.58 0-.82-.4-1.09-.87l-1.38.83m5.98-.18c.5.98 1.51 1.73 3.09 1.73 1.6 0 2.8-.83 2.8-2.36 0-1.41-.81-2.04-2.25-2.66l-.42-.18c-.73-.31-1.04-.52-1.04-1.02 0-.41.31-.73.81-.73.48 0 .8.21 1.09.73l1.31-.87c-.55-.96-1.33-1.33-2.4-1.33-1.51 0-2.48.96-2.48 2.23 0 1.38.81 2.03 2.03 2.55l.42.18c.78.34 1.24.55 1.24 1.13 0 .48-.45.83-1.15.83-.83 0-1.31-.43-1.67-1.03l-1.38.8z"/></svg>`;
+    case "ts":
+    case "tsx":
+      return `<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3V3m10.71 14.86c.5.98 1.51 1.73 3.09 1.73 1.6 0 2.8-.83 2.8-2.36 0-1.41-.81-2.04-2.25-2.66l-.42-.18c-.73-.31-1.04-.52-1.04-1.02 0-.41.31-.73.81-.73.48 0 .8.21 1.09.73l1.31-.87c-.55-.96-1.33-1.33-2.4-1.33-1.51 0-2.48.96-2.48 2.23 0 1.38.81 2.03 2.03 2.55l.42.18c.78.34 1.24.55 1.24 1.13 0 .48-.45.83-1.15.83-.83 0-1.31-.43-1.67-1.03l-1.38.8M13 11.25H8v1.5h1.5V20h1.75v-7.25H13v-1.5z"/></svg>`;
+    case "json":
+      return `<svg viewBox="0 0 24 24"><path d="M5 3h2v2H5v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5h2v2H5c-1.07-.27-2-.9-2-2v-4a2 2 0 0 0-2-2H0v-2h1a2 2 0 0 0 2-2V5a2 2 0 0 1 2-2m14 0a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1v2h-1a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2v-2h2v-5a2 2 0 0 1 2-2 2 2 0 0 1-2-2V5h-2V3h2m-7 12a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1m-4 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1m8 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1z"/></svg>`;
+    case "html":
+      return `<svg viewBox="0 0 24 24"><path d="M12 17.56l4.07-1.13.55-6.1H9.38L9.2 8.3h7.6l.2-1.99H7l.56 6.01h6.89l-.23 2.58-2.22.6-2.22-.6-.14-1.66h-2l.29 3.19L12 17.56M4.07 3h15.86L18.5 19.2 12 21l-6.5-1.8L4.07 3z"/></svg>`;
+    case "css":
+    case "scss":
+    case "sass":
+      return `<svg viewBox="0 0 24 24"><path d="M5 3l-.65 3.34h13.59L17.5 8.5H3.92l-.66 3.33h13.59l-.76 3.81-5.48 1.81-4.75-1.81.33-1.64H2.85l-.79 4 7.85 3 9.05-3 1.2-6.03.24-1.21L21.94 3z"/></svg>`;
+    case "md":
+    case "markdown":
+      return `<svg viewBox="0 0 24 24"><path d="M20.56 18H3.44C2.65 18 2 17.37 2 16.59V7.41C2 6.63 2.65 6 3.44 6h17.12c.79 0 1.44.63 1.44 1.41v9.18c0 .78-.65 1.41-1.44 1.41M6.81 15.19v-3.66l1.92 2.35 1.92-2.35v3.66h1.93V8.81h-1.93l-1.92 2.35-1.92-2.35H4.89v6.38h1.92m11.15 0l-3.08-3.66h2.31V8.81H13.1v6.38h1.92z"/></svg>`;
+    case "txt":
+      return `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6m4 18H6V4h7v5h5v11m-2-8H8v2h8v-2m0 4H8v2h8v-2z"/></svg>`;
+    case "yml":
+    case "yaml":
+      return `<svg viewBox="0 0 24 24"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5m0 2.18l8 3.99v8.08c0 4.35-2.98 8.41-7 9.72V4.18z"/></svg>`;
+    case "xml":
+      return `<svg viewBox="0 0 24 24"><path d="M12.89 3L14.85 3.4L11.11 21L9.15 20.6L12.89 3M19.59 12L16 8.41V5.58L22.42 12L16 18.41V15.58L19.59 12M1.58 12L8 5.58V8.41L4.41 12L8 15.58V18.41L1.58 12Z"/></svg>`;
+    default:
+      return getDefaultFileIcon();
+  }
+}
+
+function getDefaultFileIcon() {
+  return `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6m4 18H6V4h7v5h5v11z"/></svg>`;
+}
+
+function getFolderIconSVG(isOpen) {
+  if (isOpen) {
+    return `<svg viewBox="0 0 24 24"><path d="M19 20H4a2 2 0 0 1-2-2V6c0-1.11.89-2 2-2h6l2 2h7a2 2 0 0 1 2 2H4v10l2.14-8h17.07l-2.28 8.5c-.23.87-1.01 1.5-1.93 1.5z"/></svg>`;
+  }
+  return `<svg viewBox="0 0 24 24"><path d="M10 4H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>`;
+}
+
+function getChevronIconSVG() {
+  return `<svg viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>`;
+}
+
+function getFileIconClass(fileName) {
+  if (!fileName) return "file-icon-default";
+  const ext = fileName.split(".").pop()?.toLowerCase();
+  
+  const iconMap = {
+    sol: "file-icon-sol",
+    js: "file-icon-js",
+    jsx: "file-icon-js",
+    ts: "file-icon-ts",
+    tsx: "file-icon-ts",
+    json: "file-icon-json",
+    html: "file-icon-html",
+    css: "file-icon-css",
+    scss: "file-icon-css",
+    sass: "file-icon-css",
+    md: "file-icon-md",
+    markdown: "file-icon-md",
+    txt: "file-icon-txt",
+    yml: "file-icon-txt",
+    yaml: "file-icon-txt",
+    xml: "file-icon-txt",
+  };
+  
+  return iconMap[ext] || "file-icon-default";
+}
+
 function toFunctionSignature(fn) {
   return `${fn.name}(${(fn.inputs || []).map((i) => i.type).join(",")})`;
 }
@@ -599,14 +677,19 @@ function renderExplorerTree() {
 
   if (upLevelPath) {
     const upRow = document.createElement("div");
-    upRow.className = "file-tree-item directory up-level";
+    upRow.className = "file-tree-item directory";
     upRow.dataset.dirPath = upLevelPath;
-    upRow.title = upLevelPath;
+    upRow.title = "Go up one level";
+
+    const iconEl = document.createElement("span");
+    iconEl.className = "file-tree-item-icon file-icon-folder";
+    iconEl.innerHTML = getFolderIconSVG(false);
 
     const upLabel = document.createElement("span");
     upLabel.className = "file-tree-item-label";
     upLabel.textContent = "..";
 
+    upRow.appendChild(iconEl);
     upRow.appendChild(upLabel);
     tree.appendChild(upRow);
   }
@@ -614,17 +697,25 @@ function renderExplorerTree() {
   state.explorerItems.forEach((item) => {
     const row = document.createElement("div");
     row.className = `file-tree-item ${item.type}`;
-    row.style.paddingLeft = `${8 + (Number(item.depth) || 0) * 14}px`;
+    row.style.paddingLeft = `${8 + (Number(item.depth) || 0) * 16}px`;
+
+    const iconEl = document.createElement("span");
+    iconEl.className = "file-tree-item-icon";
 
     const label = document.createElement("span");
     label.className = "file-tree-item-label";
-    label.textContent = item.type === "directory"
-      ? `> ${item.name}`
-      : item.name;
+    label.textContent = item.name;
 
-    row.appendChild(label);
+    if (item.type === "directory") {
+      iconEl.classList.add("file-icon-folder");
+      iconEl.innerHTML = getFolderIconSVG(false);
+      row.dataset.dirPath = item.path;
+      row.title = item.path;
+    } else {
+      const iconClass = getFileIconClass(item.name);
+      iconEl.classList.add(iconClass);
+      iconEl.innerHTML = getFileIconSVG(item.name);
 
-    if (item.type === "file") {
       const openable = item.openable !== false;
       row.dataset.filePath = item.path;
       row.dataset.openable = openable ? "true" : "false";
@@ -634,11 +725,10 @@ function renderExplorerTree() {
       if (normalizePathForComparison(item.path) === activePathKey) {
         row.classList.add("active");
       }
-    } else if (item.type === "directory") {
-      row.dataset.dirPath = item.path;
-      row.title = item.path;
     }
 
+    row.appendChild(iconEl);
+    row.appendChild(label);
     tree.appendChild(row);
   });
 }
@@ -2451,7 +2541,7 @@ document.querySelectorAll(".tpl-btn").forEach((btn) => {
   }
 
   loadUiPreferences();
-  state.code = TEMPLATES.counter;
+  state.code = ""; // Start with empty editor
   initializeEditorTabs(state.code);
 
   applyUiPreferences({ persist: false });

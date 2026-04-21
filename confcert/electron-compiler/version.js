@@ -1,7 +1,7 @@
 // Version configuration for Solidity Playground
 // Update this file to change the version across the entire application
 
-const APP_VERSION = "1.1.3";
+const APP_VERSION = "1.1.4";
 
 // Export for different module systems
 if (typeof module !== "undefined" && module.exports) {

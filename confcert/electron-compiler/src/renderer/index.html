@@ -561,30 +561,28 @@
       border: 1px solid var(--border);
       border-radius: 3px;
       background: var(--panel-bg-alt);
-      max-height: 240px;
+      max-height: 320px;
       overflow: auto;
     }
 
     .file-tree-item {
       width: 100%;
       border: none;
-      border-bottom: 1px solid var(--border);
       background: transparent;
       color: var(--text-dim);
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: var(--sidebar-font-size);
       display: flex;
       align-items: center;
       gap: 6px;
       text-align: left;
-      padding: 6px 8px;
+      padding: 3px 8px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    .file-tree-item:last-child {
-      border-bottom: none;
+      transition: background-color 0.12s, color 0.12s;
+      user-select: none;
+      position: relative;
     }
 
     .file-tree-item.file {
@@ -598,13 +596,11 @@
 
     .file-tree-item.file.readonly {
       cursor: default;
-      color: var(--text-muted);
-      opacity: 0.9;
+      opacity: 0.6;
     }
 
     .file-tree-item.file.readonly:hover {
       background: transparent;
-      color: var(--text-muted);
     }
 
     .file-tree-item.active {
@@ -613,14 +609,72 @@
     }
 
     .file-tree-item.directory {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .file-tree-item.directory:hover {
+      background: var(--button-muted);
+      color: var(--text);
+    }
+
+    .file-tree-item-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-tree-item-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .file-icon-chevron {
+      width: 12px;
+      height: 12px;
+      transition: transform 0.15s ease;
       color: var(--text-muted);
+      margin-right: 2px;
+    }
+
+    .file-icon-chevron svg {
+      width: 12px;
+      height: 12px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .file-tree-item.directory.collapsed .file-icon-chevron {
+      transform: rotate(0deg);
+    }
+
+    .file-tree-item.directory.expanded .file-icon-chevron {
+      transform: rotate(90deg);
     }
 
     .file-tree-item-label {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      flex: 1;
     }
+
+    .file-icon-sol { color: #519aba; }
+    .file-icon-js { color: #f1dd3f; }
+    .file-icon-ts { color: #3178c6; }
+    .file-icon-json { color: #f1dd3f; }
+    .file-icon-html { color: #e34c26; }
+    .file-icon-css { color: #1572b6; }
+    .file-icon-md { color: #519aba; }
+    .file-icon-txt { color: var(--text-muted); }
+    .file-icon-folder { color: #90a4ae; }
+    .file-icon-folder-open { color: #90a4ae; }
+    .file-icon-default { color: var(--text-muted); }
 
     .file-tree-empty {
       padding: 9px;

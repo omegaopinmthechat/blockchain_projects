@@ -1,6 +1,6 @@
 {
   "name": "solidity-playground-electron",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Offline Solidity Playground — Electron Desktop App",
   "main": "src/main/main.js",
   "scripts": {
@@ -9,9 +9,11 @@
     "setup": "npm install",
     "build:mac": "electron-builder --mac",
     "build:win": "electron-builder --win",
+    "build:win:publish": "electron-builder --win --publish always",
     "build:linux": "electron-builder --linux"
   },
   "dependencies": {
+    "electron-updater": "^6.8.3",
     "monaco-editor": "^0.45.0"
   },
   "devDependencies": {
@@ -23,6 +25,13 @@
     "productName": "Solidity Playground",
     "directories": {
       "output": "dist"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "omegaopinmthechat",
+      "repo": "blockchain_projects",
+      "releaseType": "release",
+      "publishAutoUpdate": true
     },
     "files": [
       "src/**/*",
@@ -42,18 +51,28 @@
       "icon": "assets/final_icon.png"
     },
     "win": {
-      "icon": "assets/final_icon.png",
-      "target": "nsis"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "icon": "assets/final_icon.png"
     },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
+      "runAfterFinish": true,
+      "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "shortcutName": "Solidity Playground",
-      "uninstallDisplayName": "Solidity Playground",
-      "deleteAppDataOnUninstall": false
+      "installerIcon": "assets/final_icon.png",
+      "uninstallerIcon": "assets/final_icon.png",
+      "artifactName": "${productName}-Installer-${version}.${ext}"
     },
     "linux": {
       "icon": "assets/final_icon.png",

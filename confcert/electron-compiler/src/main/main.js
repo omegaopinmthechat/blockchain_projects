@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, shell, Menu, dialog } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const path = require("path");
 const fs = require("fs");
 
@@ -575,6 +576,71 @@ function registerIPCHandlers() {
   });
 }
 
+function setupAutoUpdater() {
+  // Updates are only available for packaged builds with a valid publish config.
+  if (!app.isPackaged) {
+    return;
+  }
+
+  autoUpdater.autoDownload = false;
+
+  autoUpdater.on("error", (error) => {
+    console.error("[updater] error:", serializeError(error));
+  });
+
+  autoUpdater.on("update-available", (info) => {
+    console.log(`[updater] update available: ${info?.version || "unknown"}`);
+
+    dialog
+      .showMessageBox(mainWindow, {
+        type: "info",
+        title: "Update Available",
+        message: "New version available. Download?",
+        buttons: ["Yes", "No"],
+        defaultId: 0,
+        cancelId: 1,
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          autoUpdater.downloadUpdate().catch((error) => {
+            console.error("[updater] download failed:", serializeError(error));
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("[updater] prompt failed:", serializeError(error));
+      });
+  });
+
+  autoUpdater.on("update-not-available", () => {
+    console.log("[updater] no updates available");
+  });
+
+  autoUpdater.on("update-downloaded", () => {
+    dialog
+      .showMessageBox(mainWindow, {
+        type: "info",
+        title: "Install Update",
+        message: "Update downloaded. Restart now?",
+        buttons: ["Restart", "Later"],
+        defaultId: 0,
+        cancelId: 1,
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          autoUpdater.quitAndInstall();
+        }
+      })
+      .catch((error) => {
+        console.error("[updater] restart prompt failed:", serializeError(error));
+      });
+  });
+
+  autoUpdater.checkForUpdates().catch((error) => {
+    console.error("[updater] check failed:", serializeError(error));
+  });
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -641,6 +707,7 @@ app.whenReady().then(() => {
   registerIPCHandlers();
   Menu.setApplicationMenu(null);
   createWindow();
+  setupAutoUpdater();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

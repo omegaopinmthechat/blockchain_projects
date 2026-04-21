@@ -409,6 +409,14 @@ function renderTabBar() {
     tabEl.appendChild(closeEl);
     tabBar.appendChild(tabEl);
   });
+
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "tab-add-btn";
+  addButton.setAttribute("aria-label", "New File");
+  addButton.title = "New File (Ctrl+N)";
+  addButton.textContent = "+";
+  tabBar.appendChild(addButton);
 }
 
 function activateTab(tabId, options = {}) {
@@ -459,6 +467,18 @@ function openDocumentInTab(filePath, content) {
   return tab;
 }
 
+function createNewFileTab() {
+  syncActiveTabContentFromEditor();
+
+  const tab = createTabEntry({ content: "" });
+  state.tabs.push(tab);
+  activateTab(tab.id, { syncCurrent: false });
+
+  showToast(`Created ${tab.title}`);
+  addLog("info", `Created ${tab.title}`);
+  return tab;
+}
+
 function closeTabById(tabId) {
   const index = state.tabs.findIndex((tab) => tab.id === tabId);
   if (index < 0) {
@@ -498,6 +518,12 @@ function initTabBar() {
   }
 
   tabBar.addEventListener("click", (event) => {
+    const addButton = event.target.closest(".tab-add-btn");
+    if (addButton) {
+      createNewFileTab();
+      return;
+    }
+
     const tabEl = event.target.closest(".editor-tab");
     if (!tabEl) {
       return;
@@ -1102,6 +1128,8 @@ function initMenuBar() {
 
   const MENUS = {
     file: [
+      { label: "New File", kbd: "Ctrl+N", action: createNewFileTab },
+      { sep: true },
       { label: "Open File", kbd: "Ctrl+O", action: openSolFile },
       { label: "Open Folder", kbd: "Ctrl+Shift+O", action: openFolderInExplorer },
       { sep: true },
@@ -2199,6 +2227,12 @@ window.addEventListener("keydown", (e) => {
   if (key === "b") {
     e.preventDefault();
     toggleSidebar();
+    return;
+  }
+
+  if (key === "n") {
+    e.preventDefault();
+    createNewFileTab();
     return;
   }
 

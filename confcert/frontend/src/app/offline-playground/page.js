@@ -19,8 +19,7 @@ import {
 } from "lucide-react";
 import StarBackground from "@/components/StarBackground";
 
-const RELEASES_LATEST_API =
-  "https://api.github.com/repos/omegaopinmthechat/blockchain_projects/releases/latest";
+const RELEASES_LATEST_API = "/api/releases/latest";
 const RELEASES_PAGE_URL =
   "https://github.com/omegaopinmthechat/blockchain_projects/releases";
 const INITIAL_RELEASE_INFO = {
@@ -118,45 +117,30 @@ function FadeUp({ children, delay = 0, className = "" }) {
 
 async function getLatestRelease() {
   const res = await fetch(RELEASES_LATEST_API, {
-    headers: {
-      Accept: "application/vnd.github+json",
-      "User-Agent": "solidity-playground-app",
-    },
     cache: "no-store",
   });
 
   if (!res.ok) {
-    throw new Error(`Failed to load latest release (${res.status}).`);
+    return INITIAL_RELEASE_INFO;
   }
 
   const data = await res.json();
-  const assets = Array.isArray(data?.assets) ? data.assets : [];
-  const exeAssets = assets.filter(
-    (asset) =>
-      typeof asset?.name === "string" &&
-      asset.name.toLowerCase().endsWith(".exe") &&
-      typeof asset?.browser_download_url === "string"
-  );
-
-  const preferredAsset =
-    exeAssets.find((asset) => /setup|installer/i.test(asset.name)) || exeAssets[0];
-
-  if (!preferredAsset) {
-    throw new Error("No installer asset (.exe) found in latest release.");
-  }
-
   const tag =
-    typeof data?.tag_name === "string" && data.tag_name.trim()
-      ? data.tag_name.trim()
+    typeof data?.versionTag === "string" && data.versionTag.trim()
+      ? data.versionTag.trim()
       : INITIAL_RELEASE_INFO.versionTag;
 
   return {
     versionTag: tag,
-    versionLabel: tag.replace(/^v/i, ""),
-    downloadUrl: preferredAsset.browser_download_url,
+    versionLabel:
+      typeof data?.versionLabel === "string" && data.versionLabel.trim()
+        ? data.versionLabel.trim()
+        : tag.replace(/^v/i, ""),
+    downloadUrl:
+      typeof data?.downloadUrl === "string" ? data.downloadUrl : INITIAL_RELEASE_INFO.downloadUrl,
     releaseUrl:
-      typeof data?.html_url === "string" && data.html_url.trim()
-        ? data.html_url
+      typeof data?.releaseUrl === "string" && data.releaseUrl.trim()
+        ? data.releaseUrl
         : RELEASES_PAGE_URL,
   };
 }
@@ -174,8 +158,11 @@ export default function OfflinePlaygroundPage() {
         }
         setReleaseInfo(latest);
       })
-      .catch((error) => {
-        console.error("[offline-playground] latest release fetch failed:", error);
+      .catch(() => {
+        if (!isActive) {
+          return;
+        }
+        setReleaseInfo(INITIAL_RELEASE_INFO);
       });
 
     return () => {

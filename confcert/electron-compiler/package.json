@@ -9,8 +9,8 @@
     "setup": "npm install",
     "prebuild": "node sync-version.js",
     "build:mac": "electron-builder --mac",
-    "build:win": "electron-builder --win",
-    "build:win:publish": "electron-builder --win --publish always",
+    "build:win": "electron-builder --win --publish=never",
+    "build:win:publish": "electron-builder --win --publish=never",
     "build:linux": "electron-builder --linux"
   },
   "dependencies": {

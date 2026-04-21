@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -18,10 +19,16 @@ import {
 } from "lucide-react";
 import StarBackground from "@/components/StarBackground";
 
-const LATEST_DOWNLOAD_URL =
-  "https://github.com/omegaopinmthechat/blockchain_projects/releases/download/v1.1.0/Solidity.Playground.Setup.1.1.0.exe";
-const LATEST_RELEASE_URL =
-  "https://github.com/omegaopinmthechat/blockchain_projects/releases/tag/v1.1.0";
+const RELEASES_LATEST_API =
+  "https://api.github.com/repos/omegaopinmthechat/blockchain_projects/releases/latest";
+const RELEASES_PAGE_URL =
+  "https://github.com/omegaopinmthechat/blockchain_projects/releases";
+const INITIAL_RELEASE_INFO = {
+  versionTag: "latest",
+  versionLabel: "latest",
+  downloadUrl: "",
+  releaseUrl: RELEASES_PAGE_URL,
+};
 const LEGACY_DOWNLOAD_URL =
   "https://github.com/omegaopinmthechat/blockchain_projects/releases/download/v1.0.0/Solidity.Playground.Setup.1.0.0.exe";
 
@@ -109,7 +116,73 @@ function FadeUp({ children, delay = 0, className = "" }) {
   );
 }
 
+async function getLatestRelease() {
+  const res = await fetch(RELEASES_LATEST_API, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "solidity-playground-app",
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to load latest release (${res.status}).`);
+  }
+
+  const data = await res.json();
+  const assets = Array.isArray(data?.assets) ? data.assets : [];
+  const exeAssets = assets.filter(
+    (asset) =>
+      typeof asset?.name === "string" &&
+      asset.name.toLowerCase().endsWith(".exe") &&
+      typeof asset?.browser_download_url === "string"
+  );
+
+  const preferredAsset =
+    exeAssets.find((asset) => /setup|installer/i.test(asset.name)) || exeAssets[0];
+
+  if (!preferredAsset) {
+    throw new Error("No installer asset (.exe) found in latest release.");
+  }
+
+  const tag =
+    typeof data?.tag_name === "string" && data.tag_name.trim()
+      ? data.tag_name.trim()
+      : INITIAL_RELEASE_INFO.versionTag;
+
+  return {
+    versionTag: tag,
+    versionLabel: tag.replace(/^v/i, ""),
+    downloadUrl: preferredAsset.browser_download_url,
+    releaseUrl:
+      typeof data?.html_url === "string" && data.html_url.trim()
+        ? data.html_url
+        : RELEASES_PAGE_URL,
+  };
+}
+
 export default function OfflinePlaygroundPage() {
+  const [releaseInfo, setReleaseInfo] = useState(INITIAL_RELEASE_INFO);
+
+  useEffect(() => {
+    let isActive = true;
+
+    getLatestRelease()
+      .then((latest) => {
+        if (!isActive) {
+          return;
+        }
+        setReleaseInfo(latest);
+      })
+      .catch((error) => {
+        console.error("[offline-playground] latest release fetch failed:", error);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       <StarBackground starCount={120} />
@@ -152,7 +225,7 @@ export default function OfflinePlaygroundPage() {
 
               <div className="flex flex-wrap gap-2.5 sm:gap-3">
                 <span className="rounded-full border border-emerald-500/35 bg-emerald-500/12 px-3 py-1.5 text-xs font-semibold text-emerald-300">
-                  Version 1.1.0
+                  Version {releaseInfo.versionLabel}
                 </span>
                 <span className="rounded-full border border-blue-500/35 bg-blue-500/12 px-3 py-1.5 text-xs font-semibold text-blue-300">
                   Windows Installer (.exe)
@@ -182,7 +255,9 @@ export default function OfflinePlaygroundPage() {
                 </div>
                 <div>
                   <p className="text-lg font-semibold text-slate-100">Ready To Install</p>
-                  <p className="text-sm text-slate-400">Official v1.1.0 desktop setup</p>
+                  <p className="text-sm text-slate-400">
+                    Official {releaseInfo.versionTag} desktop setup
+                  </p>
                 </div>
               </div>
 
@@ -206,18 +281,29 @@ export default function OfflinePlaygroundPage() {
               </div>
 
               <div className="flex flex-col gap-3">
-                <a
-                  href={LATEST_DOWNLOAD_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-linear-to-r from-emerald-500 to-green-500 px-5 py-3 text-sm font-bold text-white shadow-[0_14px_36px_-20px_rgba(34,197,94,0.8)] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_20px_42px_-20px_rgba(34,197,94,0.9)]"
-                >
-                  <Download className="h-4 w-4" />
-                  Download Setup 1.1.0
-                </a>
+                {releaseInfo.downloadUrl ? (
+                  <a
+                    href={releaseInfo.downloadUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-linear-to-r from-emerald-500 to-green-500 px-5 py-3 text-sm font-bold text-white shadow-[0_14px_36px_-20px_rgba(34,197,94,0.8)] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_20px_42px_-20px_rgba(34,197,94,0.9)]"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download Setup {releaseInfo.versionLabel}
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-800/70 px-5 py-3 text-sm font-bold text-slate-400"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download Unavailable
+                  </button>
+                )}
 
                 <a
-                  href={LATEST_RELEASE_URL}
+                  href={releaseInfo.releaseUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-800/80 px-5 py-2.5 text-sm font-semibold text-slate-200 transition-all duration-300 hover:bg-slate-700"

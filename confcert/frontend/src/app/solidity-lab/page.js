@@ -163,11 +163,11 @@ const ONE_DARK_PRO_THEME = {
   base: "vs-dark",
   inherit: true,
   rules: [
-    { token: "comment", foreground: "ABB2BF", fontStyle: "" },
-    { token: "comment.line", foreground: "ABB2BF", fontStyle: "" },
-    { token: "comment.block", foreground: "ABB2BF", fontStyle: "" },
-    { token: "comment.doc", foreground: "ABB2BF", fontStyle: "" },
-    { token: "comment.solidity", foreground: "ABB2BF", fontStyle: "" },
+    { token: "comment", foreground: "6A9955", fontStyle: "" },
+    { token: "comment.line", foreground: "6A9955", fontStyle: "" },
+    { token: "comment.block", foreground: "6A9955", fontStyle: "" },
+    { token: "comment.doc", foreground: "6A9955", fontStyle: "" },
+    { token: "comment.solidity", foreground: "6A9955", fontStyle: "" },
     { token: "keyword", foreground: "C678DD" },
     { token: "type", foreground: "E5C07B" },
     { token: "number", foreground: "D19A66" },
@@ -197,13 +197,21 @@ export default function SolidityLabPage() {
   const backendUrl = process.env.NEXT_PUBLIC_COMPILER_BACKEND_URL || "http://localhost:5501";
   const compileShortcutRef = useRef(() => {});
   const lastShortcutRunAtRef = useRef(0);
-  const [code, setCode] = useState(DEFAULT_CODE);
+  
+  const [code, setCode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedCode = localStorage.getItem("solidityLabCode");
+      return savedCode || DEFAULT_CODE;
+    }
+    return DEFAULT_CODE;
+  });
   const [compiledContracts, setCompiledContracts] = useState([]);
   const [selectedContract, setSelectedContract] = useState("");
   const [compilerMeta, setCompilerMeta] = useState(null);
   const [activeAbi, setActiveAbi] = useState([]);
   const [constructorArgValues, setConstructorArgValues] = useState({});
   const [deployment, setDeployment] = useState(null);
+  const [selectedSender, setSelectedSender] = useState("");
   const [selectedFunctionSignature, setSelectedFunctionSignature] = useState("");
   const [functionArgValues, setFunctionArgValues] = useState({});
   const [callValueWei, setCallValueWei] = useState("0");
@@ -371,6 +379,8 @@ export default function SolidityLabPage() {
       escapes: /\\(?:[abfnrtv\\"'0-9xXuU])*/,
       tokenizer: {
         root: [
+          [/\/\/.*$/, "comment"],
+          [/\/\*/, "comment", "@comment"],
           [/[a-zA-Z_$][\w$]*/, {
             cases: {
               "@keywords": "keyword",
@@ -392,8 +402,6 @@ export default function SolidityLabPage() {
           [/'([^'\\]|\\.)*$/, "string.invalid"],
           [/"/, "string", "@string_double"],
           [/'/, "string", "@string_single"],
-          [/\/\*/, "comment", "@comment"],
-          [/\/\/.*$/, "comment"],
           [/\s+/, "white"],
         ],
         comment: [
@@ -418,6 +426,12 @@ export default function SolidityLabPage() {
 
     monaco.editor.defineTheme("one-dark-pro", ONE_DARK_PRO_THEME);
   }
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && code !== DEFAULT_CODE) {
+      localStorage.setItem("solidityLabCode", code);
+    }
+  }, [code]);
 
   useEffect(() => {
     setTerminalLogs([toLog("info", "Ready. Compile your contract to start the playground.")]);
@@ -687,6 +701,7 @@ export default function SolidityLabPage() {
         balance: data.balance,
         accounts: data.accounts || [],
       });
+      setSelectedSender(data.deployer || "");
 
       const functions = (data.abi || []).filter((entry) => entry.type === "function");
       setSelectedFunctionSignature(functions[0] ? toFunctionSignature(functions[0]) : "");
@@ -779,6 +794,7 @@ export default function SolidityLabPage() {
           contractAddress: deployment.contractAddress,
           functionName: functionSignature,
           args,
+          sender: selectedSender || deployment.deployer,
           value: valueToSend,
         }),
       });
@@ -1102,6 +1118,22 @@ export default function SolidityLabPage() {
                       {deployment.contractAddress}
                     </p>
                     <p className="text-xs text-green-200 mt-1">{deployment.contractName}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-200 mb-2">Sender Account</label>
+                    <select
+                      value={selectedSender}
+                      onChange={(e) => setSelectedSender(e.target.value)}
+                      className="w-full min-h-11 sm:min-h-12 rounded-xl border-2 border-slate-600 bg-slate-900 px-3 py-2 text-sm font-mono text-slate-100 focus:border-blue-500 focus:outline-none"
+                    >
+                      {(deployment.accounts || []).map((account, index) => (
+                        <option key={account} value={account}>
+                          {account === deployment.deployer ? `${account.slice(0, 10)}...${account.slice(-8)} (Deployer)` : `${account.slice(0, 10)}...${account.slice(-8)} (Account ${index})`}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-slate-400 mt-1">Select which account sends the transaction</p>
                   </div>
 
                   <div>

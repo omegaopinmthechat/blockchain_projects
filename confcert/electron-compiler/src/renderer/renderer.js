@@ -2091,6 +2091,8 @@ function initMonaco() {
         escapes: /\\(?:[abfnrtv\\"'0-9xXuU])/,
         tokenizer: {
           root: [
+            [/\/\/.*$/, "comment"],
+            [/\/\*/, "comment", "@comment"],
             [/[a-zA-Z_$][\w$]*/, { cases: { "@keywords": "keyword", "@typeKeywords": "type", "@default": "identifier" } }],
             [/\d+/, "number"],
             [/[{}()[\]]/, "delimiter.bracket"],
@@ -2098,8 +2100,6 @@ function initMonaco() {
             [/;|,|\./, "delimiter"],
             [/"/, "string", "@string_double"],
             [/'/, "string", "@string_single"],
-            [/\/\*/, "comment", "@comment"],
-            [/\/\/.*$/, "comment"],
             [/\s+/, "white"],
           ],
           comment: [[/[^/*]+/, "comment"], [/\*\//, "comment", "@pop"], [/[/*]/, "comment"]],
@@ -2142,7 +2142,7 @@ function initMonaco() {
         base: "vs",
         inherit: true,
         rules: [
-          { token: "comment", foreground: "888B94" },
+          { token: "comment", foreground: "8A8D95" },
           { token: "keyword", foreground: "65359D" },
           { token: "type", foreground: "006C86" },
           { token: "number", foreground: "965027" },

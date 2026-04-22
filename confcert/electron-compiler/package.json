@@ -1,6 +1,6 @@
 {
   "name": "solidity-playground-electron",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Offline Solidity Playground — Electron Desktop App",
   "main": "src/main/main.js",
   "scripts": {

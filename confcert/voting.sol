@@ -10,7 +10,6 @@ contract Voting {
 
     mapping(uint => Candidate) public candidates;
     mapping(address => bool) public hasVoted;
-
     uint public candidatesCount;
     address public admin;
 

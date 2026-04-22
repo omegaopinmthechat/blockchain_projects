@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const OWNER = "omegaopinmthechat";
 const REPO = "blockchain_projects";
-const CACHE_SECONDS = 3600; // 1 hour cache
+const CACHE_SECONDS = 300; // 5 minutes cache
 
 const RELEASES_PAGE_URL = `https://github.com/${OWNER}/${REPO}/releases`;
 const RELEASES_LATEST_URL = `${RELEASES_PAGE_URL}/latest`;

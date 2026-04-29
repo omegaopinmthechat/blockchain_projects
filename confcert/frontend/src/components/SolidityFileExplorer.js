@@ -77,7 +77,7 @@ function SmartInput({ inFolder = "", existingPaths, onConfirm, onCancel, icon: I
           onKeyDown={(e) => e.key === "Escape" && onCancel()}
           placeholder="name.sol or folder/"
           className={cn(
-            "flex-1 min-w-0 hidden lg:block rounded border px-1.5 py-0.5 text-xs text-text-main outline-none placeholder:text-text-muted bg-bg-input transition-colors",
+            "flex-1 min-w-0 block md:hidden lg:block rounded border px-1.5 py-0.5 text-xs text-text-main outline-none placeholder:text-text-muted bg-bg-input transition-colors",
             isError ? "border-red-500" : "border-purple-500"
           )}
         />
@@ -90,7 +90,7 @@ function SmartInput({ inFolder = "", existingPaths, onConfirm, onCancel, icon: I
       </form>
       {hint && (
         <p className={cn(
-          "hidden lg:flex items-center gap-1 text-[10px] mt-0.5 pl-5",
+          "flex md:hidden lg:flex items-center gap-1 text-[10px] mt-0.5 pl-5",
           isError ? "text-red-400" : "text-text-muted"
         )}>
           {isError
@@ -142,7 +142,7 @@ function RenameInput({ initialValue, isFile, existingPaths, currentPath, onConfi
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Escape" && onCancel()}
           className={cn(
-            "flex-1 min-w-0 hidden lg:block rounded border px-1.5 py-0.5 text-xs text-text-main outline-none bg-bg-input transition-colors",
+            "flex-1 min-w-0 block md:hidden lg:block rounded border px-1.5 py-0.5 text-xs text-text-main outline-none bg-bg-input transition-colors",
             isError ? "border-red-500" : "border-purple-500"
           )}
         />
@@ -154,7 +154,7 @@ function RenameInput({ initialValue, isFile, existingPaths, currentPath, onConfi
         </button>
       </form>
       {alreadyExists && (
-        <p className="hidden lg:flex items-center gap-1 text-[10px] text-red-400 mt-0.5 pl-1">
+        <p className="flex md:hidden lg:flex items-center gap-1 text-[10px] text-red-400 mt-0.5 pl-1">
           <AlertCircle className="h-2.5 w-2.5 shrink-0" />
           &quot;{previewName}&quot; already exists
         </p>
@@ -297,9 +297,9 @@ function TreeNode({
               ? <FolderOpen className="h-4 w-4 shrink-0 text-yellow-500/80" />
               : <Folder className="h-4 w-4 shrink-0 text-yellow-500/80" />
             }
-            <span className="hidden lg:block truncate text-xs font-medium">{node.name}</span>
+            <span className="block md:hidden lg:block truncate text-xs font-medium">{node.name}</span>
             {/* Hover action bar */}
-            <span className="hidden lg:flex ml-auto gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="flex md:hidden lg:flex ml-auto gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <span role="button" title="New file/folder" onClick={(e) => { e.stopPropagation(); setCreating(true); setOpen(true); }}
                 className="p-0.5 hover:text-purple-400"><FilePlus className="h-3 w-3" /></span>
               <span role="button" title="Rename" onClick={(e) => { e.stopPropagation(); setEditMode("rename"); }}
@@ -337,7 +337,7 @@ function TreeNode({
             )}
             {!hasVisibleChildren && !creating && (
               <li style={{ paddingLeft: indent + 20 }}
-                className="hidden lg:block py-1 text-[10px] text-text-muted italic select-none">
+                className="block md:hidden lg:block py-1 text-[10px] text-text-muted italic select-none">
                 Empty folder
               </li>
             )}
@@ -395,8 +395,8 @@ function TreeNode({
           )}
         >
           <FileCode2 className="h-3.5 w-3.5 shrink-0" />
-          <span className="hidden lg:block truncate text-xs font-medium">{node.name}</span>
-          <span className="hidden lg:flex ml-auto gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="block md:hidden lg:block truncate text-xs font-medium">{node.name}</span>
+          <span className="flex md:hidden lg:flex ml-auto gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
             <span role="button" onClick={(e) => { e.stopPropagation(); setEditMode("rename"); }}
               className="p-0.5 hover:text-purple-400"><Pencil className="h-3 w-3" /></span>
             <span role="button" onClick={(e) => { e.stopPropagation(); onDelete("file", node.path); }}
@@ -488,7 +488,7 @@ export default function SolidityFileExplorer({
     <div className="border-t border-border-main pt-1.5">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-1 lg:px-4">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted hidden lg:block select-none">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted block md:hidden lg:block select-none">
           Files
         </span>
         <div className="flex items-center gap-0.5 ml-auto">
@@ -527,7 +527,7 @@ export default function SolidityFileExplorer({
             onCancel={() => setCreatingRoot(false)}
             icon={FilePlus}
           />
-          <p className="hidden lg:block text-[10px] text-text-muted mt-0.5 pl-5 select-none">
+          <p className="block md:hidden lg:block text-[10px] text-text-muted mt-0.5 pl-5 select-none">
             Tip: end with <kbd className="rounded bg-bg-input px-1 font-mono">/</kbd> to create a folder
           </p>
         </div>

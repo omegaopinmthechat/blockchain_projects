@@ -16,7 +16,6 @@ import {
   RotateCcw,
   TerminalSquare,
 } from "lucide-react";
-import StarBackground from "@/components/StarBackground";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -427,11 +426,28 @@ export default function SolidityLabPage() {
     monaco.editor.defineTheme("one-dark-pro", ONE_DARK_PRO_THEME);
   }
 
+  const [editorTheme, setEditorTheme] = useState("one-dark-pro");
+
   useEffect(() => {
     if (typeof window !== "undefined" && code !== DEFAULT_CODE) {
       localStorage.setItem("solidityLabCode", code);
     }
   }, [code]);
+
+  useEffect(() => {
+    const checkTheme = () => {
+      if (!document.documentElement.classList.contains("light")) {
+        setEditorTheme("one-dark-pro");
+      } else {
+        setEditorTheme("vs-light");
+      }
+    };
+    
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     setTerminalLogs([toLog("info", "Ready. Compile your contract to start the playground.")]);
@@ -883,12 +899,11 @@ export default function SolidityLabPage() {
 
   return (
     <div className="min-h-screen relative">
-      <StarBackground starCount={120} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
         <div className="mb-6 sm:mb-8">
           <Link href="/">
-            <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-slate-600 text-slate-200 hover:bg-slate-800 rounded-xl font-semibold transition-all duration-300">
+            <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border border-border-main bg-bg-card/70 text-text-main hover:bg-bg-input rounded-xl font-medium transition-all duration-300">
               <ArrowLeft className="w-4 h-4" />
               Back to Projects
             </button>
@@ -896,16 +911,16 @@ export default function SolidityLabPage() {
         </div>
 
         <div className="mb-6 sm:mb-8 lg:mb-10">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-linear-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-full">
-            <Code className="w-4 h-4 text-blue-300" />
-            <span className="text-sm font-semibold text-blue-300">Solidity Playground</span>
+          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full">
+            <Code className="w-4 h-4 text-purple-400" />
+            <span className="text-sm font-semibold text-purple-400">Solidity Playground</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-text-main">
             Simple Compile, Deploy, and Test Lab
           </h1>
 
-          <p className="text-slate-300 text-base sm:text-lg max-w-3xl">
+          <p className="text-text-muted text-base sm:text-lg max-w-3xl">
             Write your smart contract, compile it, deploy to a temporary local chain, and test
             functions step by step.
           </p>
@@ -913,11 +928,11 @@ export default function SolidityLabPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <section className="lg:col-span-8 space-y-6">
-            <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl overflow-hidden shadow-[0_12px_40px_-10px_rgba(0,0,0,0.55)]">
-              <div className="px-4 py-3 border-b border-slate-700 bg-slate-900/70 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="bg-bg-card border border-border-main rounded-3xl overflow-hidden shadow-sm">
+              <div className="px-4 py-3 border-b border-border-main flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-bg-input/50">
                 <div className="flex items-center gap-2">
-                  <Code className="w-4 h-4 text-slate-300" />
-                  <span className="text-sm font-semibold text-slate-200">Playground.sol</span>
+                  <Code className="w-4 h-4 text-text-muted" />
+                  <span className="text-sm font-semibold text-text-main">Playground.sol</span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -925,7 +940,7 @@ export default function SolidityLabPage() {
                     <button
                       key={template.id}
                       onClick={() => loadTemplate(template)}
-                      className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-600 text-slate-200 bg-slate-800 hover:bg-slate-700 transition-all"
+                      className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-border-main text-text-main bg-bg-input hover:bg-bg-card transition-all"
                     >
                       {template.name}
                     </button>
@@ -933,7 +948,7 @@ export default function SolidityLabPage() {
 
                   <button
                     onClick={copySourceCode}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-600 text-slate-200 bg-slate-800 hover:bg-slate-700 transition-all"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-border-main text-text-main bg-bg-input hover:bg-bg-card transition-all"
                   >
                     <Copy className="w-3.5 h-3.5" />
                     Copy
@@ -941,7 +956,7 @@ export default function SolidityLabPage() {
                 </div>
               </div>
 
-              <div className="code-theme-one-dark-pro rounded-none border-0 shadow-none">
+              <div className="rounded-none border-0 shadow-none">
                 <MonacoEditor
                   beforeMount={handleEditorBeforeMount}
                   onMount={handleEditorMount}
@@ -949,7 +964,7 @@ export default function SolidityLabPage() {
                   language="solidity"
                   value={code}
                   onChange={(value) => setCode(value || "")}
-                  theme="one-dark-pro"
+                  theme={editorTheme}
                   height="560px"
                   options={{
                     automaticLayout: true,
@@ -969,32 +984,32 @@ export default function SolidityLabPage() {
               </div>
             </div>
 
-            <div className="code-theme-one-dark-pro rounded-2xl p-4 sm:p-5">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-100 mb-3 flex items-center gap-2">
-                <TerminalSquare className="w-5 h-5 text-blue-300" />
+            <div className="bg-bg-card rounded-3xl p-4 sm:p-5 border border-border-main shadow-sm">
+              <h2 className="text-lg sm:text-xl font-bold text-text-main mb-3 flex items-center gap-2">
+                <TerminalSquare className="w-5 h-5 text-text-muted" />
                 Terminal Output
               </h2>
 
-              <div className="code-theme-one-dark-pro rounded-xl p-3 sm:p-4 max-h-90 overflow-y-auto text-xs sm:text-sm">
+              <div className="bg-bg-input rounded-xl p-3 sm:p-4 max-h-90 overflow-y-auto text-xs sm:text-sm border border-border-main">
                 <div className="space-y-3">
                   {terminalLogs.map((entry) => (
                     <div key={entry.id}>
                       <p
                         className={`font-mono ${
                           entry.level === "success"
-                            ? "text-green-300"
+                            ? "text-green-500"
                             : entry.level === "error"
-                              ? "text-red-300"
+                              ? "text-red-500"
                               : entry.level === "warning"
-                                ? "text-yellow-300"
-                                : "text-blue-300"
+                                ? "text-yellow-600"
+                                : "text-blue-500"
                         }`}
                       >
                         [{entry.time}] {entry.level.toUpperCase()}: {entry.message}
                       </p>
 
                       {entry.details !== null && (
-                        <pre className="mt-1 pl-3 border-l border-slate-600 text-slate-300 whitespace-pre-wrap wrap-break-word font-mono">
+                        <pre className="mt-1 pl-3 border-l-2 border-border-main text-text-muted whitespace-pre-wrap wrap-break-word font-mono">
                           {typeof entry.details === "string"
                             ? entry.details
                             : JSON.stringify(entry.details, null, 2)}
@@ -1008,21 +1023,21 @@ export default function SolidityLabPage() {
           </section>
 
           <aside className="lg:col-span-4 space-y-6">
-            <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-5 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.55)]">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-                <Hammer className="w-5 h-5 text-yellow-300" />
+            <div className="bg-bg-card border border-border-main rounded-3xl p-5 shadow-sm">
+              <h2 className="text-lg sm:text-xl font-bold text-text-main mb-4 flex items-center gap-2">
+                <Hammer className="w-5 h-5 text-text-muted" />
                 Compile and Deploy
               </h2>
 
               <div className="space-y-4">
                 {compiledContracts.length > 1 && (
                   <div>
-                    <label className="block text-sm font-semibold text-slate-200 mb-2">Contract</label>
+                    <label className="block text-sm font-semibold text-text-main mb-2">Contract</label>
 
                     <select
                       value={selectedContract}
                       onChange={(e) => setSelectedContract(e.target.value)}
-                      className="w-full min-h-11 sm:min-h-12 rounded-xl border-2 border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                      className="w-full min-h-11 sm:min-h-12 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm text-text-main focus:border-purple-500/50 focus:outline-none"
                     >
                       {!selectedContract && <option value="">Auto select deployable contract</option>}
                       {compiledContracts.map((item) => (
@@ -1037,12 +1052,12 @@ export default function SolidityLabPage() {
 
                 {constructorAbi && (constructorAbi.inputs || []).length > 0 && (
                   <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-slate-200 mb-1">
+                    <label className="block text-sm font-semibold text-text-main mb-1">
                       Constructor Arguments
                     </label>
                     {(constructorAbi.inputs || []).map((input, index) => (
                       <div key={`${input.name || "arg"}-${index}`}>
-                        <label className="block text-xs font-semibold text-slate-200 mb-1">
+                        <label className="block text-xs font-semibold text-text-main mb-1">
                           {input.name || `arg${index}`} ({input.type})
                         </label>
                         <input
@@ -1053,7 +1068,7 @@ export default function SolidityLabPage() {
                               ? "Use JSON-like value"
                               : "Value"
                           }
-                          className="w-full min-h-10 rounded-xl border border-slate-600 bg-slate-900 px-3 py-2 text-sm font-mono text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none"
+                          className="w-full min-h-10 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm font-mono text-text-main placeholder:text-text-muted focus:border-purple-500/50 focus:outline-none"
                         />
                       </div>
                     ))}
@@ -1061,7 +1076,7 @@ export default function SolidityLabPage() {
                 )}
 
                 {constructorAbi && (constructorAbi.inputs || []).length === 0 && (
-                  <p className="text-xs text-slate-300">
+                  <p className="text-xs text-text-muted">
                     This contract has no constructor arguments.
                   </p>
                 )}
@@ -1070,7 +1085,7 @@ export default function SolidityLabPage() {
                   <button
                     onClick={compileSource}
                     disabled={busy.compile}
-                    className="inline-flex items-center justify-center gap-2 min-h-11 px-3 py-2 text-sm bg-linear-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50"
+                    className="inline-flex items-center justify-center gap-2 min-h-11 px-3 py-2 text-sm bg-bg-input hover:bg-border-main border border-border-main text-text-main font-semibold rounded-xl transition-all duration-300 disabled:opacity-50"
                   >
                     {busy.compile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Hammer className="w-4 h-4" />}
                     Compile
@@ -1079,7 +1094,7 @@ export default function SolidityLabPage() {
                   <button
                     onClick={deploySource}
                     disabled={busy.deploy}
-                    className="inline-flex items-center justify-center gap-2 min-h-11 px-3 py-2 text-sm bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50"
+                    className="inline-flex items-center justify-center gap-2 min-h-11 px-3 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50"
                   >
                     {busy.deploy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />}
                     Deploy
@@ -1088,11 +1103,11 @@ export default function SolidityLabPage() {
               </div>
 
               {compilerMeta && (
-                <div className="mt-4 p-3 rounded-xl border border-slate-600 bg-slate-900/70">
-                  <p className="text-xs text-slate-300 font-semibold">Compiled Contract</p>
-                  <p className="text-sm text-slate-100 mt-1">{compilerMeta.contractName}</p>
+                <div className="mt-4 p-4 rounded-xl border border-border-main bg-bg-input">
+                  <p className="text-xs text-text-muted font-semibold">Compiled Contract</p>
+                  <p className="text-sm text-text-main mt-1">{compilerMeta.contractName}</p>
                   {(compilerMeta.warnings || []).length > 0 && (
-                    <p className="text-xs text-yellow-300 mt-1">
+                    <p className="text-xs text-yellow-500 mt-1">
                       Warning Count: {compilerMeta.warnings.length}
                     </p>
                   )}
@@ -1100,32 +1115,32 @@ export default function SolidityLabPage() {
               )}
             </div>
 
-            <div className="bg-linear-to-b from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 sm:p-5 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.55)]">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-                <ListChecks className="w-5 h-5 text-cyan-300" />
+            <div className="bg-bg-card border border-border-main rounded-3xl p-5 shadow-sm">
+              <h2 className="text-lg sm:text-xl font-bold text-text-main mb-4 flex items-center gap-2">
+                <ListChecks className="w-5 h-5 text-text-muted" />
                 Function Tester
               </h2>
 
               {!deployment?.contractAddress ? (
-                <div className="rounded-xl border border-slate-600 bg-slate-900 p-3 text-sm text-slate-200">
+                <div className="rounded-xl border border-border-main bg-bg-input p-3 text-sm text-text-muted">
                   Deploy a contract first, then functions will appear here.
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="rounded-xl border border-green-500/50 bg-green-500/10 p-3">
-                    <p className="text-xs font-semibold text-green-300">Active Deployment</p>
-                    <p className="text-sm text-green-100 break-all mt-1">
+                  <div className="rounded-xl border border-green-500/50 bg-green-500/10 p-4">
+                    <p className="text-xs font-semibold text-green-500">Active Deployment</p>
+                    <p className="text-sm text-text-main font-mono break-all mt-1">
                       {deployment.contractAddress}
                     </p>
-                    <p className="text-xs text-green-200 mt-1">{deployment.contractName}</p>
+                    <p className="text-xs text-text-muted mt-1">{deployment.contractName}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-200 mb-2">Sender Account</label>
+                    <label className="block text-sm font-semibold text-text-main mb-2">Sender Account</label>
                     <select
                       value={selectedSender}
                       onChange={(e) => setSelectedSender(e.target.value)}
-                      className="w-full min-h-11 sm:min-h-12 rounded-xl border-2 border-slate-600 bg-slate-900 px-3 py-2 text-sm font-mono text-slate-100 focus:border-blue-500 focus:outline-none"
+                      className="w-full min-h-11 sm:min-h-12 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm font-mono text-text-main focus:border-purple-500/50 focus:outline-none"
                     >
                       {(deployment.accounts || []).map((account, index) => (
                         <option key={account} value={account}>
@@ -1133,15 +1148,15 @@ export default function SolidityLabPage() {
                         </option>
                       ))}
                     </select>
-                    <p className="text-xs text-slate-400 mt-1">Select which account sends the transaction</p>
+                    <p className="text-xs text-text-muted mt-1">Select which account sends the transaction</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-200 mb-2">Function</label>
+                    <label className="block text-sm font-semibold text-text-main mb-2">Function</label>
                     <select
                       value={selectedFunctionSignature}
                       onChange={(e) => onFunctionSelectionChange(e.target.value)}
-                      className="w-full min-h-11 sm:min-h-12 rounded-xl border-2 border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                      className="w-full min-h-11 sm:min-h-12 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm text-text-main focus:border-purple-500/50 focus:outline-none"
                     >
                       {!selectedFunctionSignature && <option value="">Select a function</option>}
                       {functionOptions.map((fn) => {
@@ -1186,7 +1201,7 @@ export default function SolidityLabPage() {
                         value={callValueWei}
                         onChange={(e) => setCallValueWei(e.target.value)}
                         placeholder="0"
-                        className="w-full min-h-10 rounded-xl border border-slate-600 bg-slate-900 px-3 py-2 text-sm font-mono text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none"
+                        className="w-full min-h-10 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm font-mono text-text-main placeholder:text-text-muted focus:border-blue-500 focus:outline-none"
                       />
                     </div>
                   )}
@@ -1204,7 +1219,7 @@ export default function SolidityLabPage() {
                     <button
                       onClick={resetSession}
                       disabled={busy.reset}
-                      className="inline-flex items-center justify-center gap-2 min-h-11 px-3 py-2 text-sm bg-linear-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50"
+                      className="inline-flex items-center justify-center gap-2 min-h-11 px-3 py-2 text-sm bg-bg-input hover:bg-bg-card border border-border-main text-text-main font-semibold rounded-xl transition-all duration-300 disabled:opacity-50"
                     >
                       {busy.reset ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
                       Reset
@@ -1212,7 +1227,7 @@ export default function SolidityLabPage() {
                   </div>
 
                   {lastCallResult && (
-                    <pre className="code-theme-one-dark-pro rounded-xl p-3 text-xs sm:text-sm whitespace-pre-wrap wrap-break-word overflow-auto max-h-72">
+                    <pre className="bg-bg-input border border-border-main text-text-main font-mono rounded-xl p-3 text-xs sm:text-sm whitespace-pre-wrap wrap-break-word overflow-auto max-h-72">
                       {JSON.stringify(lastCallResult, null, 2)}
                     </pre>
                   )}

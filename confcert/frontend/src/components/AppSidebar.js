@@ -12,6 +12,8 @@ import {
   Home,
   Compass,
   Menu,
+  Hexagon,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -48,6 +50,11 @@ const navItems = [
     label: "Support",
     icon: Headset,
   },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: Settings,
+  },
 ];
 
 export default function AppSidebar() {
@@ -55,11 +62,11 @@ export default function AppSidebar() {
 
   return (
     <>
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-20 flex-col border-r border-slate-700/70 bg-slate-900/95 px-3 py-4 backdrop-blur-md md:flex lg:w-64 lg:px-4">
-        <div className="mb-6 flex items-center justify-center gap-2 text-slate-400 lg:justify-start">
-          <Compass className="h-5 w-5" />
-          <span className="hidden text-sm font-semibold tracking-wide lg:inline">
-            Quick Nav
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-20 flex-col bg-sidebar-bg px-3 py-4 md:flex lg:w-64 lg:px-4 transition-colors duration-300 border-r border-border-main">
+        <div className="mb-6 flex items-center justify-center gap-3 text-text-main lg:justify-start">
+          <Hexagon className="h-6 w-6 text-purple-500" />
+          <span className="hidden text-lg font-bold tracking-wide lg:inline">
+            LearnChain
           </span>
         </div>
 
@@ -77,15 +84,15 @@ export default function AppSidebar() {
                 asChild
                 variant="ghost"
                 className={cn(
-                  "h-10 justify-center rounded-lg border border-transparent px-2 md:w-full lg:h-11 lg:justify-start lg:px-3",
+                  "h-10 justify-center rounded-xl border border-transparent px-2 md:w-full lg:h-12 lg:justify-start lg:px-4 transition-all duration-200",
                   isActive
-                    ? "border-slate-600/80 bg-slate-800 text-slate-100 ring-1 ring-amber-500/20 hover:bg-slate-700"
-                    : "text-slate-400 hover:border-slate-700 hover:bg-slate-800/80 hover:text-slate-200",
+                    ? "bg-[#8B5CF6] text-white font-medium"
+                    : "text-text-muted hover:text-text-main hover:bg-bg-card/50",
                 )}
               >
-                <Link href={item.href} title={item.label}>
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span className="hidden lg:inline">{item.label}</span>
+                <Link href={item.href} title={item.label} className="flex items-center gap-3 w-full">
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <span className="hidden lg:inline text-[15px]">{item.label}</span>
                 </Link>
               </Button>
             );
@@ -93,44 +100,26 @@ export default function AppSidebar() {
         </nav>
       </aside>
 
-      <div className="fixed inset-x-0 top-0 z-50 border-b border-slate-700/80 bg-slate-900/95 backdrop-blur md:hidden">
-        <div className="flex h-16 items-center justify-between px-3">
-          <div className="flex items-center gap-2">
-            <div className="relative h-9 w-9 overflow-hidden rounded-md border border-slate-600/80 shadow-[0_8px_18px_-12px_rgba(0,0,0,0.8)]">
-              <Image
-                src="/final_icon.png"
-                alt="Blockwave"
-                fill
-                sizes="36px"
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="leading-tight">
-              <p className="text-sm font-semibold text-slate-100">Blockwave</p>
-              <p className="text-[11px] text-slate-400">Quick Access</p>
-            </div>
-          </div>
-
+      <div className="fixed inset-x-0 top-0 z-50 border-b border-border-main bg-bg-card/95 backdrop-blur md:hidden">
+        <div className="flex h-16 items-center px-3 gap-4">
           <Sheet>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 rounded-md border-slate-600/80 bg-slate-800 text-slate-100 hover:bg-slate-700"
+                size="icon"
+                className="h-10 w-10 shrink-0 border-border-main bg-bg-main text-text-main"
                 aria-label="Open quick navigation"
               >
-                <Menu className="h-4 w-4" />
-                <span>Quick Nav</span>
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
 
             <SheetContent
               side="left"
               title="Quick navigation menu"
-              className="w-72 border-r border-slate-700/80 bg-slate-900 px-4 py-6"
+              className="w-72 border-r border-border-main bg-bg-main px-4 py-6"
             >
-              <div className="mb-6 flex items-center gap-2 text-slate-400">
+              <div className="mb-6 flex items-center gap-2 text-text-muted">
                 <Compass className="h-5 w-5" />
                 <span className="text-sm font-semibold tracking-wide">Quick Nav</span>
               </div>
@@ -149,15 +138,15 @@ export default function AppSidebar() {
                         asChild
                         variant="ghost"
                         className={cn(
-                          "h-11 w-full justify-start rounded-lg border border-transparent px-3",
+                          "h-12 w-full justify-start rounded-xl border border-transparent px-4 transition-all duration-200",
                           isActive
-                            ? "border-slate-600/80 bg-slate-800 text-slate-100 ring-1 ring-amber-500/20 hover:bg-slate-700"
-                            : "text-slate-400 hover:border-slate-700 hover:bg-slate-800/80 hover:text-slate-200",
+                            ? "bg-[#8B5CF6] text-white font-medium"
+                            : "text-text-muted hover:text-text-main hover:bg-bg-card/50",
                         )}
                       >
-                        <Link href={item.href}>
-                          <Icon className="h-4 w-4 shrink-0" />
-                          <span>{item.label}</span>
+                        <Link href={item.href} className="flex items-center gap-3 w-full">
+                          <Icon className="h-5 w-5 shrink-0" />
+                          <span className="text-[15px]">{item.label}</span>
                         </Link>
                       </Button>
                     </SheetClose>
@@ -166,6 +155,10 @@ export default function AppSidebar() {
               </nav>
             </SheetContent>
           </Sheet>
+
+          <div className="flex-1 flex justify-end">
+            <p className="text-lg font-bold text-text-main">LearnChain</p>
+          </div>
         </div>
       </div>
     </>

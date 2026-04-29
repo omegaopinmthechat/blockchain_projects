@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ArrowLeft, Code, BookOpen, Rocket, Copy, CheckCircle, PlayCircle } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import StarBackground from "@/components/StarBackground";
 
 export default function Documentation() {
   const [copiedCode, setCopiedCode] = useState(null);
@@ -990,13 +989,12 @@ contract SimpleNFT {
   ];
 
   return (
-    <div className="min-h-screen relative">
-      <StarBackground starCount={120} />
+    <div className="min-h-screen relative text-text-muted overflow-x-hidden">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Header */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           <Link href="/">
-            <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-slate-600 text-slate-300 hover:bg-slate-800 rounded-xl font-semibold transition-all duration-300 mb-6">
+            <button className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-2 text-sm border-2 border-border-main text-text-muted hover:bg-bg-card rounded-xl font-semibold transition-all duration-300 mb-6">
               <ArrowLeft className="w-4 h-4" />
               Back to Home
             </button>
@@ -1004,13 +1002,13 @@ contract SimpleNFT {
 
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-text-main" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text-main">
                 Project Documentation
               </h1>
-              <p className="text-slate-400 text-sm sm:text-base lg:text-lg mt-2">
+              <p className="text-text-muted text-sm sm:text-base lg:text-lg mt-2">
                 Complete guide to smart contracts, code explanations, and deployment
               </p>
             </div>
@@ -1018,16 +1016,16 @@ contract SimpleNFT {
         </div>
 
         {/* Video Tutorials Section */}
-        <div className="mb-12 lg:mb-12 lg:bg-linear-to-b lg:from-slate-800 lg:to-slate-900 lg:border-2 lg:border-purple-500/30 lg:rounded-2xl lg:p-8">
+        <div className="mb-12 lg:mb-12 bg-bg-card border border-border-main rounded-3xl p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
-              <PlayCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              <PlayCircle className="w-6 h-6 sm:w-7 sm:h-7 text-text-main" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-text-main">
                 Video Tutorials
               </h2>
-              <p className="text-slate-400 text-sm sm:text-base mt-1">
+              <p className="text-text-muted text-sm sm:text-base mt-1">
                 Watch step-by-step guides to get started with blockchain development
               </p>
             </div>
@@ -1035,7 +1033,7 @@ contract SimpleNFT {
 
           <div className="grid grid-cols-1 gap-6 max-w-3xl mx-auto">
             {videoTutorials.map((video, index) => (
-              <div key={video.id} className="bg-slate-800/50 border border-slate-700 hover:border-purple-500/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20">
+              <div key={video.id} className="bg-bg-card border border-border-main hover:border-purple-500/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20">
                 <div className="relative w-full" style={{ paddingBottom: '45%' }}>
                   <iframe
                     className="absolute top-0 left-0 w-full h-full"
@@ -1049,14 +1047,14 @@ contract SimpleNFT {
                 </div>
                 <div className="p-4 sm:p-6">
                   <div className="flex items-start gap-2 mb-2">
-                    <div className="shrink-0 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                    <div className="shrink-0 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-xs font-bold text-text-main">
                       {index + 1}
                     </div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-200 leading-tight">
+                    <h3 className="text-base sm:text-lg font-bold text-text-muted leading-tight">
                       {video.title}
                     </h3>
                   </div>
-                  <p className="text-slate-400 text-sm mt-2">
+                  <p className="text-text-muted text-sm mt-2">
                     {video.description}
                   </p>
                 </div>
@@ -1064,19 +1062,19 @@ contract SimpleNFT {
             ))}
           </div>
 
-          <div className="mt-8 bg-purple-500/10 border border-purple-500/30 rounded-xl p-6">
-            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-purple-400 mb-2">Quick Tips</h3>
-            <ul className="space-y-2 text-purple-200 text-sm">
+          <div className="mt-8 bg-bg-card border border-border-main rounded-xl p-6">
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-text-main mb-2">Quick Tips</h3>
+            <ul className="space-y-2 text-text-muted text-sm">
               <li className="flex items-start gap-2">
-                <span className="text-purple-400 mt-1">•</span>
+                <span className="text-text-main mt-1">•</span>
                 Watch the MetaMask tutorial first to set up your wallet
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-purple-400 mt-1">•</span>
+                <span className="text-text-main mt-1">•</span>
                 Follow the deployment guide to deploy your first smart contract
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-purple-400 mt-1">•</span>
+                <span className="text-text-main mt-1">•</span>
                 Use Etherscan to verify and interact with deployed contracts
               </li>
             </ul>
@@ -1084,47 +1082,47 @@ contract SimpleNFT {
         </div>
 
         {/* Deployment Guide */}
-        <div className="mb-12 lg:mb-12 lg:bg-linear-to-b lg:from-slate-800 lg:to-slate-900 lg:border-2 lg:border-slate-700 lg:rounded-2xl lg:p-8">
+        <div className="mb-12 bg-bg-card border-2 border-border-main rounded-3xl p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-6">
-            <Rocket className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-200">
+            <Rocket className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-text-main">
               How to Deploy Smart Contracts on Remix IDE
             </h2>
           </div>
 
           <div className="space-y-6">
             {deploymentSteps.map((item) => (
-              <div key={item.step} className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+              <div key={item.step} className="bg-bg-card border border-border-main rounded-xl p-6">
                 <div className="flex items-start gap-4">
                   <div className="shrink-0 w-10 min-h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold">{item.step}</span>
+                    <span className="text-text-main font-bold">{item.step}</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-slate-200 mb-2">{item.title}</h3>
-                    <p className="text-slate-400">{item.content}</p>
+                    <h3 className="text-xl font-bold text-text-muted mb-2">{item.title}</h3>
+                    <p className="text-text-muted">{item.content}</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6">
-            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-yellow-400 mb-2">Important Notes</h3>
-            <ul className="space-y-2 text-yellow-200 text-sm">
+          <div className="mt-8 bg-bg-card border border-border-main rounded-xl p-6">
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-text-main mb-2">Important Notes</h3>
+            <ul className="space-y-2 text-text-muted text-sm">
               <li className="flex items-start gap-2">
-                <span className="text-yellow-400 mt-1">•</span>
+                <span className="text-text-main mt-1">•</span>
                 Always test contracts on Sepolia testnet before mainnet deployment
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-400 mt-1">•</span>
+                <span className="text-text-main mt-1">•</span>
                 Keep your contract address safe after deployment
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-400 mt-1">•</span>
+                <span className="text-text-main mt-1">•</span>
                 The deployer address becomes admin/university for access control
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-yellow-400 mt-1">•</span>
+                <span className="text-text-main mt-1">•</span>
                 Verify compiler version matches (0.8.31 or compatible)
               </li>
             </ul>
@@ -1134,28 +1132,27 @@ contract SimpleNFT {
         {/* Projects */}
         <div className="space-y-12">
           {projects.map((project) => (
-            <div key={project.id} className={`lg:bg-linear-to-b lg:from-slate-800 lg:to-slate-900 lg:border-2 lg:border-${project.color}-500/30 lg:rounded-2xl lg:p-8`}>
+            <div key={project.id} className={`bg-bg-card border-2 border-${project.color}-500/30 rounded-3xl p-6 sm:p-8 shadow-sm transition-all hover:border-${project.color}-500/50`}>
               {/* Project Header */}
               <div className="mb-6">
                 <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-${project.color}-400 mb-3`}>
                   {project.name}
                 </h2>
-                <p className="text-slate-300 text-sm sm:text-base lg:text-lg mb-4">{project.description}</p>
-                <div className="inline-block bg-slate-800 border border-slate-700 rounded-lg px-4 py-2">
-                  <p className="text-sm text-slate-400">Contract Address</p>
-                  <p className="text-slate-300 font-mono text-sm">{project.address}</p>
+                <p className="text-text-muted text-sm sm:text-base lg:text-lg mb-4">{project.description}</p>
+                <div className="inline-block bg-bg-card border border-border-main rounded-lg px-4 py-2">
+                  <p className="text-sm text-text-muted">Contract Address</p>
+                  <p className="text-text-muted font-mono text-sm">{project.address}</p>
                 </div>
               </div>
 
-              {/* Features */}
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-slate-200 mb-3 flex items-center gap-2">
+                <h3 className="text-xl font-bold text-text-main mb-3 flex items-center gap-2">
                   <Code className="w-4 h-4 sm:w-5 sm:h-5" />
                   Key Features
                 </h3>
                 <ul className="space-y-2">
                   {project.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-slate-300">
+                    <li key={idx} className="flex items-start gap-2 text-text-muted">
                       <span className={`text-${project.color}-400 mt-1`}>•</span>
                       {feature}
                     </li>
@@ -1166,13 +1163,13 @@ contract SimpleNFT {
               {/* Solidity Code */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xl font-bold text-slate-200 flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
                     <Code className="w-4 h-4 sm:w-5 sm:h-5" />
                     Complete Solidity Code
                   </h3>
                   <button
                     onClick={() => copyToClipboard(project.code, project.id)}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg transition-all"
+                    className="flex items-center gap-2 px-4 py-2 bg-bg-input hover:bg-border-main text-text-main rounded-lg transition-all border border-border-main"
                   >
                     {copiedCode === project.id ? (
                       <>
@@ -1212,14 +1209,14 @@ contract SimpleNFT {
 
               {/* Code Explanation */}
               <div>
-                <h3 className="text-xl font-bold text-slate-200 mb-4">Code Explanation</h3>
+                <h3 className="text-xl font-bold text-text-muted mb-4">Code Explanation</h3>
                 <div className="space-y-4">
                   {project.explanation.map((item, idx) => (
-                    <div key={idx} className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+                    <div key={idx} className="bg-bg-card border border-border-main rounded-xl p-6">
                       <h4 className={`text-sm sm:text-base lg:text-lg font-bold text-${project.color}-400 mb-2`}>
                         {item.title}
                       </h4>
-                      <p className="text-slate-300">{item.content}</p>
+                      <p className="text-text-muted">{item.content}</p>
                     </div>
                   ))}
                 </div>
@@ -1230,13 +1227,13 @@ contract SimpleNFT {
 
         {/* Footer */}
         <div className="mt-16 text-center">
-          <div className="lg:bg-linear-to-b lg:from-slate-800 lg:to-slate-900 lg:border-2 lg:border-slate-700 lg:rounded-2xl lg:p-8">
-            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-200 mb-4">Ready to Deploy?</h3>
-            <p className="text-slate-400 mb-6">
+          <div className="bg-bg-card border-2 border-border-main rounded-3xl p-6 sm:p-8">
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-text-main mb-4">Ready to Deploy?</h3>
+            <p className="text-text-muted mb-6">
               Follow the deployment guide above and use the contract codes provided. All contracts are tested and production-ready.
             </p>
             <Link href="/">
-              <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95">
+              <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-text-main rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95">
                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 Back to Projects
               </button>

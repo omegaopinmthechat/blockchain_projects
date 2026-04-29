@@ -13,7 +13,6 @@ import {
   Paperclip,
   X,
 } from "lucide-react";
-import StarBackground from "@/components/StarBackground";
 
 const MAX_NAME = 120;
 const MAX_SUBJECT = 180;
@@ -152,55 +151,54 @@ export default function SupportPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
-      <StarBackground starCount={110} />
+    <main className="relative min-h-screen overflow-hidden text-text-main">
 
       <div className="relative z-10 mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-10 lg:py-14">
         <Link
           href="/"
-          className="mb-6 inline-flex items-center gap-2 rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+          className="mb-6 inline-flex items-center gap-2 rounded-xl border border-border-main bg-bg-card/70 px-4 py-2 text-sm font-medium text-text-main transition hover:bg-bg-input"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Link>
 
-        <section className="rounded-xl border border-slate-700 bg-slate-900 p-5 shadow-sm sm:p-8">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-800 text-slate-100">
-              <Headset className="h-5 w-5" />
+        <section className="rounded-3xl border border-border-main bg-bg-card p-6 shadow-sm sm:p-10">
+          <div className="mb-8 flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-bg-input border border-border-main text-text-main">
+              <Headset className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-slate-100 sm:text-3xl">Contact Support</h1>
-              <p className="mt-1 text-sm text-slate-300 sm:text-base">
+              <h1 className="text-2xl font-bold text-text-main sm:text-3xl">Contact Support</h1>
+              <p className="mt-1 text-sm text-text-muted sm:text-base">
                 Need help with LearnChain? Send your issue and we will get back to you.
               </p>
             </div>
           </div>
 
-          <div className="mb-6 grid gap-3 sm:grid-cols-2">
+          <div className="mb-8 grid gap-4 sm:grid-cols-2">
             <a
               href="mailto:support@learnchain.live"
-              className="rounded-lg border border-slate-700 bg-slate-900/70 p-4 text-sm text-slate-200 transition hover:bg-slate-800"
+              className="rounded-2xl border border-border-main bg-bg-input/50 p-5 text-sm text-text-main transition hover:bg-bg-input hover:border-purple-500/50"
             >
-              <p className="mb-2 inline-flex items-center gap-2 font-semibold text-slate-100">
+              <p className="mb-2 inline-flex items-center gap-2 font-bold text-text-main">
                 <Mail className="h-4 w-4" />
                 Direct Support Email
               </p>
-              <p className="break-all text-slate-300">support@learnchain.live</p>
+              <p className="break-all text-text-muted">support@learnchain.live</p>
             </a>
 
-            <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-4 text-sm text-slate-200">
-              <p className="mb-2 font-semibold text-slate-100">Response Tips</p>
-              <p className="text-slate-300">
+            <div className="rounded-2xl border border-border-main bg-bg-input/50 p-5 text-sm text-text-main">
+              <p className="mb-2 font-bold text-text-main">Response Tips</p>
+              <p className="text-text-muted">
                 Add wallet address, page URL, and optional screenshot to speed up resolution.
               </p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-200" htmlFor="name">
+                <label className="mb-2 block text-sm font-semibold text-text-main" htmlFor="name">
                   Name
                 </label>
                 <input
@@ -211,12 +209,12 @@ export default function SupportPage() {
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="Your full name"
-                  className="w-full rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-slate-500"
+                  className="w-full rounded-xl border border-border-main bg-bg-input px-4 py-3 text-sm text-text-main outline-none transition placeholder:text-text-muted focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-200" htmlFor="email">
+                <label className="mb-2 block text-sm font-semibold text-text-main" htmlFor="email">
                   Email
                 </label>
                 <input
@@ -226,13 +224,13 @@ export default function SupportPage() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="you@example.com"
-                  className="w-full rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-slate-500"
+                  className="w-full rounded-xl border border-border-main bg-bg-input px-4 py-3 text-sm text-text-main outline-none transition placeholder:text-text-muted focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50"
                 />
               </div>
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-200" htmlFor="subject">
+              <label className="mb-2 block text-sm font-semibold text-text-main" htmlFor="subject">
                 Subject
               </label>
               <input
@@ -243,15 +241,15 @@ export default function SupportPage() {
                 value={subject}
                 onChange={(event) => setSubject(event.target.value)}
                 placeholder="What can we help you with?"
-                className="w-full rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-slate-500"
+                className="w-full rounded-xl border border-border-main bg-bg-input px-4 py-3 text-sm text-text-main outline-none transition placeholder:text-text-muted focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50"
               />
-              <p className="mt-2 text-right text-xs text-slate-400">
+              <p className="mt-2 text-right text-xs text-text-muted">
                 {MAX_SUBJECT - subject.length} characters left
               </p>
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-200" htmlFor="message">
+              <label className="mb-2 block text-sm font-semibold text-text-main" htmlFor="message">
                 Message
               </label>
               <textarea
@@ -262,36 +260,36 @@ export default function SupportPage() {
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
                 placeholder="Describe your issue in detail..."
-                className="w-full resize-y rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-slate-500"
+                className="w-full resize-y rounded-xl border border-border-main bg-bg-input px-4 py-3 text-sm text-text-main outline-none transition placeholder:text-text-muted focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50"
               />
-              <p className="mt-2 text-right text-xs text-slate-400">
+              <p className="mt-2 text-right text-xs text-text-muted">
                 {remainingChars} characters left
               </p>
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-200" htmlFor="attachment">
+              <label className="mb-2 block text-sm font-semibold text-text-main" htmlFor="attachment">
                 Optional Image (JPG, PNG, WEBP, GIF up to 2 MB)
               </label>
-              <div className="rounded-md border border-slate-700 bg-slate-900 p-3">
+              <div className="rounded-xl border border-border-main bg-bg-card p-3">
                 <input
                   id="attachment"
                   ref={fileInputRef}
                   type="file"
                   accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif"
                   onChange={handleAttachmentChange}
-                  className="block w-full text-sm text-slate-300 file:mr-3 file:rounded-md file:border file:border-slate-600 file:bg-slate-800 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-200 hover:file:bg-slate-700"
+                  className="block w-full text-sm text-text-muted file:mr-3 file:rounded-lg file:border file:border-border-main file:bg-bg-input file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-text-main hover:file:bg-bg-card"
                 />
 
                 {attachment ? (
-                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200">
+                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-border-main bg-bg-input px-3 py-2 text-sm text-text-main">
                     <Paperclip className="h-4 w-4" />
                     <span className="max-w-full truncate">{attachment.name}</span>
-                    <span className="text-slate-400">({Math.ceil(attachment.size / 1024)} KB)</span>
+                    <span className="text-text-muted">({Math.ceil(attachment.size / 1024)} KB)</span>
                     <button
                       type="button"
                       onClick={resetAttachment}
-                      className="ml-auto inline-flex items-center gap-1 rounded-md border border-slate-600 bg-slate-900 px-2 py-1 text-xs text-slate-200 hover:bg-slate-700"
+                      className="ml-auto inline-flex items-center gap-1 rounded-md border border-border-main bg-bg-card px-2 py-1 text-xs text-text-main hover:bg-bg-input"
                     >
                       <X className="h-3.5 w-3.5" />
                       Remove
@@ -300,32 +298,27 @@ export default function SupportPage() {
                 ) : null}
 
                 {attachmentError ? (
-                  <p className="mt-2 text-xs text-rose-600">{attachmentError}</p>
+                  <p className="mt-2 text-sm text-red-400">{attachmentError}</p>
                 ) : null}
               </div>
             </div>
 
-            {result.message ? (
-              <div
-                className={`flex items-start gap-2 rounded-md border px-4 py-3 text-sm ${
-                  result.type === "success"
-                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-200"
-                    : "border-rose-500/40 bg-rose-500/10 text-rose-200"
-                }`}
-              >
-                {result.type === "success" ? (
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
-                ) : (
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                )}
-                <span>{result.message}</span>
+            {result.type === "success" ? (
+              <div className="flex items-center gap-3 rounded-xl border border-green-500/50 bg-green-500/10 p-4 text-green-400">
+                <CheckCircle2 className="h-5 w-5 shrink-0" />
+                <p className="text-sm">{result.message}</p>
+              </div>
+            ) : result.type === "error" ? (
+              <div className="flex items-center gap-3 rounded-xl border border-red-500/50 bg-red-500/10 p-4 text-red-400">
+                <AlertCircle className="h-5 w-5 shrink-0" />
+                <p className="text-sm">{result.message}</p>
               </div>
             ) : null}
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-slate-800 bg-slate-800 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 py-3 text-sm font-bold text-white transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-70 sm:py-3.5 sm:text-base"
             >
               {isSubmitting ? (
                 <>

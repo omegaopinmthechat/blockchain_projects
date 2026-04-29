@@ -17,7 +17,6 @@ import {
   TerminalSquare,
   Wrench,
 } from "lucide-react";
-import StarBackground from "@/components/StarBackground";
 
 const RELEASES_LATEST_API = "/api/releases/latest";
 const RELEASES_PAGE_URL =
@@ -172,18 +171,12 @@ export default function OfflinePlaygroundPage() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      <StarBackground starCount={120} />
 
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="orb orb-one" />
-        <div className="orb orb-two" />
-        <div className="orb orb-three" />
-      </div>
 
       <main className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
         <FadeUp className="mb-6">
           <Link href="/solidity-lab">
-            <button className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border-2 border-slate-600 px-4 py-2 text-sm font-semibold text-slate-200 transition-all duration-300 hover:bg-slate-800">
+            <button className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-border-main bg-transparent px-5 py-2 text-sm font-medium text-text-muted transition-all duration-300 hover:bg-bg-input">
               <ArrowLeft className="h-4 w-4" />
               Back to Solidity Lab
             </button>
@@ -192,88 +185,74 @@ export default function OfflinePlaygroundPage() {
 
         <section className="mb-10 grid grid-cols-1 gap-6 xl:grid-cols-12 xl:gap-8">
           <FadeUp delay={0.05} className="xl:col-span-7">
-            <div className="rounded-3xl border-2 border-slate-700 bg-linear-to-b from-slate-800/95 to-slate-900/95 p-6 shadow-[0_22px_60px_-18px_rgba(0,0,0,0.65)] sm:p-8 lg:p-10">
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-500/35 bg-linear-to-r from-blue-500/20 to-cyan-500/20 px-4 py-2">
-                <Sparkles className="h-4 w-4 text-blue-300" />
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300 sm:text-sm">
+            <div className="p-2 sm:p-6 lg:p-8">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-transparent px-4 py-2">
+                <Sparkles className="h-4 w-4 text-purple-400" />
+                <span className="text-xs font-semibold uppercase tracking-[0.1em] text-purple-400 sm:text-sm">
                   Offline Solidity Playground
                 </span>
               </div>
 
-              <h1 className="mb-4 text-3xl font-bold leading-tight text-slate-100 sm:text-4xl lg:text-5xl">
-                Download The Desktop Playground And Build Contracts Offline
+              <h1 className="mb-6 text-4xl font-bold leading-tight text-text-main sm:text-5xl lg:text-6xl tracking-tight">
+                Download The<br />Desktop Playground<br />And Build Contracts<br />Offline
               </h1>
 
-              <p className="mb-6 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base lg:text-lg">
+              <p className="mb-8 max-w-2xl text-base leading-relaxed text-text-muted sm:text-lg">
                 Install the Windows setup and get a complete local workflow for writing Solidity,
                 compiling, deploying to an in-memory EVM, and testing contract functions from one
                 desktop app.
               </p>
 
-              <div className="flex flex-wrap gap-2.5 sm:gap-3">
-                <span className="rounded-full border border-emerald-500/35 bg-emerald-500/12 px-3 py-1.5 text-xs font-semibold text-emerald-300">
-                  Version {releaseInfo.versionLabel}
-                </span>
-                <span className="rounded-full border border-blue-500/35 bg-blue-500/12 px-3 py-1.5 text-xs font-semibold text-blue-300">
-                  Windows Installer (.exe)
-                </span>
-                <span className="rounded-full border border-violet-500/35 bg-violet-500/12 px-3 py-1.5 text-xs font-semibold text-violet-300">
-                  In-Memory EVM
-                </span>
-                <span className="rounded-full border border-amber-500/35 bg-amber-500/12 px-3 py-1.5 text-xs font-semibold text-amber-300">
-                  Beta Build
-                </span>
-              </div>
             </div>
           </FadeUp>
 
           <FadeUp delay={0.15} className="xl:col-span-5">
-            <div className="relative overflow-hidden rounded-3xl border-2 border-slate-700 bg-linear-to-b from-slate-900/95 to-slate-950/95 p-6 shadow-[0_22px_60px_-18px_rgba(0,0,0,0.7)] sm:p-7">
-              <div className="mb-5 flex items-center gap-4">
-                <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-slate-600/80 bg-slate-800 p-2 shadow-[0_12px_28px_-16px_rgba(56,189,248,0.8)]">
+            <div className="relative overflow-hidden rounded-3xl border border-border-main bg-bg-card p-6 sm:p-8">
+              <div className="mb-8 flex items-center gap-4">
+                <div className="relative h-14 w-14 overflow-hidden rounded-2xl bg-bg-input flex items-center justify-center">
                   <Image
                     src="/final_icon.png"
                     alt="Solidity Playground app icon"
                     fill
                     sizes="56px"
-                    className="object-cover"
+                    className="object-contain p-2"
                     priority
                   />
                 </div>
                 <div>
-                  <p className="text-lg font-semibold text-slate-100">Ready To Install</p>
-                  <p className="text-sm text-slate-400">
-                    Official {releaseInfo.versionTag} desktop setup
+                  <p className="text-xl font-bold text-text-main">Ready To Install</p>
+                  <p className="text-sm text-text-muted">
+                    Official v{releaseInfo.versionLabel} desktop setup
                   </p>
                 </div>
               </div>
 
-              <div className="mb-6 grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-3">
-                  <p className="text-[11px] uppercase tracking-wider text-slate-500">Platform</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-200">Windows</p>
+              <div className="mb-8 grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-border-main bg-bg-input p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Platform</p>
+                  <p className="mt-1 text-sm font-medium text-text-main">Windows</p>
                 </div>
-                <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-3">
-                  <p className="text-[11px] uppercase tracking-wider text-slate-500">Package</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-200">.exe Setup</p>
+                <div className="rounded-2xl border border-border-main bg-bg-input p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Package</p>
+                  <p className="mt-1 text-sm font-medium text-text-main">.exe Setup</p>
                 </div>
-                <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-3">
-                  <p className="text-[11px] uppercase tracking-wider text-slate-500">Mode</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-200">Offline Local</p>
+                <div className="rounded-2xl border border-border-main bg-bg-input p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Mode</p>
+                  <p className="mt-1 text-sm font-medium text-text-main">Offline Local</p>
                 </div>
-                <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-3">
-                  <p className="text-[11px] uppercase tracking-wider text-slate-500">Flow</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-200">Compile To Test</p>
+                <div className="rounded-2xl border border-border-main bg-bg-input p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Flow</p>
+                  <p className="mt-1 text-sm font-medium text-text-main">Compile To Test</p>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3">
                 {releaseInfo.downloadUrl ? (
                   <a
                     href={releaseInfo.downloadUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-linear-to-r from-emerald-500 to-green-500 px-5 py-3 text-sm font-bold text-white shadow-[0_14px_36px_-20px_rgba(34,197,94,0.8)] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_20px_42px_-20px_rgba(34,197,94,0.9)]"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] px-5 py-3 text-sm font-bold text-text-main transition-all duration-300"
                   >
                     <Download className="h-4 w-4" />
                     Download Setup {releaseInfo.versionLabel}
@@ -282,7 +261,7 @@ export default function OfflinePlaygroundPage() {
                   <button
                     type="button"
                     disabled
-                    className="inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-800/70 px-5 py-3 text-sm font-bold text-slate-400"
+                    className="inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-border-main bg-bg-input px-5 py-3 text-sm font-bold text-text-muted"
                   >
                     <Download className="h-4 w-4" />
                     Download Unavailable
@@ -293,109 +272,126 @@ export default function OfflinePlaygroundPage() {
                   href={releaseInfo.releaseUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-800/80 px-5 py-2.5 text-sm font-semibold text-slate-200 transition-all duration-300 hover:bg-slate-700"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border-main bg-transparent px-5 py-3 text-sm font-semibold text-text-muted transition-all duration-300 hover:bg-bg-input"
                 >
                   Open Release Page
                   <ExternalLink className="h-4 w-4" />
                 </a>
-
-                <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3">
-                  <div className="mb-2 flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-blue-300" />
-                    <p className="text-xs font-semibold uppercase tracking-wider text-blue-300">
-                      LTS Version Available
-                    </p>
-                  </div>
-                  <p className="mb-2 text-xs leading-relaxed text-slate-300">
-                    <span className="font-semibold text-blue-200">LTS:</span> Long Term Support - Last stable version (1.1.0) recommended for production use.
-                  </p>
-                  <a
-                    href={LTS_DOWNLOAD_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-blue-500/40 bg-blue-500/20 px-4 py-2 text-xs font-semibold text-blue-200 transition-all duration-300 hover:bg-blue-500/30"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    Download LTS 1.1.0
-                  </a>
-                </div>
               </div>
+            </div>
+
+            <div className="mt-6 rounded-3xl border border-border-main bg-bg-card p-6 sm:p-8">
+              <div className="mb-4 flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-purple-500" />
+                <p className="text-sm font-bold uppercase tracking-wider text-text-main">
+                  LEGACY VERSION AVAILABLE
+                </p>
+              </div>
+              <p className="mb-6 text-sm leading-relaxed text-text-muted">
+                <span className="font-semibold text-text-muted">Legacy:</span> Last stable older version (1.1.0) is still available but no longer actively supported.
+              </p>
+              <a
+                href={LTS_DOWNLOAD_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex w-full min-h-12 items-center justify-center gap-2 rounded-xl border border-border-main bg-transparent px-5 py-3 text-sm font-semibold text-text-muted transition-all duration-300 hover:bg-bg-input"
+              >
+                <Download className="h-4 w-4" />
+                Download Legacy 1.1.0
+              </a>
             </div>
           </FadeUp>
         </section>
 
-        <FadeUp delay={0.05} className="mb-10">
-          <div className="mb-6 flex items-center gap-2">
-            <h2 className="text-2xl font-bold text-slate-100 sm:text-3xl">Core Features</h2>
-            <span className="h-px flex-1 bg-linear-to-r from-slate-600 to-transparent" />
-          </div>
+        <FadeUp delay={0.05} className="mb-12 border-t border-border-main pt-12">
+          <h2 className="text-3xl font-bold text-text-main mb-8">Core Features</h2>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {featureCards.map((feature, index) => {
               const Icon = feature.icon;
+              
+              // Map old accents to new simplified dark styles
+              let iconBg = "bg-purple-500/10";
+              let iconColor = "text-purple-500";
+              if (feature.title === "Compile And Deploy") {
+                iconBg = "bg-green-500/10";
+                iconColor = "text-green-500";
+              } else if (feature.title === "Function Tester") {
+                iconBg = "bg-fuchsia-500/10";
+                iconColor = "text-fuchsia-500";
+              } else if (feature.title === "Live Terminal Feedback") {
+                iconBg = "bg-yellow-500/10";
+                iconColor = "text-yellow-500";
+              } else if (feature.title === "Offline First") {
+                iconBg = "bg-blue-500/10";
+                iconColor = "text-blue-500";
+              } else if (feature.title === "Beta Friendly") {
+                iconBg = "bg-pink-500/10";
+                iconColor = "text-pink-500";
+              }
 
               return (
                 <motion.article
                   key={feature.title}
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.45, delay: 0.08 * index }}
-                  className={`rounded-2xl border bg-linear-to-br p-5 sm:p-6 ${feature.accent}`}
+                  className="rounded-3xl border border-border-main bg-bg-card p-8 hover:border-border-main transition-colors"
                 >
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 bg-slate-950/45">
-                    <Icon className="h-5 w-5" />
+                  <div className={`mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl ${iconBg}`}>
+                    <Icon className={`h-6 w-6 ${iconColor}`} />
                   </div>
-                  <h3 className="mb-2 text-lg font-semibold text-slate-100">{feature.title}</h3>
-                  <p className="text-sm leading-relaxed text-slate-300">{feature.description}</p>
+                  <h3 className="mb-3 text-xl font-bold text-text-main">{feature.title}</h3>
+                  <p className="text-base leading-relaxed text-text-muted">{feature.description}</p>
                 </motion.article>
               );
             })}
           </div>
         </FadeUp>
 
-        <section className="mb-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <section className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {walkthroughCards.map((item, index) => (
             <motion.article
               key={item.title}
-              initial={{ opacity: 0, y: 26 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.5, delay: 0.12 * index }}
-              className="rounded-2xl border-2 border-slate-700 bg-linear-to-b from-slate-800/90 to-slate-900/95 p-5 sm:p-6"
+              className="rounded-3xl border border-border-main bg-bg-card p-8"
             >
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-blue-500/35 bg-blue-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-300">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-transparent px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-purple-400">
                 {item.label}
               </div>
 
-              <h3 className="text-xl font-semibold text-slate-100">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-300">{item.summary}</p>
+              <h3 className="text-2xl font-bold text-text-main">{item.title}</h3>
+              <p className="mt-3 text-base leading-relaxed text-text-muted">{item.summary}</p>
 
-              <div className="mock-screen mt-4 rounded-xl border border-slate-700 bg-slate-900/80 p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="h-2 w-20 rounded-full bg-slate-600/70" />
-                  <span className="h-2 w-8 rounded-full bg-slate-700/80" />
+              <div className="mock-screen mt-6 rounded-2xl border border-border-main bg-bg-input p-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="h-2 w-20 rounded-full bg-border-main" />
+                  <span className="h-2 w-8 rounded-full bg-text-muted" />
                 </div>
 
-                <div className="grid grid-cols-12 gap-2">
-                  <div className="col-span-4 space-y-2 rounded-lg border border-slate-700/80 bg-slate-950/60 p-2">
-                    <div className="h-2 rounded bg-cyan-500/35" />
-                    <div className="h-2 rounded bg-blue-500/25" />
-                    <div className="h-2 rounded bg-slate-700/80" />
-                    <div className="h-10 rounded bg-slate-800/70" />
+                <div className="grid grid-cols-12 gap-3">
+                  <div className="col-span-4 space-y-2 rounded-xl border border-border-main/80 bg-bg-card p-3">
+                    <div className="h-2 rounded bg-border-main" />
+                    <div className="h-2 rounded bg-border-main" />
+                    <div className="h-2 rounded bg-border-main" />
+                    <div className="h-12 rounded bg-bg-input" />
                   </div>
-                  <div className="col-span-8 rounded-lg border border-slate-700/80 bg-linear-to-br from-slate-800 to-slate-900 p-2">
-                    <div className="mb-2 h-2 w-28 rounded bg-violet-500/35" />
-                    <div className="h-20 rounded bg-[radial-gradient(circle_at_20%_10%,rgba(56,189,248,0.18),transparent_55%),radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.18),transparent_45%),linear-gradient(145deg,#111827,#0f172a)]" />
+                  <div className="col-span-8 rounded-xl border border-border-main/80 bg-bg-card p-3">
+                    <div className="mb-3 h-2 w-28 rounded bg-border-main" />
+                    <div className="h-24 rounded bg-bg-input" />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 space-y-2">
+              <div className="mt-6 space-y-3">
                 {item.points.map((point) => (
-                  <div key={point} className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
-                    <p className="text-sm text-slate-300">{point}</p>
+                  <div key={point} className="flex items-start gap-3">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-purple-500" />
+                    <p className="text-base text-text-muted">{point}</p>
                   </div>
                 ))}
               </div>
@@ -405,70 +401,8 @@ export default function OfflinePlaygroundPage() {
       </main>
 
       <style jsx>{`
-        .orb {
-          position: absolute;
-          border-radius: 9999px;
-          filter: blur(50px);
-          opacity: 0.38;
-          animation: drift 14s ease-in-out infinite;
-        }
-
-        .orb-one {
-          width: 280px;
-          height: 280px;
-          top: -70px;
-          left: -70px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.7), rgba(56, 189, 248, 0.08));
-        }
-
-        .orb-two {
-          width: 240px;
-          height: 240px;
-          top: 18%;
-          right: -60px;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.65), rgba(14, 165, 233, 0.06));
-          animation-delay: 2.2s;
-        }
-
-        .orb-three {
-          width: 260px;
-          height: 260px;
-          bottom: -95px;
-          right: 22%;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.45), rgba(14, 116, 144, 0.04));
-          animation-delay: 4s;
-        }
-
         .mock-screen {
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 12px 28px -20px rgba(0, 0, 0, 0.8);
-          animation: pulseGlow 3.8s ease-in-out infinite;
-        }
-
-        @keyframes drift {
-          0%,
-          100% {
-            transform: translate3d(0, 0, 0) scale(1);
-          }
-          50% {
-            transform: translate3d(0, -20px, 0) scale(1.04);
-          }
-        }
-
-        @keyframes pulseGlow {
-          0%,
-          100% {
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 12px 28px -20px rgba(0, 0, 0, 0.8);
-          }
-          50% {
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 20px 34px -18px rgba(56, 189, 248, 0.3);
-          }
-        }
-
-        @media (max-width: 640px) {
-          .orb {
-            opacity: 0.26;
-            filter: blur(58px);
-          }
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 8px 16px -8px rgba(0, 0, 0, 0.5);
         }
       `}</style>
     </div>

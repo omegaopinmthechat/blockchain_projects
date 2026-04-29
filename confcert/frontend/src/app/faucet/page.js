@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Droplets, Loader2, CheckCircle2, XCircle, AlertCircle, Zap, Wallet, Timer, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import StarBackground from "@/components/StarBackground";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5500';
 
@@ -223,7 +222,6 @@ export default function FaucetPage() {
 
   return (
     <div className="min-h-screen relative p-4 sm:p-8">
-      <StarBackground starCount={100} />
 
       {/* Back to Home */}
       <div className="relative z-10 max-w-3xl mx-auto mb-6">
@@ -244,30 +242,30 @@ export default function FaucetPage() {
               <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-50 rounded-full animate-pulse"></div>
               <Droplets className="relative w-16 h-16 text-blue-400 animate-bounce" />
             </div>
-            <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent animate-fade-in">
+            <h1 className="text-5xl sm:text-6xl font-bold text-text-main animate-fade-in">
               Sepolia Faucet
             </h1>
           </div>
-          <p className="text-blue-200/80 text-lg font-medium">
+          <p className="text-text-muted text-lg font-semibold mt-2">
             Get free testnet ETH for development
           </p>
         </div>
 
         {/* Faucet Info Card */}
         {faucetInfo?.configured && (
-          <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-blue-500/20 shadow-xl hover:shadow-2xl transition-all duration-300">
+          <div className="bg-bg-input/50 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-border-main shadow-sm hover:shadow-md transition-all duration-300">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
-              <div className="group hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 rounded-xl p-4">
-                <div className="text-blue-300/70 text-sm mb-2 font-medium">Amount per claim</div>
-                <div className="text-white text-2xl font-bold flex items-center justify-center gap-2">
-                  <Droplets className="w-6 h-6 text-blue-400 group-hover:animate-pulse" />
+              <div className="group hover:scale-105 transition-all duration-300 rounded-xl p-4 bg-bg-card border border-border-main">
+                <div className="text-text-muted text-sm mb-2 font-medium">Amount per claim</div>
+                <div className="text-text-main text-2xl font-bold flex items-center justify-center gap-2">
+                  <Droplets className="w-6 h-6 text-blue-500 group-hover:animate-pulse" />
                   {faucetInfo.dripAmount} ETH
                 </div>
               </div>
-              <div className="group hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 rounded-xl p-4">
-                <div className="text-blue-300/70 text-sm mb-2 font-medium">Cooldown period</div>
-                <div className="text-white text-2xl font-bold flex items-center justify-center gap-2">
-                  <Timer className="w-6 h-6 text-purple-400 group-hover:animate-spin" />
+              <div className="group hover:scale-105 transition-all duration-300 rounded-xl p-4 bg-bg-card border border-border-main">
+                <div className="text-text-muted text-sm mb-2 font-medium">Cooldown period</div>
+                <div className="text-text-main text-2xl font-bold flex items-center justify-center gap-2">
+                  <Timer className="w-6 h-6 text-purple-500 group-hover:animate-spin" />
                   {faucetInfo.cooldownHours}h
                 </div>
               </div>
@@ -276,9 +274,8 @@ export default function FaucetPage() {
         )}
 
         {/* Main Faucet Card */}
-        <div className="bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-700 hover:shadow-3xl transition-all duration-300 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-800/5 via-transparent to-gray-700/5 rounded-3xl"></div>
-          <div className="relative p-8 sm:p-10">
+        <div className="bg-bg-card rounded-3xl overflow-hidden border border-border-main shadow-sm transition-all duration-300 relative">
+          <div className="relative p-6 sm:p-10">
             {/* Network Badge */}
             {!isServiceDown && (
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-5 py-2.5 rounded-full text-sm font-bold mb-6 shadow-lg">
@@ -301,26 +298,26 @@ export default function FaucetPage() {
 
             {/* Info Box */}
             {!isServiceDown && (
-              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 mb-8 border-2 border-gray-600/50 shadow-inner">
-                <h3 className="font-bold text-gray-200 mb-4 text-lg flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-blue-400" />
+              <div className="bg-bg-input/50 rounded-2xl p-6 mb-8 border border-border-main shadow-sm">
+                <h3 className="font-bold text-text-main mb-4 text-lg flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-blue-500" />
                   How it works:
                 </h3>
-                <ul className="space-y-3 text-gray-300">
+                <ul className="space-y-3 text-text-muted">
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm leading-relaxed">Enter your Sepolia wallet address</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm leading-relaxed">Solve a cryptographic puzzle (Proof-of-Work) to prevent abuse</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm leading-relaxed">Receive {faucetInfo?.dripAmount || '0.05'} SepoliaETH instantly</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm leading-relaxed">Wait 24 hours before claiming again</span>
                   </li>
                 </ul>
@@ -330,7 +327,7 @@ export default function FaucetPage() {
             {/* Address Input */}
             {!isServiceDown && (
               <div className="mb-6">
-                <label className="block text-gray-200 font-bold mb-3 text-sm">
+                <label className="block text-text-main font-bold mb-3 text-sm">
                   Wallet Address
                 </label>
                 <div className="flex gap-3">
@@ -339,11 +336,11 @@ export default function FaucetPage() {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="0x..."
-                    className="flex-1 px-5 py-4 border-2 border-gray-600 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 text-sm font-mono bg-gray-800 text-gray-200 shadow-inner hover:shadow-md focus:shadow-lg placeholder-gray-500"
+                    className="flex-1 px-5 py-4 border border-border-main rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-300 text-sm font-mono bg-bg-input text-text-main shadow-sm placeholder-text-muted"
                   />
                   <button
                     onClick={connectMetaMask}
-                    className="px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-bold transition-all duration-300 flex items-center gap-2 whitespace-nowrap shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+                    className="px-6 py-4 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-bold transition-all duration-300 flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md"
                   >
                     <Wallet className="w-5 h-5" />
                     <span className="hidden sm:inline">Connect</span>
@@ -368,9 +365,9 @@ export default function FaucetPage() {
               <button
                 onClick={handleClaim}
                 disabled={isLoading || faucetInfoLoading}
-                className="w-full py-5 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 hover:from-blue-700 hover:via-cyan-700 hover:to-blue-700 text-white rounded-xl font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center gap-3 relative overflow-hidden group"
+                className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md flex items-center justify-center gap-3 relative overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                <div className="absolute inset-0 bg-white/20 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
                 {faucetInfoLoading ? (
                   <>
                     <Loader2 className="w-6 h-6 animate-spin" />
@@ -392,25 +389,25 @@ export default function FaucetPage() {
 
             {/* Mining Progress */}
             {!isServiceDown && isMining && (
-              <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-50 rounded-2xl border-2 border-blue-300/50 shadow-lg">
+              <div className="mt-6 p-6 bg-bg-input/50 rounded-2xl border border-border-main shadow-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-gray-800 font-bold text-sm flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                  <span className="text-text-main font-bold text-sm flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
                     Mining in progress...
                   </span>
-                  <span className="text-blue-700 font-black text-lg">
+                  <span className="text-blue-500 font-black text-lg">
                     {Math.round(miningProgress)}%
                   </span>
                 </div>
-                <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-3 shadow-inner">
+                <div className="w-full h-4 bg-bg-card border border-border-main rounded-full overflow-hidden mb-3">
                   <div
-                    className="h-full bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 transition-all duration-300 relative overflow-hidden"
+                    className="h-full bg-blue-500 transition-all duration-300 relative overflow-hidden"
                     style={{ width: `${miningProgress}%` }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer"></div>
+                    <div className="absolute inset-0 bg-white/20 animate-shimmer"></div>
                   </div>
                 </div>
-                <div className="text-gray-700 text-sm font-semibold">
+                <div className="text-text-muted text-sm font-semibold">
                   {miningAttempts.toLocaleString()} attempts computed
                 </div>
               </div>

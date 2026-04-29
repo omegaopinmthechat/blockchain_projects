@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import {
@@ -14,8 +14,10 @@ import {
   PlayCircle,
   Rocket,
   RotateCcw,
+  Save,
   TerminalSquare,
 } from "lucide-react";
+import { useSolidityFiles } from "@/hooks/useSolidityFiles";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -197,13 +199,71 @@ export default function SolidityLabPage() {
   const compileShortcutRef = useRef(() => {});
   const lastShortcutRunAtRef = useRef(0);
   
-  const [code, setCode] = useState(() => {
-    if (typeof window !== "undefined") {
-      const savedCode = localStorage.getItem("solidityLabCode");
-      return savedCode || DEFAULT_CODE;
+  const {
+    files,
+    activeFile,
+    activeCode,
+    createFile,
+    renameFile,
+    renameFolder,
+    deleteFile,
+    deleteFolder,
+    createFolder,
+    moveFile,
+    saveActiveFile,
+    openFile,
+    tree,
+  } = useSolidityFiles(DEFAULT_CODE);
+
+  const [code, setCode] = useState("");
+
+  // Sync code editor when active file changes
+  useEffect(() => {
+    setCode(activeCode);
+  }, [activeCode]);
+
+  // Auto-save code to the active file on change (debounced)
+  const saveTimerRef = useRef(null);
+  const handleCodeChange = useCallback((value) => {
+    const next = value || "";
+    setCode(next);
+    clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      saveActiveFile(next);
+      // Notify sidebar
+      window.dispatchEvent(new Event("solidityFilesChanged"));
+    }, 600);
+  }, [saveActiveFile]);
+
+  // Listen for file actions dispatched from the sidebar
+  useEffect(() => {
+    function handleFileAction(e) {
+      const { type, file, name, dir, kind, path, newName, fromPath, toFolder } = e.detail;
+      switch (type) {
+        case "open":         openFile(file); break;
+        case "createFile":   createFile(name, dir ?? ""); break;
+        case "createFolder": createFolder(name, dir ?? ""); break;
+        case "rename":
+          if (kind === "file")   renameFile(path, newName);
+          else                   renameFolder(path, newName);
+          break;
+        case "delete":
+          if (kind === "file")   deleteFile(path);
+          else                   deleteFolder(path);
+          break;
+        case "moveFile":     moveFile(fromPath, toFolder ?? ""); break;
+        default: break;
+      }
+      window.dispatchEvent(new Event("solidityFilesChanged"));
     }
-    return DEFAULT_CODE;
-  });
+    window.addEventListener("solidityFileAction", handleFileAction);
+    return () => window.removeEventListener("solidityFileAction", handleFileAction);
+  }, [openFile, createFile, createFolder, renameFile, renameFolder, deleteFile, deleteFolder, moveFile]);
+
+  // Notify sidebar when file list changes
+  useEffect(() => {
+    window.dispatchEvent(new Event("solidityFilesChanged"));
+  }, [files, activeFile]);
   const [compiledContracts, setCompiledContracts] = useState([]);
   const [selectedContract, setSelectedContract] = useState("");
   const [compilerMeta, setCompilerMeta] = useState(null);
@@ -429,10 +489,10 @@ export default function SolidityLabPage() {
   const [editorTheme, setEditorTheme] = useState("one-dark-pro");
 
   useEffect(() => {
-    if (typeof window !== "undefined" && code !== DEFAULT_CODE) {
-      localStorage.setItem("solidityLabCode", code);
+    if (typeof window !== "undefined" && activeFile) {
+      // No longer needed — saving is handled by handleCodeChange
     }
-  }, [code]);
+  }, [code, activeFile]);
 
   useEffect(() => {
     const checkTheme = () => {
@@ -567,6 +627,8 @@ export default function SolidityLabPage() {
 
   function loadTemplate(template) {
     setCode(template.code);
+    saveActiveFile(template.code);
+    window.dispatchEvent(new Event("solidityFilesChanged"));
     setCompiledContracts([]);
     setSelectedContract("");
     setCompilerMeta(null);
@@ -932,7 +994,7 @@ export default function SolidityLabPage() {
               <div className="px-4 py-3 border-b border-border-main flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-bg-input/50">
                 <div className="flex items-center gap-2">
                   <Code className="w-4 h-4 text-text-muted" />
-                  <span className="text-sm font-semibold text-text-main">Playground.sol</span>
+                  <span className="text-sm font-semibold text-text-main">{activeFile || "Playground.sol"}</span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -960,10 +1022,10 @@ export default function SolidityLabPage() {
                 <MonacoEditor
                   beforeMount={handleEditorBeforeMount}
                   onMount={handleEditorMount}
-                  path="Playground.sol"
+                  path={activeFile || "Playground.sol"}
                   language="solidity"
                   value={code}
-                  onChange={(value) => setCode(value || "")}
+                  onChange={handleCodeChange}
                   theme={editorTheme}
                   height="560px"
                   options={{
@@ -1174,7 +1236,7 @@ export default function SolidityLabPage() {
                     <div className="space-y-3">
                       {(selectedFunctionAbi.inputs || []).map((input, index) => (
                         <div key={`${input.name || "arg"}-${index}`}>
-                          <label className="block text-xs font-semibold text-slate-200 mb-1">
+                          <label className="block text-xs font-semibold text-text-main mb-1">
                             {input.name || `arg${index}`} ({input.type})
                           </label>
                           <input
@@ -1185,7 +1247,7 @@ export default function SolidityLabPage() {
                                 ? "Use JSON-like value"
                                 : "Value"
                             }
-                            className="w-full min-h-10 rounded-xl border border-slate-600 bg-slate-900 px-3 py-2 text-sm font-mono text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none"
+                            className="w-full min-h-10 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm font-mono text-text-main placeholder:text-text-muted focus:border-purple-500/50 focus:outline-none"
                           />
                         </div>
                       ))}
@@ -1194,7 +1256,7 @@ export default function SolidityLabPage() {
 
                   {selectedFunctionAbi?.stateMutability === "payable" && (
                     <div>
-                      <label className="block text-xs font-semibold text-slate-200 mb-1">
+                      <label className="block text-xs font-semibold text-text-main mb-1">
                         Value in Wei
                       </label>
                       <input

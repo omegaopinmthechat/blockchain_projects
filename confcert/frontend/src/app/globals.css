@@ -14,22 +14,26 @@
   --bg-main: #0B0A0F;
   --bg-card: #111018;
   --bg-input: rgba(15, 23, 42, 0.7);
+  --bg-input-solid: #0f172a;
   --border-main: rgba(30, 41, 59, 0.4);
   --text-main: #e2e8f0;
   --text-muted: #94a3b8;
   --purple-glow: rgba(139, 92, 246, 0.3);
   --sidebar-bg: #0B0A0F;
+  color-scheme: dark;
 }
 
 .light {
   --bg-main: #f1f5f9;
   --bg-card: #f8fafc;
   --bg-input: #e2e8f0;
+  --bg-input-solid: #e2e8f0;
   --border-main: rgba(203, 213, 225, 0.8);
   --text-main: #0f172a;
   --text-muted: #475569;
   --purple-glow: rgba(139, 92, 246, 0.15);
   --sidebar-bg: #f8fafc;
+  color-scheme: light;
 }
 
 body {
@@ -97,6 +101,29 @@ input, textarea, select, button {
   input, textarea, select {
     font-size: 14px;
   }
+}
+
+/* ─── Select / Option dark theme ─────────────────────────────────────────── */
+/* color-scheme tells the browser to render the native dropdown in dark mode  */
+select {
+  color-scheme: inherit;
+  background-color: var(--bg-input-solid, #0f172a);
+  color: var(--text-main);
+}
+
+select option {
+  background-color: var(--bg-input-solid, #0f172a);
+  color: var(--text-main);
+}
+
+.light select {
+  background-color: var(--bg-input-solid, #e2e8f0);
+  color: var(--text-main);
+}
+
+.light select option {
+  background-color: var(--bg-input-solid, #e2e8f0);
+  color: var(--text-main);
 }
 
 /* One Dark Pro-inspired code block theme */

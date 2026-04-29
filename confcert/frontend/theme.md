@@ -1,119 +1,81 @@
-# ConfCert Yellow Theme System
+# Theme and Animation System
 
-## Color Palette
+This document outlines the detailed design decisions, color palettes (for both Light and Dark modes), and animation implementations used across the frontend application.
 
-### Primary Colors
-- **Light Yellow**: `#FEF9C3` (yellow-100)
-- **Medium Yellow**: `#FDE047` (yellow-300)
-- **Base Yellow**: `#FACC15` (yellow-400)
-- **Dark Yellow**: `#EAB308` (yellow-500)
-- **Deep Yellow**: `#CA8A04` (yellow-600)
+## 1. Color Palette System
 
-### Accent Colors
-- **Amber**: `#F59E0B` (amber-500)
-- **Orange**: `#F97316` (orange-500)
+The application utilizes CSS variables (`globals.css`) mapped to custom Tailwind classes for seamless theming. The core color system is built around slate and cool gray tones, combined with dark purple/black accents to create a modern, sleek web3 aesthetic.
 
-### Neutral Colors
-- **Background**: `#FEFCE8` (yellow-50)
-- **Card Background**: `#FFFFFF` with yellow tint
-- **Text Primary**: `#713F12` (yellow-900)
-- **Text Secondary**: `#854D0E` (yellow-800)
-- **Border**: `#FDE68A` (yellow-200)
+### Dark Theme (`:root` / Default)
+The dark theme provides a deep, immersive experience. It avoids pure black to reduce eye strain, opting instead for very dark purple/blue-tinted shades.
 
-## Gradients
+*   **`--bg-main` (`#0B0A0F`)**: The primary background color. A very dark, almost black shade with subtle purple undertones that sets a premium, moody foundation.
+*   **`--bg-card` (`#111018`)**: Used for project cards and elevated surfaces. It is slightly lighter than the main background, providing depth and separating foreground elements from the background.
+*   **`--bg-input` (`rgba(15, 23, 42, 0.7)`)**: A semi-transparent dark slate used for input fields and informational banners, allowing some background bleed-through for a glass-like effect.
+*   **`--bg-input-solid` (`#0f172a`)**: A solid fallback for inputs and dropdowns (`<select>`) where transparency would cause legibility issues.
+*   **`--border-main` (`rgba(30, 41, 59, 0.4)`)**: A subtle, semi-transparent slate border used to outline cards, inputs, and sections without being visually overwhelming.
+*   **`--text-main` (`#e2e8f0`)**: The primary text color. A light slate (off-white) that provides high contrast against the dark background while being softer on the eyes than pure white.
+*   **`--text-muted` (`#94a3b8`)**: A mid-tone slate gray used for secondary text, descriptions, and tags, establishing visual hierarchy.
+*   **`--purple-glow` (`rgba(139, 92, 246, 0.3)`)**: An accent color used for hover effects and borders, providing a subtle "web3" neon purple glow.
+*   **`--sidebar-bg` (`#0B0A0F`)**: Matches the main background to keep the navigation cohesive.
 
-### Primary Gradient
-```css
-background: linear-gradient(135deg, #FEF9C3 0%, #FDE047 50%, #FACC15 100%);
-```
+### Light Theme (`.light`)
+The light theme completely inverts the experience into a clean, crisp, and highly readable interface, utilizing light slate colors.
 
-### Card Gradient
-```css
-background: linear-gradient(180deg, #FFFFFF 0%, #FEF9C3 100%);
-```
+*   **`--bg-main` (`#f1f5f9`)**: A soft light slate gray background, providing a clean canvas that isn't blindingly white.
+*   **`--bg-card` (`#f8fafc`)**: A very light, almost white shade for cards, making them pop slightly off the light gray background.
+*   **`--bg-input` (`#e2e8f0`) & `--bg-input-solid` (`#e2e8f0`)**: A light slate gray for input backgrounds, giving them a distinct interactive area.
+*   **`--border-main` (`rgba(203, 213, 225, 0.8)`)**: A defined, slightly transparent gray border to structure the cards and elements cleanly.
+*   **`--text-main` (`#0f172a`)**: A very dark slate gray for primary text, ensuring excellent readability and contrast.
+*   **`--text-muted` (`#475569`)**: A medium-dark gray for secondary text, maintaining hierarchy without losing legibility.
+*   **`--purple-glow` (`rgba(139, 92, 246, 0.15)`)**: The purple accent remains but at a lower opacity to ensure it looks subtle against the bright background.
+*   **`--sidebar-bg` (`#f8fafc`)**: Matches the card background for a unified light navigation structure.
 
-### Button Gradient (Primary)
-```css
-background: linear-gradient(135deg, #FACC15 0%, #EAB308 100%);
-hover: background: linear-gradient(135deg, #EAB308 0%, #CA8A04 100%);
-```
+---
 
-### Button Gradient (Secondary)
-```css
-background: linear-gradient(135deg, #FEF9C3 0%, #FDE047 100%);
-```
+## 2. Animation System
 
-### Hero Gradient
-```css
-background: linear-gradient(180deg, #FEFCE8 0%, #FEF9C3 50%, #FDE047 100%);
-```
+The application uses a combination of **Framer Motion** for complex, scroll-triggered animations and **Tailwind CSS** for responsive hover transitions.
 
-## Component Styles
+### Scroll-Triggered Card Reveal (Framer Motion)
+In `page.js`, the project cards use `framer-motion` to create a cascading reveal effect as the user scrolls down the page.
 
-### Cards
-- Background: White with subtle yellow tint or gradient
-- Border: 2px solid #FDE68A
-- Border Radius: 16px (rounded-2xl)
-- Shadow: `0 10px 25px -5px rgba(234, 179, 8, 0.15)`
-- Padding: 2rem (p-8)
+*   **How it works:**
+    ```jsx
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+    >
+    ```
+*   **`initial={{ opacity: 0, y: 20 }}`**: Before the card is in view, it is completely transparent and pushed down by 20 pixels.
+*   **`whileInView={{ opacity: 1, y: 0 }}`**: As soon as the card enters the viewport, it animates to full opacity (`1`) and its natural vertical position (`0`).
+*   **`viewport={{ once: true }}`**: Ensures the animation only plays the first time the user scrolls to it, preventing repetitive flashing if the user scrolls up and down.
+*   **`transition={{ duration: 0.5, delay: X }}`**: Each card takes exactly 0.5 seconds to fade/slide in. By incrementally increasing the `delay` for each card (e.g., `0`, `0.1`, `0.2`, `0.3`, `0.4`, `0.5`, `0.6`), it creates a satisfying staggered "waterfall" effect, drawing the user's eye across the grid.
 
-### Buttons
-- Primary: Yellow gradient with white text
-- Height: 48px (h-12)
-- Padding: 24px horizontal (px-6)
-- Border Radius: 12px (rounded-xl)
-- Font Weight: 600 (font-semibold)
-- Transition: all 0.3s ease
+### Interactive Hover States (Tailwind CSS)
+Tailwind utility classes handle micro-interactions to make the interface feel responsive and tactile.
 
-### Inputs
-- Background: White
-- Border: 2px solid #FDE68A
-- Focus Border: #FACC15
-- Border Radius: 12px (rounded-xl)
-- Height: 48px (h-12)
-- Padding: 16px horizontal (px-4)
+*   **Card Hover Effects:**
+    ```css
+    className="... border-border-main hover:border-purple-500/50 transition-all duration-300 ..."
+    ```
+    *   By default, cards have the subtle `--border-main` color.
+    *   On hover (`hover:border-purple-500/50`), the border smoothly transitions to a semi-transparent bright purple.
+    *   `transition-all duration-300` ensures this change happens smoothly over 300 milliseconds rather than snapping instantly, providing a premium feel.
 
-### Typography
-- Headings: Yellow-900 (#713F12)
-- Body: Yellow-800 (#854D0E)
-- Font Family: System fonts or Geist
+*   **Button Hover Effects:**
+    ```css
+    className="... bg-[#8B5CF6] hover:bg-[#7C3AED] transition-all duration-300 ..."
+    ```
+    *   Buttons darken slightly when hovered to indicate clickability.
+    *   The 300ms transition softens the interaction.
 
-## Layout
-- Max Width: 1200px
-- Container Padding: 2rem
-- Spacing Scale: Tailwind default (4px base)
+### Global Theme Transition
+In `globals.css`, the `body` tag is styled to ensure smooth theme switching:
+*   **`transition: background-color 0.3s ease, color 0.3s ease;`**
+    *   When the user toggles between Dark and Light mode, the entire page background and text colors crossfade smoothly over 300ms. This prevents a harsh, sudden flash of light or dark that can be jarring to the user.
 
-## Animations
-- Hover Scale: scale(1.02)
-- Transition Duration: 300ms
-- Easing: cubic-bezier(0.4, 0, 0.2, 1)
-
-## Usage Examples
-
-### Card Component
-```jsx
-<div className="bg-linear-to-b from-white to-yellow-100 border-2 border-yellow-200 rounded-2xl p-8 shadow-[0_10px_25px_-5px_rgba(234,179,8,0.15)]">
-  {/* Content */}
-</div>
-```
-
-### Primary Button
-```jsx
-<button className="bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
-  Button Text
-</button>
-```
-
-### Input Field
-```jsx
-<input className="w-full h-12 px-4 border-2 border-yellow-200 focus:border-yellow-400 focus:outline-none rounded-xl transition-colors" />
-```
-
-### Page Layout
-```jsx
-<div className="min-h-screen bg-linear-to-b from-yellow-50 via-yellow-100 to-yellow-200">
-  <div className="max-w-6xl mx-auto px-8 py-12">
-    {/* Content */}
-  </div>
-</div>
-```
+### Scrollbar Customization
+*   Custom webkit scrollbars are implemented in `globals.css` using yellow accents (`--yellow-100`, `--yellow-400`, `--yellow-500`) to add a unique, branded touch even in the native browser UI elements.

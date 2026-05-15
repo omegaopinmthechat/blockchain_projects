@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import AppSidebar from "@/components/AppSidebar";
+import SiteFooter from "@/components/SiteFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,7 +42,10 @@ export default function RootLayout({ children }) {
         />
         <div className="fixed top-0 right-0 w-[600px] sm:w-[800px] h-[600px] sm:h-[800px] bg-[var(--purple-glow)] blur-[120px] rounded-full pointer-events-none -translate-y-1/3 translate-x-1/3 z-0 transition-colors duration-500" />
         <AppSidebar />
-        <div className="pt-16 md:pt-0 md:pl-20 lg:pl-64 relative z-10 min-h-screen">{children}</div>
+        <div className="pt-16 md:pt-0 md:pl-20 lg:pl-64 relative z-10 min-h-screen flex flex-col">
+          <div className="flex-1">{children}</div>
+          <SiteFooter />
+        </div>
         <Analytics />
       </body>
     </html>

@@ -1225,21 +1225,6 @@ contract SimpleNFT {
           ))}
         </div>
 
-        {/* Footer */}
-        <div className="mt-16 text-center">
-          <div className="bg-bg-card border-2 border-border-main rounded-3xl p-6 sm:p-8">
-            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-text-main mb-4">Ready to Deploy?</h3>
-            <p className="text-text-muted mb-6">
-              Follow the deployment guide above and use the contract codes provided. All contracts are tested and production-ready.
-            </p>
-            <Link href="/">
-              <button className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-text-main rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95">
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                Back to Projects
-              </button>
-            </Link>
-          </div>
-        </div>
       </div>
     </div>
   );

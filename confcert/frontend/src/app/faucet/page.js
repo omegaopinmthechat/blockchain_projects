@@ -458,7 +458,7 @@ export default function FaucetPage() {
             )}
           </div>
 
-          {/* Footer */}
+          {/* Testnet Notice */}
           <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-8 py-6 border-t-2 border-gray-700 hover:from-gray-900 hover:to-gray-800 transition-all duration-300">
             <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
               <div className="flex items-center gap-2">

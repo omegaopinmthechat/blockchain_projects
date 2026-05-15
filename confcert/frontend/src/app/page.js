@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { motion } from 'framer-motion';
-import { Blocks, Award, Rocket, Vote, Heart, Shield, Github, BookOpen, Linkedin } from "lucide-react";
+import { Blocks, Award, Rocket, Vote, Heart, Shield, BookOpen } from "lucide-react";
 export default function Home() {
   return (
     <div className="min-h-screen relative">
@@ -212,34 +212,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="relative z-10 mt-16 sm:mt-24 pb-8 text-center">
-          <div className="bg-bg-card border border-border-main rounded-3xl p-8 max-w-4xl mx-auto">
-            <p className="text-xl font-bold text-text-main mb-6">
-              Made by Amar Sankar Maitra
-            </p>
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4">
-              <a
-                href="https://github.com/omegaopinmthechat/blockchain_projects"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-btn-bg hover:bg-btn-hover text-text-main rounded-xl font-semibold transition-all duration-300"
-              >
-                <Github className="w-5 h-5" />
-                View on GitHub
-              </a>
-              <a
-                href="https://www.linkedin.com/in/amarsankarmaitra"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white rounded-xl font-semibold transition-all duration-300"
-              >
-                <Linkedin className="w-5 h-5" />
-                Connect on LinkedIn
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -20,6 +20,9 @@
   --text-muted: #94a3b8;
   --purple-glow: rgba(139, 92, 246, 0.3);
   --sidebar-bg: #0B0A0F;
+  --scrollbar-track: #0b0a0f;
+  --scrollbar-thumb: #7c3aed;
+  --scrollbar-thumb-hover: #9f67ff;
   color-scheme: dark;
 }
 
@@ -33,6 +36,9 @@
   --text-muted: #475569;
   --purple-glow: rgba(139, 92, 246, 0.15);
   --sidebar-bg: #f8fafc;
+  --scrollbar-track: #0b0a0f;
+  --scrollbar-thumb: #7c3aed;
+  --scrollbar-thumb-hover: #9f67ff;
   color-scheme: light;
 }
 
@@ -50,6 +56,11 @@ body {
 html {
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+body {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* Mobile touch improvements */
@@ -74,16 +85,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--yellow-100);
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--yellow-400);
+  background: var(--scrollbar-thumb);
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--yellow-500);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Selection color */

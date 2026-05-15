@@ -271,6 +271,8 @@ export default function SolidityLabPage() {
   const [constructorArgValues, setConstructorArgValues] = useState({});
   const [deployment, setDeployment] = useState(null);
   const [selectedSender, setSelectedSender] = useState("");
+  const [copiedKey, setCopiedKey] = useState(null);
+  const copyTimeoutRef = useRef(null);
   const [selectedFunctionSignature, setSelectedFunctionSignature] = useState("");
   const [functionArgValues, setFunctionArgValues] = useState({});
   const [callValueWei, setCallValueWei] = useState("0");
@@ -513,6 +515,12 @@ export default function SolidityLabPage() {
     setTerminalLogs([toLog("info", "Ready. Compile your contract to start the playground.")]);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
   function handleEditorMount(editor, monaco) {
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
       compileShortcutRef.current();
@@ -637,13 +645,41 @@ export default function SolidityLabPage() {
     addLog("info", `Loaded template: ${template.name}`);
   }
 
-  async function copySourceCode() {
-    try {
-      await navigator.clipboard.writeText(code);
-      addLog("success", "Source code copied to clipboard.");
-    } catch (_err) {
-      addLog("error", "Failed to copy source code.");
+  function markCopied(key) {
+    if (!key) {
+      return;
     }
+
+    setCopiedKey(key);
+    clearTimeout(copyTimeoutRef.current);
+    copyTimeoutRef.current = setTimeout(() => setCopiedKey(null), 1600);
+  }
+
+  async function copyText(value, label = "Value", options = {}) {
+    const { silent = false, key = null } = options;
+
+    if (!value) {
+      if (!silent) {
+        addLog("warning", `No ${label.toLowerCase()} to copy.`);
+      }
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(value);
+      markCopied(key);
+      if (!silent) {
+        addLog("success", `${label} copied to clipboard.`);
+      }
+    } catch (_err) {
+      if (!silent) {
+        addLog("error", `Failed to copy ${label.toLowerCase()}.`);
+      }
+    }
+  }
+
+  async function copySourceCode() {
+    await copyText(code, "Source code");
   }
 
   async function compileSource() {
@@ -1191,11 +1227,97 @@ export default function SolidityLabPage() {
                 <div className="space-y-4">
                   <div className="rounded-xl border border-green-500/50 bg-green-500/10 p-4">
                     <p className="text-xs font-semibold text-green-500">Active Deployment</p>
-                    <p className="text-sm text-text-main font-mono break-all mt-1">
-                      {deployment.contractAddress}
-                    </p>
-                    <p className="text-xs text-text-muted mt-1">{deployment.contractName}</p>
+                    <div className="flex items-start justify-between gap-3 mt-2">
+                      <div className="min-w-0">
+                        <p className="text-xs text-text-muted font-semibold">Contract Address</p>
+                        <p className="text-sm text-text-main font-mono break-all mt-1">
+                          {deployment.contractAddress}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          copyText(deployment.contractAddress, "Contract address", {
+                            silent: true,
+                            key: "contract-address",
+                          })
+                        }
+                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                          copiedKey === "contract-address"
+                            ? "border-green-500/60 text-green-500 bg-green-500/10 animate-pulse"
+                            : "border-border-main text-text-main bg-bg-input hover:bg-bg-card"
+                        }`}
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        {copiedKey === "contract-address" ? "Copied" : "Copy"}
+                      </button>
+                    </div>
+                    <p className="text-xs text-text-muted mt-2">{deployment.contractName}</p>
+                    {deployment.deployer && (
+                      <div className="flex items-start justify-between gap-3 mt-3">
+                        <div className="min-w-0">
+                          <p className="text-xs text-text-muted font-semibold">Deployer</p>
+                          <p className="text-sm text-text-main font-mono break-all mt-1">
+                            {deployment.deployer}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            copyText(deployment.deployer, "Deployer address", {
+                              silent: true,
+                              key: "deployer-address",
+                            })
+                          }
+                          className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                            copiedKey === "deployer-address"
+                              ? "border-green-500/60 text-green-500 bg-green-500/10 animate-pulse"
+                              : "border-border-main text-text-main bg-bg-input hover:bg-bg-card"
+                          }`}
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          {copiedKey === "deployer-address" ? "Copied" : "Copy"}
+                        </button>
+                      </div>
+                    )}
                   </div>
+
+                  {(deployment.accounts || []).length > 0 && (
+                    <div className="rounded-xl border border-border-main bg-bg-input p-3">
+                      <p className="text-xs font-semibold text-text-muted">Available Accounts</p>
+                      <div className="mt-2 space-y-2 max-h-40 overflow-y-auto">
+                        {(deployment.accounts || []).map((account, index) => (
+                          <div key={account} className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="text-xs text-text-muted">
+                                {account === deployment.deployer ? "Deployer" : `Account ${index}`}
+                              </p>
+                              <p className="text-xs sm:text-sm text-text-main font-mono break-all">
+                                {account}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                copyText(account, "Account address", {
+                                  silent: true,
+                                  key: `account-${account}`,
+                                })
+                              }
+                              className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                                copiedKey === `account-${account}`
+                                  ? "border-green-500/60 text-green-500 bg-green-500/10 animate-pulse"
+                                  : "border-border-main text-text-main bg-bg-card hover:bg-bg-input"
+                              }`}
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                              {copiedKey === `account-${account}` ? "Copied" : "Copy"}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-sm font-semibold text-text-main mb-2">Sender Account</label>
@@ -1206,11 +1328,30 @@ export default function SolidityLabPage() {
                     >
                       {(deployment.accounts || []).map((account, index) => (
                         <option key={account} value={account}>
-                          {account === deployment.deployer ? `${account.slice(0, 10)}...${account.slice(-8)} (Deployer)` : `${account.slice(0, 10)}...${account.slice(-8)} (Account ${index})`}
+                          {account === deployment.deployer
+                            ? `${account.slice(0, 10)}...${account.slice(-8)} (Deployer)`
+                            : `${account.slice(0, 10)}...${account.slice(-8)} (Account ${index})`}
                         </option>
                       ))}
                     </select>
                     <p className="text-xs text-text-muted mt-1">Select which account sends the transaction</p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        copyText(selectedSender || deployment.deployer, "Sender address", {
+                          silent: true,
+                          key: "sender-address",
+                        })
+                      }
+                      className={`mt-2 inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                        copiedKey === "sender-address"
+                          ? "border-green-500/60 text-green-500 bg-green-500/10 animate-pulse"
+                          : "border-border-main text-text-main bg-bg-input hover:bg-bg-card"
+                      }`}
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      {copiedKey === "sender-address" ? "Copied" : "Copy sender"}
+                    </button>
                   </div>
 
                   <div>
@@ -1247,7 +1388,7 @@ export default function SolidityLabPage() {
                                 ? "Use JSON-like value"
                                 : "Value"
                             }
-                            className="w-full min-h-10 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm font-mono text-text-main placeholder:text-text-muted focus:border-purple-500/50 focus:outline-none"
+                            className="w-full min-h-10 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm font-mono text-text-main placeholder:text-text-muted focus:border-purple-500/50 focus:outline-none selection:bg-yellow-400/40 selection:text-yellow-100"
                           />
                         </div>
                       ))}
@@ -1263,7 +1404,7 @@ export default function SolidityLabPage() {
                         value={callValueWei}
                         onChange={(e) => setCallValueWei(e.target.value)}
                         placeholder="0"
-                        className="w-full min-h-10 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm font-mono text-text-main placeholder:text-text-muted focus:border-blue-500 focus:outline-none"
+                        className="w-full min-h-10 rounded-xl border border-border-main bg-bg-input px-3 py-2 text-sm font-mono text-text-main placeholder:text-text-muted focus:border-blue-500 focus:outline-none selection:bg-yellow-400/40 selection:text-yellow-100"
                       />
                     </div>
                   )}

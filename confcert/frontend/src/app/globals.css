@@ -23,6 +23,8 @@
   --scrollbar-track: #0b0a0f;
   --scrollbar-thumb: #7c3aed;
   --scrollbar-thumb-hover: #9f67ff;
+  --yellow-300: #fde047;
+  --yellow-900: #713f12;
   color-scheme: dark;
 }
 
@@ -39,6 +41,8 @@
   --scrollbar-track: #0b0a0f;
   --scrollbar-thumb: #7c3aed;
   --scrollbar-thumb-hover: #9f67ff;
+  --yellow-300: #fde047;
+  --yellow-900: #713f12;
   color-scheme: light;
 }
 
@@ -99,6 +103,12 @@ body {
 
 /* Selection color */
 ::selection {
+  background: var(--yellow-300);
+  color: var(--yellow-900);
+}
+
+input::selection,
+textarea::selection {
   background: var(--yellow-300);
   color: var(--yellow-900);
 }

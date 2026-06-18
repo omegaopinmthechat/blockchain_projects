@@ -1,0 +1,33 @@
+{
+  "name": "create-fabric-app",
+  "version": "0.1.0",
+  "description": "",
+  "main": "src/bin/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/bin/index.ts",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "node dist/bin/index.js",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm clean && pnpm build",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.3",
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^15.0.0",
+    "execa": "^9.6.1",
+    "fs-extra": "^11.3.5",
+    "ora": "^9.4.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^25.9.3",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}

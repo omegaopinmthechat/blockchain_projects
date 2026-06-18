@@ -1,9 +1,13 @@
 {
   "name": "create-fabric-app",
   "version": "0.1.0",
-  "description": "",
+  "description": "Zero-configuration Hyperledger Fabric blockchain project scaffolder",
   "main": "src/bin/index.js",
   "type": "module",
+  "bin": {
+    "create-fabric-app": "./dist/bin/index.js",
+    "remove-fabric-app": "./dist/bin/remove.js"
+  },
   "scripts": {
     "dev": "tsx src/bin/index.ts",
     "build": "tsc",

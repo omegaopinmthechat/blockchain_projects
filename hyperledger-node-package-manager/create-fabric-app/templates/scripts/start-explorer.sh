@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+echo ""
+echo "======================================"
+echo "  Hyperledger Explorer Setup"
+echo "======================================"
+echo ""
+echo "Hyperledger Explorer provides a web-based dashboard for your blockchain."
+echo ""
+echo "To set up Explorer, please see the detailed guide:"
+echo "https://github.com/hyperledger/blockchain-explorer"
+echo ""
+echo "Quick setup:"
+echo "1. cd fabric-samples"
+echo "2. git clone https://github.com/hyperledger/blockchain-explorer.git"
+echo "3. cd blockchain-explorer"
+echo "4. Follow configuration steps in EXPLORER_SETUP.md"
+echo ""
+echo "Once configured, Explorer will be available at: http://localhost:8080"
+echo ""

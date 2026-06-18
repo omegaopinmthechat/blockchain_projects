@@ -73,6 +73,8 @@ export const logger = {
         chalk.white(`→ Create a channel (mychannel)\n`) +
         chalk.gray(`    npm run deploy-chaincode  `) +
         chalk.white(`→ Deploy the basic chaincode\n`) +
+        chalk.gray(`    npm run client            `) +
+        chalk.white(`→ Run the TypeScript client app\n`) +
         chalk.gray(`    npm run stop-network      `) +
         chalk.white(`→ Stop and clean up\n`) +
         chalk.white(`

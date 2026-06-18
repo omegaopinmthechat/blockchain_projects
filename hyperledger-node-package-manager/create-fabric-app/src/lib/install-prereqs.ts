@@ -74,6 +74,15 @@ async function installWindowsPrereqs(): Promise<void> {
   if (!curlInWSL) {
     await runCommand("wsl", ["bash", "-c", "sudo apt-get install -y curl"]);
   }
+
+  // Step 5: ensure jq inside WSL (required by Fabric scripts)
+  const jqInWSL = await checkCommandInWSL("jq");
+  if (!jqInWSL) {
+    logger.info("Installing jq inside WSL...");
+    await runCommand("wsl", ["bash", "-c", "sudo apt-get install -y jq"]);
+  } else {
+    logger.info(" jq already installed in WSL, skipping.");
+  }
 }
 
 // Runs a "which <cmd>" inside WSL and returns true if found
@@ -131,6 +140,16 @@ async function installLinuxPrereqs(): Promise<void> {
   } else {
     logger.info(" Go already installed, skipping.");
   }
+
+  if (!(await commandExists("jq"))) {
+    await runCommand(
+      "bash",
+      ["-c", "sudo apt-get install -y jq"],
+      "Installing jq...",
+    );
+  } else {
+    logger.info(" jq already installed, skipping.");
+  }
 }
 
 // Mac
@@ -151,6 +170,12 @@ async function installMacPrereqs(): Promise<void> {
     await runCommand("bash", ["-c", "brew install go"], "Installing Go...");
   } else {
     logger.info(" Go already installed, skipping.");
+  }
+
+  if (!(await commandExists("jq"))) {
+    await runCommand("bash", ["-c", "brew install jq"], "Installing jq...");
+  } else {
+    logger.info(" jq already installed, skipping.");
   }
 
   if (!(await commandExists("docker"))) {

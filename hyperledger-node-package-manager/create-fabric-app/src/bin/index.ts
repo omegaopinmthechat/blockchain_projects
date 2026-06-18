@@ -29,6 +29,7 @@ program
 
       logger.step(2, "Installing prerequisites...");
       await installPrereqs(platform);
+      logger.success("Prerequisites installed successfully.");
 
       logger.step(3, "Installing Hyperledger Fabric...");
       await installFabric(
@@ -39,18 +40,33 @@ program
         },
         platform,
       );
+      logger.success("Hyperledger Fabric installation complete.");
 
       logger.step(4, "Scaffolding project...");
       await scaffold({ projectName, projectDir });
+      logger.success("Project scaffolding complete.");
 
       logger.done(projectName);
     } catch (err) {
       // Clean user-facing error — no raw stack trace
+      console.error(""); // Empty line
       logger.error(
         err instanceof Error ? err.message : "An unexpected error occurred.",
       );
       logger.warn("Run with DEBUG=1 for full details.");
-      if (process.env["DEBUG"]) console.error(err);
+      
+      if (process.env["DEBUG"]) {
+        console.error("\nFull error details:");
+        console.error(err);
+      }
+      
+      // Provide helpful next steps
+      console.error("\nTroubleshooting steps:");
+      console.error("1. Ensure Docker Desktop is running");
+      console.error("2. Check you have at least 10 GB free space");
+      console.error("3. Try running with: DEBUG=1 npx create-fabric-app " + projectName);
+      console.error("4. Check ISSUES.md for common problems\n");
+      
       process.exit(1);
     }
   });

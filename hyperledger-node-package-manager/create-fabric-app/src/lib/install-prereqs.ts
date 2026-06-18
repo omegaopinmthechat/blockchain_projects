@@ -1,6 +1,5 @@
-//todo: Add icons loading etc using a npm package i can't remeber rn
-
 import { execa } from "execa";
+import { logger } from "../utils/logger.js";
 
 export type Platform = "windows" | "linux" | "mac";
 
@@ -22,7 +21,7 @@ async function runCommand(
   args: string[],
   label?: string,
 ): Promise<void> {
-  if (label) console.log(label);
+  if (label) logger.info(label);
   await execa(command, args, { stdio: "inherit" });
 }
 
@@ -33,41 +32,41 @@ async function installWindowsPrereqs(): Promise<void> {
   const wslAvailable = await commandExists("wsl");
 
   if (!wslAvailable) {
-    console.log("WSL not found. Installing WSL2...");
-    console.log("  Windows will require a REBOOT after WSL installs.");
-    console.log("   After rebooting, run this command again to continue.\n");
+    logger.info("WSL not found. Installing WSL2...");
+    logger.info("  Windows will require a REBOOT after WSL installs.");
+    logger.info("   After rebooting, run this command again to continue.\n");
 
     await runCommand("powershell", ["-Command", "wsl --install"]);
 
     // Can't continue — WSL needs a reboot to be usable
-    console.log("\n WSL installed. Please REBOOT your machine, then re-run.");
+    logger.info("\n WSL installed. Please REBOOT your machine, then re-run.");
     process.exit(0);
   }
 
   // Step 2: check Docker inside WSL
   const dockerInWSL = await checkCommandInWSL("docker");
   if (!dockerInWSL) {
-    console.log("Installing Docker inside WSL...");
+    logger.info("Installing Docker inside WSL...");
     await runCommand("wsl", [
       "bash",
       "-c",
       "curl -fsSL https://get.docker.com | sh && sudo usermod -aG docker $USER",
     ]);
   } else {
-    console.log(" Docker already installed in WSL, skipping.");
+    logger.info(" Docker already installed in WSL, skipping.");
   }
 
   // Step 3: check Go inside WSL
   const goInWSL = await checkCommandInWSL("go");
   if (!goInWSL) {
-    console.log("Installing Go inside WSL...");
+    logger.info("Installing Go inside WSL...");
     await runCommand("wsl", [
       "bash",
       "-c",
       "sudo apt-get update && sudo apt-get install -y golang-go",
     ]);
   } else {
-    console.log(" Go already installed in WSL, skipping.");
+    logger.info(" Go already installed in WSL, skipping.");
   }
 
   // Step 4: ensure curl inside WSL
@@ -104,7 +103,7 @@ async function installLinuxPrereqs(): Promise<void> {
       "Installing curl...",
     );
   } else {
-    console.log(" curl already installed, skipping.");
+    logger.info(" curl already installed, skipping.");
   }
 
   if (!(await commandExists("docker"))) {
@@ -116,11 +115,11 @@ async function installLinuxPrereqs(): Promise<void> {
       ],
       "Installing Docker...",
     );
-    console.log(
+    logger.info(
       "  Docker installed. You may need to log out and back in for group changes to take effect.",
     );
   } else {
-    console.log(" Docker already installed, skipping.");
+    logger.info(" Docker already installed, skipping.");
   }
 
   if (!(await commandExists("go"))) {
@@ -130,7 +129,7 @@ async function installLinuxPrereqs(): Promise<void> {
       "Installing Go...",
     );
   } else {
-    console.log(" Go already installed, skipping.");
+    logger.info(" Go already installed, skipping.");
   }
 }
 
@@ -139,19 +138,19 @@ async function installLinuxPrereqs(): Promise<void> {
 async function installMacPrereqs(): Promise<void> {
   // Check Homebrew first — nothing else works without it
   if (!(await commandExists("brew"))) {
-    console.log("Homebrew not found. Installing Homebrew...");
+    logger.info("Homebrew not found. Installing Homebrew...");
     await runCommand("bash", [
       "-c",
       '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
     ]);
   } else {
-    console.log(" Homebrew already installed, skipping.");
+    logger.info(" Homebrew already installed, skipping.");
   }
 
   if (!(await commandExists("go"))) {
     await runCommand("bash", ["-c", "brew install go"], "Installing Go...");
   } else {
-    console.log(" Go already installed, skipping.");
+    logger.info(" Go already installed, skipping.");
   }
 
   if (!(await commandExists("docker"))) {
@@ -161,11 +160,11 @@ async function installMacPrereqs(): Promise<void> {
       ["-c", "brew install --cask docker"],
       "Installing Docker Desktop...",
     );
-    console.log(
+    logger.info(
       "  Please open Docker Desktop manually once to finish setup.",
     );
   } else {
-    console.log(" Docker already installed, skipping.");
+    logger.info(" Docker already installed, skipping.");
   }
 }
 
